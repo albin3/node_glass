@@ -31,7 +31,7 @@
         <dd>
         <label for="news-title" class="col-sm-2 control-label">标题</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="news-title" name="news-title" value="{{ doc.title }}">
+          <input type="text" class="form-control" id="news-title" name="news-title" value="{{ news.title }}">
         </div>
         </dd>
         <br>
@@ -39,7 +39,7 @@
         <dd>
         <label for="news-summary" class="col-sm-2 control-label">导语</label>
         <div class="col-sm-6">
-          <textarea class="form-control" rows="3" id="news-summary" name="news-summary" value="{{ doc.summary }}"></textarea>
+          <textarea class="form-control" rows="3" id="news-summary" name="news-summary">{{ news.summary }}</textarea>
         </div>
         </dd>
         <br>
@@ -47,7 +47,7 @@
         <dd>
         <label for="news-detail" class="col-sm-2 control-label">内容</label>
         <div class="col-sm-6">
-          <textarea class="form-control" rows="6" id="news-detail" name="news-detail" value="{{ doc.detail }}"></textarea>
+          <textarea class="form-control" rows="6" id="news-detail" name="news-detail">{{ news.detail }}</textarea>
         </div>
         </dd>
         <br>
@@ -55,7 +55,7 @@
         <dd>
         <label for="news-url" class="col-sm-2 control-label">外部链接</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" id="news-url" name="news-url" value="{{ doc.url }}">
+          <input type="text" class="form-control" id="news-url" name="news-url" value="{{ news.url }}">
         </div>
         </dd>
         <br>
@@ -88,6 +88,21 @@
         <br>
 
         <dl class="added-pics">
+        {% for index, img in news.imgs %}
+        <dd>
+        <label for="news-first-pic" class="col-sm-2 control-label">图片[{{index}}]</label>
+        <div class="col-sm-6">
+          <img src="/img/news/{{ _id }}{{index}}.jpg" width="300px" height="186px" id="news-first-pic">
+          <form id="form-ch-pic" class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}{{index}}"> 
+            <input type="file" name="upload">
+            <br>
+            <button id="ch-pic-btn" type="submit" class="btn btn-primary">更换</button>
+            <iframe id="ch-pic-target" hidden="hidden"></iframe>
+          </form>
+        </div>
+        </dd>
+        <br>
+        {% endfor %}
         </dl>
 
       </dl>
