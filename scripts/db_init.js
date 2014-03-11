@@ -23,6 +23,12 @@ MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
             } else { 
               console.log("create unique index success"); 
             }
+
+            var root_user = config.root_user;
+            root_user.password = password_hash.generate(root_user.password);
+            dbaccount.insert(config.root_user, function(err, doc){
+              console.log("root account inserted.");
+            });
             db.close();
           }
           );

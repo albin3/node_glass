@@ -113,3 +113,11 @@ exports.appPath = function() {
 };
 
 exports.pic_size = 524288; // 限制上传的图片的大小
+
+exports.root_user = {
+  username : "admin",
+  password : "admin",
+  email    : "test@louding.com",
+  tel      : "12345678901",
+  level    : 0            // root level
+};
