@@ -26,7 +26,7 @@ exports.editnews = function (req, res) {
     if (err) {
       res.end(err);
     } else {
-      res.render("news/editnews", {title: "新闻及推送", _id: req.params.newsid, news: doc});
+      res.render("news/editnews", {Title: "新闻及推送", _id: req.params.newsid, news: doc});
     }
   });
 };
