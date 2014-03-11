@@ -19,24 +19,16 @@ exports.updatepic = function (req, res) {
   });
 };
 
-// 编辑准备，获取到商品的detail和图片信息
-exports.beforeedit = function (req, res) {
-  model.beforeedit(req.body.id, function (err, doc) {
-    if (!err && doc) {
-      res.end(JSON.stringify({
-        status: true,
-        detail: doc.detail,
-        imgs: doc.imgs
-      }));
-    } else {
-      res.end(JSON.stringify({status: false}));
-    }
-  });
-};
-
 // 编辑，更新商品
 exports.editnews = function (req, res) {
-  res.end(JSON.stringify({status: true}));
+  model.findOneNews(req.params.newsid, function(err, doc){
+    console.log(doc);
+    if (err) {
+      res.end(err);
+    } else {
+      res.render("news/editnews", {title: "新闻及推送", _id: req.params.newsid, news: doc});
+    }
+  });
 };
 
 // 增加新闻，返回在数据库中的id
@@ -68,9 +60,32 @@ exports.delnews = function (req, res) {
 exports.delall = function (req, res) {
   model.delall(function (err) {
     if (!err) {
-      res.end(JSON.stringify({status: true}));
+      res.end(json.stringify({status: true}));
     } else {
-      res.end(JSON.stringify({status: false}));
+      res.end(json.stringify({status: false}));
     } 
   });
 };
+
+// 添加新闻图片
+exports.addpic = function (req, res) {
+  model.addpic(req, function(err){
+    if (err) {
+      return res.end(JSON.stringify({status: false}));
+    } else {
+      return res.end(JSON.stringify({status: true}));
+    }
+  });
+};
+
+// 更换首图
+exports.chpic = function (req, res) {
+  model.chpic(req, function(err){
+    if (err) {
+      return res.end(JSON.stringify({status: false}));
+    } else {
+      return res.end(JSON.stringify({status: true}));
+    }
+  });
+};
+

@@ -112,3 +112,4 @@ exports.appPath = function() {
   return __dirname;
 };
 
+exports.pic_size = 524288; // 限制上传的图片的大小
