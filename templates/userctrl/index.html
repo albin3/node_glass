@@ -6,64 +6,107 @@
 
 {% block content %}
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">App用户列表</h2>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">昵称</th>
+              <th class="col-sm-3">是否为员工<small class="alert-danger">(点击改变状态)</small></th>
+              <th class="col-sm-3">电话</th>
+              <th class="col-sm-3">E-mail</th>
+              <th class="col-sm-3">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in appusers %}
+            <tr data-id="{{ user._id.toString() }}">
+              <td>{{user.nickname}}</td>
+              <td>{%if user.isworker === 1%}是{%else%}否{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
+              <td>{%if user.tel === undefined %}无{%else%}{{user.tel}}{%endif%}</td>
+              <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="/appbg/userctrl/edituser/{{ user._id.toString() }}" class="a-edit-user">编辑</a></li>
+                  <li><a href="#" class="a-del-user">删除</a></li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
+</div>
+<script>
+  // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+  $(".table-striped tbody").click(function(event){
+    if ($(event.target).context.className === "a-del-user"){  // 点击删除用户
+      delete_user(event);
+    }
+    if ($(event.target).attr("state") !== undefined){         // 点击改变用户状态
+      var _id = $(event.target).parent().parent().parent().attr("data-id");
+      if($(event.target).text() === "(正常)"){
+        changestate({disable: true}, _id, event.target);
+        } else {
+        changestate({disable: false}, _id, event.target);
+      }
+    }
+  });
 
-    <div class="container-fluid">
-      <div class="row">
+  function changestate(state, id, target){
+    $.post("/appbg/userctrl/changestate/"+id,
+      state,function(data){
+        if (data.status){
+          $(target).text(data.state);
+          if (state.disable){
+            $(target).removeClass("label-primary").addClass("label-danger");
+            } else {
+            $(target).removeClass("label-danger").addClass("label-primary");
+          }
+        }
+    },"json");
+  };
 
-        {% include "../leftbars.html" %}
+  function delete_user(event){
+    if (!confirm('确实要删除吗？')) {       // 要求确认
+      return;
+    }
+    var tr = $(event.target).parents("tr");
+    $.post("/appbg/userctrl/deluser",{
+      id: tr.attr("data-id")
+      }, function(data) {
+      data = JSON.parse(data);
+      if (!data.status) {
+        alert("删除失败");
+        return;
+      }
+      tr.remove();
+    });
+  };
 
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{{ Title }}</h1>
-
-          <h2 class="sub-header">App用户列表</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th class="col-sm-2">用户名(状态)</th>
-                  <th class="col-sm-4">奖券信息</th>
-                  <th class="col-sm-3">其他信息</th>
-                  <th class="col-sm-3">其他信息</th>
-                  <th class="col-md-3">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+</script>
 {% endblock %}
-
 

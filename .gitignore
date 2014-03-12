@@ -1,5 +1,6 @@
 upload/
 *.log
+*.log.*
 node_modules/
 img/
 .DS_Store
