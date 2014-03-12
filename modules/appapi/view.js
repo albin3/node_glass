@@ -14,6 +14,13 @@ exports.newuser = function (req, res) {
   });
 };
 
+// 修改用户信息
+exports.updateuser = function (req, res) {
+  model.updateuser(req, function (ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
 // 验证用户有效性
 exports.usersignin = function (req, res) {
   model.usersignin(req.params, function(ret){

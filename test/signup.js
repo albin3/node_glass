@@ -4,16 +4,15 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  type: 1,
-  tel: "11111",
-  password: "111"
+  email: "11111",
+  sex : "s"
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
   host: '127.0.0.1',
   port: 3000,
-  path: '/appapi/newuser/',
+  path: '/appapi/updateuser/531fdd18f76e109213000002/',
   method: 'POST',
   headers:{
   'Content-Type':'application/x-www-form-urlencoded',

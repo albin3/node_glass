@@ -6,6 +6,7 @@ var db = mongojs(config.dbinfo.dbname);
 
 var db_user = db.collection('appuser');
 var db_workerid = db.collection('workerid');
+var ObjectID = require('mongodb').ObjectID;
 
 /**
  * 新用户注册
@@ -69,6 +70,37 @@ exports.usersignin = function (user, callback) {
            ret      : 1,
            userid   : doc._id.toString(),
            isworker : doc.isworker
+    });
+  });
+};
+
+/**
+ * 修改用户信息
+ */
+exports.updateuser = function (req, callback) {
+  var query = {_id: new ObjectID(req.params.userid)};
+  var user = req.body;
+
+  db_user.findOne(query, function(err, mid){
+    if (err || !mid) {
+      return callback({ret: 4});         // RETURN: 账号不存在
+    }
+    if (mid.disable) {
+      return callback({ret: 3});         // RETURN: 账号被封停
+    }
+    
+    mid.tel = user.tel || mid.tel;
+    mid.email = user.email || mid.email;
+    mid.sex = user.sex || mid.sex;
+    db_user.update(query, mid, function(err, doc){
+      if (err) {
+        return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
+      }
+      return callback({                  // RETURN: 修改成功
+             ret      : 1,
+             userid   : mid._id.toString(),
+             isworker : mid.isworker
+      });
     });
   });
 };
