@@ -69,22 +69,22 @@ exports.delall = function (req, res) {
 
 // 添加新闻图片
 exports.addpic = function (req, res) {
-  model.addpic(req, function(err){
+  model.addpic(req, function(err, doc){
     if (err) {
       return res.end(JSON.stringify({status: false}));
     } else {
-      return res.end(JSON.stringify({status: true}));
+      return res.end(JSON.stringify({status: true, news: doc}));
     }
   });
 };
 
 // 更换首图
 exports.chpic = function (req, res) {
-  model.chpic(req, function(err){
+  model.chpic(req, function(err, news){
     if (err) {
       return res.end(JSON.stringify({status: false}));
     } else {
-      return res.end(JSON.stringify({status: true}));
+      return res.end(JSON.stringify({status: true, news: news}));
     }
   });
 };

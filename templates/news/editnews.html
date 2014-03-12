@@ -68,7 +68,7 @@
             <input type="file" name="upload">
             <br>
             <button id="ch-pic-btn" type="submit" class="btn btn-primary">更换</button>
-            <iframe id="ch-pic-target"></iframe>
+            <iframe id="ch-pic-target" hidden="hidden"></iframe>
           </form>
         </div>
         </dd>
@@ -81,7 +81,7 @@
             <input type="file" name="upload">
             <br>
             <button type="submit" class="btn btn-primary">添加图片</button>
-            <iframe id="add-pic-target"></iframe>
+            <iframe id="add-pic-target" hidden="hidden"></iframe>
           </form>
         </div>
         </dd>
@@ -89,15 +89,11 @@
 
         <dl class="added-pics">
         {% for index, img in news.imgs %}
-        <dd>
+        <dd data-id={{_id}}{{index}}>
         <label for="news-first-pic" class="col-sm-2 control-label">图片[{{index}}]</label>
         <div class="col-sm-6">
           <img src="/img/news/{{ _id }}{{index}}.jpg" width="300px" height="186px" id="news-first-pic">
-          <form id="form-ch-pic" class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}{{index}}"> 
-            <input type="file" name="upload">
-            <br>
-            <button id="ch-pic-btn" type="submit" class="btn btn-primary">更换</button>
-            <iframe id="ch-pic-target" hidden="hidden"></iframe>
+          <form class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}{{index}}"> 
           </form>
         </div>
         </dd>
@@ -113,13 +109,10 @@
 <script>
   // 绑定iframe为submit的返回数据接收目标
   $().ready(function(){
-    $("#ch-pic-target").hide();
     document.getElementById("form-ch-pic").onsubmit = function() {
-      alert();
       document.getElementById("form-ch-pic").target = "ch-pic-target";
     }
 
-    $("#add-pic-target").hide();
     document.getElementById("form-add-pic").onsubmit = function() {
       document.getElementById("form-add-pic").target = "add-pic-target";
     }
@@ -139,25 +132,25 @@
   // 监听iframe的加载事件，加载完成回调更新图片的函数
   $("#add-pic-target").load(function(){
     var data = JSON.parse($(document.getElementById("add-pic-target").contentDocument).text());
+    console.log(data);
     if (!data.status) {
       alert("请选择512k以下的图片");
       return;
     }
     // TODO: 更新成功，增加html页面
     var new_dd = 
-          '<dd>' +
-          '<label for="news-first-pic" class="col-sm-2 control-label">新闻图片</label>' +
-          '<div class="col-sm-6">' +
-            '<img src="/img/news/{{ _id }}.jpg" width="300px" height="186px" id="news-first-pic">' +
-            '<form id="-ch-pic" class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}">' +
-              '<input type="file" name="upload">' +
+    '<dd data-id="' + data.news._id.toString() + (data.news.imgs.length-1) + '">' + 
+          '<label for="news-first-pic" class="col-sm-2 control-label">图片[' + (data.news.imgs.length-1) + ']</label>' + 
+          '<div class="col-sm-6">' + 
+            '<img src="/img/news/{{ _id }}' + (data.news.imgs.length-1) + '.jpg" width="300px" height="186px" id="news-first-pic">' +
+            '<form role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}' + (data.news.imgs.length-1) + '">' +
               '<br>' +
-              '<button id="ch-pic-btn" type="submit" class="btn btn-primary">更换</button>' +
             '</form>' +
           '</div>' +
           '</dd>' + 
           '<br>';
    $(".added-pics").append(new_dd);
   });
+
 </script>
 {% endblock %}

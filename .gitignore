@@ -1,4 +1,6 @@
 upload/
 *.log
 node_modules/
+img/
 .DS_Store
+*.swp

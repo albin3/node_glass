@@ -127,8 +127,7 @@ exports.addpic = function (req, callback) {
             enable : true
           });
           dbnews.update({_id: new ObjectID(id)}, doc, function (err, docs) {
-            console.log(err);
-            callback(err);
+            callback(err, doc);
           });
         });
       });
