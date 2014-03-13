@@ -21,6 +21,20 @@ exports.updateuser = function (req, res) {
   });
 };
 
+// 修改用户密码
+exports.chpassword = function (req, res) {
+  model.chpassword(req.params, function (ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 重置用户密码
+exports.resetpassword = function (req, res) {
+  model.resetpassword(req.params, function (ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
 // 验证用户有效性
 exports.usersignin = function (req, res) {
   model.usersignin(req.params, function(ret){

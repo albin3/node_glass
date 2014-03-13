@@ -75,6 +75,70 @@ exports.usersignin = function (user, callback) {
 };
 
 /**
+ * 修改用户密码
+ */
+exports.chpassword = function (user, callback) {
+  var query = {_id: new ObjectID(user.userid)};
+
+  db_user.findOne(query, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 4});         // RETURN: 账号不存在
+    }
+    if (doc.disable) {
+      return callback({ret: 3});         // RETURN: 账号被停封
+    }
+    if (!password_hash.verify(user.oldpsd, doc.password)){
+      return callback({ret: 2});         // RETURN: 账号密码不正确
+    }
+
+    doc.password = password_hash.generate(user.newpsd);
+    db_user.update(query, doc, function(err, updated){
+      if(err) {
+        return callback({ret: 5});       // RETURN: 数据库错误
+      }
+      return callback({                  // RETURN: 账号密码正确
+             ret      : 1,
+             userid   : doc._id.toString(),
+             isworker : doc.isworker
+      });
+    });
+  });
+};
+
+/**
+ * 重置用户密码
+ */
+exports.resetpassword = function (user, callback) {
+  var query = {_id: new ObjectID(user.userid)};
+
+  db_user.findOne(query, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 4});         // RETURN: 账号不存在
+    }
+    if (doc.disable) {
+      return callback({ret: 3});         // RETURN: 账号被停封
+    }
+
+    var Num = "";
+    for (var i = 0; i < 6; i++) {
+      Num += Math.floor(Math.random()*10);
+    }
+    doc.password = password_hash.generate(Num);
+    db_user.update(query, doc, function(err, updated){
+      if(err) {
+        return callback({ret: 5});       // RETURN: 数据库错误
+      }
+      return callback({                  // RETURN: 账号密码正确
+             ret      : 1,
+             userid   : doc._id.toString(),
+             isworker : doc.isworker,
+             password : Num
+      });
+    });
+  });
+};
+
+/**
  * 修改用户信息
  */
 exports.updateuser = function (req, callback) {
