@@ -2,14 +2,14 @@
 var model = require("./model");
 
 /**
- * 用户管理首页
+ * 后台用户管理首页
  */
 exports.userctrl = function (req, res) {
   model.alluser(function(err, docs) {
     if (err || docs.length === 0) {
-      return res.render('userctrl/index', { Title: "App用户管理" });
+      return res.render('bguser/index', { Title: "后台用户管理" });
     }
-    return res.render('userctrl/index', { Title: "App用户管理", appusers: docs });
+    return res.render('bguser/index', { Title: "后台用户管理", users: docs });
   });
 };
 
@@ -19,9 +19,9 @@ exports.userctrl = function (req, res) {
 exports.edituser = function (req, res) {
   model.finduser(req.params.userid, function(err, doc) {
     if (err || !doc) {
-      return res.render('userctrl/edituser', { Title: "App用户管理", userid: req.params.userid });
+      return res.render('bguser/edituser', { Title: "App用户管理", userid: req.params.userid });
     }
-    return res.render('userctrl/edituser', { Title: "App用户管理", user: doc, userid: req.params.userid});
+    return res.render('bguser/edituser', { Title: "App用户管理", user: doc, userid: req.params.userid});
   });
 };
 
@@ -42,6 +42,18 @@ exports.updateuser = function (req, res) {
  */
 exports.userdel = function (req, res) {
   model.userdel(req.body.id, function(err) {
+    if (err) {
+      return res.end(JSON.stringify({ status: false }));
+    }
+    return res.end(JSON.stringify({ status: true }));
+  });
+};
+
+/**
+ * 删除所有用户
+ */
+exports.delall = function (req, res) {
+  model.delall(function(err) {
     if (err) {
       return res.end(JSON.stringify({ status: false }));
     }
