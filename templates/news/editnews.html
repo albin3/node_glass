@@ -27,150 +27,113 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2>编辑文本</h2>
-      <dl class="des-list dl-horizontal">
-        <dd>
-        <label for="news-title" class="col-sm-2 control-label">标题</label>
-        <div class="col-sm-3">
-          <input type="text" class="form-control" id="news-title" name="news-title" value="{{ news.title }}">
-        </div>
-        </dd>
-        <br>
+      <h2>编辑新闻</h2>
+      <hr>
+      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/edit/{{ _id }}"> 
+        <dl class="des-list dl-horizontal">
+          <h3>新闻概要</h3>
+          <dd>
+          <label for="news-title" class="col-sm-2 control-label">标题</label>
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="news-title" name="news-title" value="{{ news.title }}" placeholder="标题">
+            <input hidden="hidden" id="_id" name="_id" value="{{_id}}">
+          </div>
+          </dd>
+          <br>
 
-        <dd>
-        <label for="news-summary" class="col-sm-2 control-label">导语</label>
-        <div class="col-sm-6">
-          <textarea class="form-control" rows="3" id="news-summary" name="news-summary">{{ news.summary }}</textarea>
-        </div>
-        </dd>
-        <br>
+          <dd>
+          <label for="news-summary" class="col-sm-2 control-label">导语</label>
+          <div class="col-sm-6">
+            <textarea class="form-control" rows="2" id="news-summary" name="news-summary" placeholder="导语">{{ news.summary }}</textarea>
+          </div>
+          </dd>
+          <br>
 
-        <dd>
-        <label for="news-detail" class="col-sm-2 control-label">内容</label>
-        <div class="col-sm-6">
-          <textarea class="form-control" rows="6" id="news-detail" name="news-detail">{{ news.detail }}</textarea>
-        </div>
-        </dd>
-        <br>
+          <dd>
+          <label for="news-fir-pic-des" class="col-sm-2 control-label">首图描述</label>
+          <div class="col-sm-6">
+            <textarea class="form-control" rows="1" id="news-fir-pic-des" name="news-fir-pic-des" placeholder="首图描述">{{ news.firstpic.describe }}</textarea>
+          </div>
+          </dd>
+          <br>
 
-        <dd>
-        <label for="news-url" class="col-sm-2 control-label">外部链接</label>
-        <div class="col-sm-6">
-          <input type="text" class="form-control" id="news-url" name="news-url" value="{{ news.url }}">
-        </div>
-        </dd>
-        <br>
-
-        <dd>
-        <label for="news-options" class="col-sm-2 control-label">操作</label>
-        <div class="col-sm-6">
-          <button class="btn btn-primary">提交</button>
-          <a href="/appbg/news/" class="btn btn-default">返回</a>
-        </div>
-        </dd>
-        <br>
-
-        <hr>
-        <h2>编辑图片</h2>
-        <dd>
-        <label for="news-first-pic" class="col-sm-2 control-label">首图</label>
-        <div class="col-sm-6">
-          <img src="/img/news/{{ _id }}.jpg" width="300px" height="186px" id="news-first-pic">
-          <form id="form-ch-pic" class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}"> 
-            <input type="file" name="upload">
+          <dd>
+          <label for="news-first-pic" class="col-sm-2 control-label">首图</label>
+          <div class="col-sm-6">
+            <img src="/img/news/{{ _id }}.jpg" width="300px" height="186px" id="news-first-pic">
             <br>
-            <button id="ch-pic-btn" type="submit" class="btn btn-primary">更换</button>
-            <iframe id="ch-pic-target" hidden="hidden"></iframe>
-          </form>
-        </div>
-        </dd>
-        <br>
+            <label>更换请选择图片</label>
+            <input type="file" name="first-pic">
+          </div>
+          </dd>
+          <br>
 
-        <dd>
-        <label for="news-fir-pic-des" class="col-sm-2 control-label">首图描述</label>
-        <div class="col-sm-6">
-          <input type="text" class="form-control" id="news-fir-pic-des" name="news-fir-pic-des" value="{{ news.firstpic.describe }}">
-        </div>
-        </dd>
-        <br>
+          <h3>新闻内容</h3>
+          <dd>
+          <label class="col-sm-2 control-label">添加内容</label>
+          <div class="col-sm-4">
+            <button id="add-detail-text" type="button" class="btn btn-primary">添加文本</button>
+            <button id="add-detail-pic" type="button" class="btn btn-primary">添加图片</button>
+          </div>
+          </dd>
+          <br>
 
-        <dd>
-        <label class="col-sm-2 control-label">添加图片</label>
-        <div class="col-sm-4">
-          <form id="form-add-pic" class="form-add-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/addpic/{{ _id }}"> 
-            <input type="file" name="upload">
-            <br>
-            <button type="submit" class="btn btn-primary">添加图片</button>
-            <iframe id="add-pic-target" hidden="hidden"></iframe>
-          </form>
-        </div>
-        </dd>
-        <br>
+          <dl id="news-details">
+          </dl>
 
-        <dl class="added-pics">
-        {% for index, img in news.imgs %}
-        <dd data-id={{_id}}{{index}}>
-        <label for="news-first-pic" class="col-sm-2 control-label">图片[{{index}}]</label>
-        <div class="col-sm-6">
-          <img src="/img/news/{{ _id }}{{index}}.jpg" width="300px" height="186px" id="news-first-pic">
-          <form class="form-ch-pic" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}{{index}}"> 
-          </form>
-        </div>
-        </dd>
-        <br>
-        {% endfor %}
+          <dd>
+          <label for="news-options" class="col-sm-2 control-label">操作</label>
+          <div class="col-sm-6">
+            <button type="submit" class="btn btn-primary">保存修改</button>
+            <a href="/appbg/news/" class="btn btn-default">返回列表</a>
+          </div>
+          </dd>
+          <br>
+
         </dl>
-
-      </dl>
+      </form>
       <hr>
     </div>
   </div>
 </div>
 <script>
-  // 绑定iframe为submit的返回数据接收目标
-  $().ready(function(){
-    document.getElementById("form-ch-pic").onsubmit = function() {
-      document.getElementById("form-ch-pic").target = "ch-pic-target";
-    }
-
-    document.getElementById("form-add-pic").onsubmit = function() {
-      document.getElementById("form-add-pic").target = "add-pic-target";
-    }
-  });
-
-  // 监听iframe的加载事件，加载完成回调更新图片的函数
-  $("#ch-pic-target").load(function(){
-    var data = JSON.parse($(document.getElementById("ch-pic-target").contentDocument).text());
-    if (!data.status) {
-      alert("请选择512k以下的图片");
-      return;
-    }
-    var oldsrc = $("#news-first-pic").attr("src");
-    $("#news-first-pic").attr("src", oldsrc + "?" + Math.floor(Math.random()*10));
-  });
-
-  // 监听iframe的加载事件，加载完成回调更新图片的函数
-  $("#add-pic-target").load(function(){
-    var data = JSON.parse($(document.getElementById("add-pic-target").contentDocument).text());
-    console.log(data);
-    if (!data.status) {
-      alert("请选择512k以下的图片");
-      return;
-    }
-    // TODO: 更新成功，增加html页面
-    var new_dd = 
-    '<dd data-id="' + data.news._id.toString() + (data.news.imgs.length-1) + '">' + 
-          '<label for="news-first-pic" class="col-sm-2 control-label">图片[' + (data.news.imgs.length-1) + ']</label>' + 
-          '<div class="col-sm-6">' + 
-            '<img src="/img/news/{{ _id }}' + (data.news.imgs.length-1) + '.jpg" width="300px" height="186px" id="news-first-pic">' +
-            '<form role="form" enctype="multipart/form-data" method="post" action="/appbg/news/chpic/{{ _id }}' + (data.news.imgs.length-1) + '">' +
-              '<br>' +
-            '</form>' +
+  // 增加新闻内容
+  $("#add-detail-text").click(function(event){
+    var elemnum = $("#news-details").children("dd").length;
+    var add_row = "";
+    add_row +=
+          '<dd>' +
+          '<label class="col-sm-2 control-label">新闻文本</label>' +
+          '<div class="col-sm-6">' +
+            '<textarea class="form-control" rows="2" id="news-text-' + elemnum + '" name="news-text-' + elemnum + '" placeholder="新闻内容"></textarea>' +
           '</div>' +
-          '</dd>' + 
-          '<br>';
-   $(".added-pics").append(new_dd);
+          '<button class="btn btn-danger" del="">x</button>' +
+          '</dd>';
+    $("#news-details").append(add_row);
+  });
+  
+  // 增加新闻图片
+  $("#add-detail-pic").click(function(event){
+    var elemnum = $("#news-details").children("dd").length;
+    var add_row = "";
+    add_row +=
+          '<dd>' +
+          '<label class="col-sm-2 control-label">新闻图片</label>' +
+          '<div class="col-sm-6">' +
+            '<label>选择图片</label>' +
+            '<input type="file" name="upload' + elemnum + '" class="added-pic">' +
+            '<textarea class="form-control" rows="1" id="news-pic-' + elemnum + '" name="news-pic-' + elemnum + '" placeholder="图片描述"></textarea>' +
+          '</div>' +
+          '<button class="btn btn-danger" del="">x</button>' +
+          '</dd>';
+    $("#news-details").append(add_row);
   });
 
+  // 监控x按钮，删除点击的项
+  $("#news-details").click(function(event){
+    if ($(event.target).attr("del") !== undefined){
+      $(event.target).parent().remove();
+    }
+  });
 </script>
 {% endblock %}

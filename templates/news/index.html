@@ -72,7 +72,7 @@
                   <td>
                     <ul class=list-inline>
                       <p></p>
-                      <li><a href="/appbg/editnews/{{ news._id.toString() }}" class="a-edit-news">编辑</a></li>
+                      <li><a href="/appbg/news/edit/{{ news._id.toString() }}" class="a-edit-news">编辑</a></li>
                       <li><a href="#" class="a-del-news">删除</a></li>
                     </ul>
                   </td>
@@ -94,7 +94,7 @@
         $.post("/appbg/news/add", {
           title: "标题",
           summary: "导语",
-          detail: "内容",
+          details: [{type: 1, content: "文本"}],
           url: "http://www.baidu.com"
           },function(data){
           data = JSON.parse(data); // 解析返回的json数据
@@ -118,7 +118,7 @@
             '<td>' +
               '<ul class=list-inline>' +
                 '<p></p>' +
-                '<li><a href="/appbg/editnews/' + data.doc._id.toString() + '" class="a-edit-news">编辑</a></li>' +
+                '<li><a href="/appbg/news/edit/' + data.doc._id.toString() + '" class="a-edit-news">编辑</a></li>' +
                 '<li><a href="#" class="a-del-news">删除</a></li>' +
                 '</ul>' +
               '</td>' +

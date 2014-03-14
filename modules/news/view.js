@@ -12,17 +12,9 @@ exports.index = function (req, res) {
   });
 };
 
-// 更新焦点图
-exports.updatepic = function (req, res) {
-  model.updatepic(req, function () {
-    res.redirect('/appbg/news');
-  });
-};
-
-// 编辑，更新商品
+// 编辑新闻页面
 exports.editnews = function (req, res) {
   model.findOneNews(req.params.newsid, function(err, doc){
-    console.log(doc);
     if (err) {
       res.end(err);
     } else {
@@ -45,7 +37,7 @@ exports.addnews = function (req, res) {
   });
 };
 
-// 删除商品
+// 删除新闻
 exports.delnews = function (req, res) {
   model.delnews(req.body, function (err) {
     if (!err) {
@@ -60,32 +52,20 @@ exports.delnews = function (req, res) {
 exports.delall = function (req, res) {
   model.delall(function (err) {
     if (!err) {
-      res.end(json.stringify({status: true}));
+      res.end(JSON.stringify({status: true}));
     } else {
-      res.end(json.stringify({status: false}));
+      res.end(JSON.stringify({status: false}));
     } 
   });
 };
 
-// 添加新闻图片
-exports.addpic = function (req, res) {
-  model.addpic(req, function(err, doc){
+// 更新新闻数据
+exports.updatenews = function (req, res) {
+  model.updatenews(req, function (err, data) {
     if (err) {
-      return res.end(JSON.stringify({status: false}));
-    } else {
-      return res.end(JSON.stringify({status: true, news: doc}));
+      res.end(JSON.stringify({status: false}));
     }
-  });
-};
-
-// 更换首图
-exports.chpic = function (req, res) {
-  model.chpic(req, function(err, news){
-    if (err) {
-      return res.end(JSON.stringify({status: false}));
-    } else {
-      return res.end(JSON.stringify({status: true, news: news}));
-    }
+    res.end(JSON.stringify({status: true}));
   });
 };
 

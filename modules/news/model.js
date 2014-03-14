@@ -2,6 +2,7 @@
 var config = require("../../config"); // 为了获取到路径
 var qureystring = require("querystring");
 var fs = require("fs");
+var fileExists = require("path").exists;
 
 var mongojs = require('mongojs');
 var db = mongojs(config.dbinfo.dbname);
@@ -14,18 +15,6 @@ exports.findOneNews = function (id, callback) {
     callback(err, doc);
   });
 };
-// 上传文件
-exports.updatepic = function(req, callback)
-{
-  var newPath = config.appPath() + "/static/img/" + req.params.picnum + ".jpg";
-
-  fs.readFile(req.files.upload.path, function (err, data) {
-    fs.writeFile(newPath, data, function (err) {
-      fs.unlinkSync(req.files.upload.path);
-      callback(err);
-    });
-  });
-}
 
 // 获取到所有新闻信息
 exports.allnews = function (callback) {
@@ -39,7 +28,7 @@ exports.allnews = function (callback) {
 exports.addnews =  function (news, callback) {
   dbnews.insert(news, function (err, doc) {
     if (doc) {
-      var defaultimg = config.appPath() + "/static/img/news/default.jpg";
+      var defaultimg = config.appPath() + "/static/img/default.jpg";
       var newsfirstimg = config.appPath() + "/static/img/news/" + doc._id.toString() + ".jpg";
 
       // 复制default.jpg
@@ -51,6 +40,18 @@ exports.addnews =  function (news, callback) {
   });
 };
 
+// 删除以id开头的所有图片
+function deletePicturesOfNews(newsid) {
+  var imgpath = config.appPath() + "/static/img/news/" + newsid;
+  for (var i = 1; i < 10; i++) {
+    try {
+      console.log(imgpath+i+".jpg");
+      fs.unlinkSync(imgpath+i+".jpg");
+    } catch (e){
+    }
+  }
+};
+
 // 删除新闻
 exports.delnews =  function (news, callback) {
   dbnews.remove({ _id: new ObjectID(news.id) }, function (err) {
@@ -59,11 +60,29 @@ exports.delnews =  function (news, callback) {
     var newsfirstimg = config.appPath() + "/static/img/news/" + news.id + ".jpg";
     try {
       fs.unlinkSync(newsfirstimg);
+      deletePicturesOfNews(news.id);
     } catch (e) {
     }
 
     callback(err);
   });
+};
+
+// 递归删除文件夹
+function deleteFolderRecursive(path) {
+  var files = [];
+  if( fs.existsSync(path) ) {
+    files = fs.readdirSync(path);
+    files.forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.statSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
 };
 
 // 删除所有新闻
@@ -72,13 +91,9 @@ exports.delall =  function (callback) {
     if(err) {
       return callback(err);
     }
-    fs.rmdir(config.appPath() + "/static/img/news", function(err){
-      if (err) {
-        return callback(err);
-      }
-      fs.mkdir(config.appPath() + "/static/img/news", function(err){
-        return callback(err);
-      });
+    deleteFolderRecursive(config.appPath() + "/static/img/news");  // 递归删除文件夹
+    fs.mkdir(config.appPath() + "/static/img/news", function(err){
+      return callback(err);
     });
   });
 };
@@ -88,51 +103,47 @@ function judge_size(size) {
   return size > 0 && size < config.pic_size;
 }
 
-// 更换新闻首图
-exports.chpic = function (req, callback) {
+// 更新新闻内容
+exports.updatenews = function (req, callback) {
+  var files = req.files;
+  var texts = req.body;
+  var newsid = texts["_id"];
+  delete texts["_id"];
+  var query = {_id: new ObjectID(newsid)};
 
-  if (judge_size(req.files.upload.size)) {
-    var newPath = config.appPath() + "/static/img/news/" + req.params.newsid + ".jpg";
-    fs.readFile(req.files.upload.path, function (err, data) {
-      fs.writeFile(newPath, data, function (err) {
-        fs.unlinkSync(req.files.upload.path);
-        callback(err);
-      });
-    });
-  } else {
-    callback("file size error"); // 图片大小不符合限制
-  }
-};
-
-// 添加新闻图片
-exports.addpic = function (req, callback) {
-
-  if (judge_size(req.files.upload.size)) {
-    var id = req.params.newsid;
-    dbnews.findOne({_id: new ObjectID(id)}, function(err, doc) {
-      if (!doc.imgs) {
-        doc.imgs = new Array();
-      }
-      var numImg = doc.imgs.length;
-      // 将新的图片存储在文件中
-      var newPath = config.appPath() + "/static/img/news/" + req.params.newsid + numImg + ".jpg";
-      console.log(newPath);
-      fs.readFile(req.files.upload.path, function (err, data) {
-        if (err) {callback(err);}
-        fs.writeFile(newPath, data, function (err) {
-          if (err) {callback(err);}
-          fs.unlinkSync(req.files.upload.path);
-          doc.imgs.push({
-            url    : "/img/news/" + req.params.newsid + numImg + ".jpg",
-            enable : true
-          });
-          dbnews.update({_id: new ObjectID(id)}, doc, function (err, docs) {
-            callback(err, doc);
+  dbnews.findOne(query, function (err, doc) {
+    doc.title = texts["news-title"];              // 更新标题
+    delete texts["news-title"];
+    doc.summary = texts["news-summary"];          // 更新导语
+    delete texts["news-summary"];
+    doc.firpicdes = texts["news-fir-pic-des"];    // 更新首图描述
+    delete texts["news-fir-pic-des"];
+    if (files["first-pic"].size > 0){             // 更新首图
+      if (judge_size(files["first-pic"].size)) { 
+        fs.readFile(files["first-pic"].path, function (err, data) {
+          var path = config.appPath() + "/static/img/news/" + newsid + ".jpg";
+          fs.writeFile(path, data, function(err){
           });
         });
-      });
-    });
-  } else {
-    callback("file size error"); // 图片大小不符合限制
-  }
+      }
+    }
+
+    var old_details = doc.details;                // 更新新闻中的元素
+    var new_details = new Array();
+    var path = config.appPath() + "/static/img/news/" + newsid;
+    for (text in texts) {
+      if (text.toString().indexOf("pic") > 0) {
+        text = text.replace("news-pic-", "");
+        if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
+          fs.rename(path+text+".jpg", path+new_detail.length+".jpg", function(err){
+            // TODO: 错误处理
+            
+          });
+        }
+      } else if (text.indexOf("text") > 0) {
+        text = text.replace("news-text-", "");
+        console.log("text" + old_details[text]);
+      }
+    }
+  });
 };
