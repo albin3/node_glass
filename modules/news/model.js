@@ -153,20 +153,37 @@ exports.updatenews = function (req, callback) {
         var item = {};
         if (text.toString().indexOf("pic") > 0){
           item.type = 2;
+          item.content = "img/news/" + newsid + new_details.length + ".jpg";
+          item.describe = texts[text];
           // TODO: 4.14号到这里
           text = text.replace("news-pic-","");
-          if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
-            fs.rename(path+text+".jpg", path+new_detail.length+".jpg", function(err){
+          if (files["upload"+text] !== undefined) {                       // 有新上传的图片
+            fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
               callback();
             });
+          }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
+            fs.rename(path+text+".jpg", path+new_details.length+".jpg", function(err){
+              callback();
+            });
+          } else {
+            callback();
           }
+        } else {
+          item.type = 1;
+          item.content = texts[text];
+          item.describe = "";
+          callback();
         }
       },text));
     }
     async.series(
         funcArr
         ,function(err){
-      console.log("done");
+      doc.details = new_details;
+      dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
+        console.log("done");
+        callback(err);
+      });
     });
     
     /*

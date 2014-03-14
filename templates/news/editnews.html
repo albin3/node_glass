@@ -79,6 +79,9 @@
           <br>
 
           <dl id="news-details">
+            {%for detail in news.details%}
+            <label for="" class="col-sm-2 control-label">{{detail.content}}</label>
+            {%endfor%}
           </dl>
 
           <dd>
