@@ -53,11 +53,8 @@ exports.userdel = function (req, res) {
  * 删除所有用户
  */
 exports.delall = function (req, res) {
-  model.delall(function(err) {
-    if (err) {
-      return res.end(JSON.stringify({ status: false }));
-    }
-    return res.end(JSON.stringify({ status: true }));
+  model.delall(function(ret) {
+    return res.end(JSON.stringify(ret));
   });
 };
 
@@ -77,3 +74,11 @@ exports.changestate = function (req, res) {
   });
 };
 
+/**
+ * 增加一个后台用户
+ */
+exports.adduser = function (req, res) {
+  model.adduser(req.body, function (ret) {
+    return res.end(JSON.stringify(ret));
+  });
+};

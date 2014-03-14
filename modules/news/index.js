@@ -9,3 +9,4 @@ exports.register = function (app) {
   app.post('/appbg/news/del', view.delnews);                  // 删除一条新闻
   app.post('/appbg/news/delall', view.delall);                // 删除所有新闻
 };
+

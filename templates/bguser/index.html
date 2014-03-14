@@ -28,7 +28,7 @@
       <h1 class="page-header">{{ Title }}</h1>
 
       <h2 class="sub-header">后台用户列表</h2>
-      <button class="btn btn-primary">增加用户</button>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-bguser">增加用户</button>
       <button class="btn btn-danger">删除所有</button>
       <div class="table-responsive">
         <table class="table table-striped">
@@ -41,7 +41,7 @@
               <th class="col-sm-3">操作</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="user-list">
             {% for user in users %}
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.username}}</td>
@@ -50,7 +50,6 @@
               <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="/appbg/bguser/edituser/{{ user._id.toString() }}" class="a-edit-user">编辑</a></li>
                   <li><a href="#" class="a-del-user">删除</a></li>
                 </ul>
               </td>
@@ -62,9 +61,64 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="modal-add-bguser">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">添加后台用户</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="user-name" class="col-sm-2 control-label">用户名</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="user-name" name="user-name" placeholder="登录名">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="user-password" class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-4">
+              <input type="password" class="form-control" id="user-password" name="user-password" placeholder="登录密码">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="user-confirm" class="col-sm-2 control-label">确认密码</label>
+            <div class="col-sm-4">
+              <input type="password" class="form-control" id="user-confirm" name="user-confirm" placeholder="确认">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="user-tel" class="col-sm-2 control-label">电话</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="user-tel" name="user-tel" placeholder="可不填">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="user-confirm" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="user-email" name="user-email" placeholder="可不填">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End modal -->
+
 <script>
   // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
   $(".table-striped tbody").click(function(event){
+    event.preventDefault();       // 页面的焦点不变
     if ($(event.target).context.className === "a-del-user"){  // 点击删除用户
       delete_user(event);
     }
@@ -97,7 +151,7 @@
       return;
     }
     var tr = $(event.target).parents("tr");
-    $.post("/appbg/bguser/deluser",{
+    $.post("/appbg/bguser/deluser/",{
       id: tr.attr("data-id")
       }, function(data) {
       data = JSON.parse(data);
@@ -114,7 +168,7 @@
     if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
       return;
     }
-    $.post("/appbg/bguser/delall",function(data){
+    $.post("/appbg/bguser/delall/",function(data){
       if(data.status) {
         $(".table-striped tbody tr").remove();
         alert("删除成功..");
@@ -124,6 +178,59 @@
     },"json");
   });
 
+  // 增加用户确认
+  $("#modal-add-bguser .modal-footer .btn-primary").click(function(event){
+    var username = $("#user-name").val();
+    var password = $("#user-password").val();
+    var _confirm = $("#user-confirm").val();
+    var tel      = $("#user-tel").val();
+    var email    = $("#user-email").val();
+
+    if (username === "" || password === ""){
+      alert("用户名和密码不能为空");
+      return ;
+    }
+    if (password !== _confirm){
+      alert("两次密码不一致");
+      return ;
+    }
+
+    $.post("/appbg/bguser/adduser/",{
+      username: username,
+      password: password,
+      tel:      tel,
+      email:    email
+      },function(data){
+      if (data.ret === 2){
+        alert("用户名已存在");
+        return ;
+      }
+      $("#modal-add-bguser").modal("hide");
+      var user = data.user;
+      var new_row = 
+      '<tr data-id="' + user._id.toString() + '">' +
+        '<td>' + user.username + '</td>' + 
+        '<td><a href="#"><span state="" class="label ' + (user.disable ? 'label-danger' : 'label-primary') + '">(' + (user.disable ? '封停' : '正常') + ')</span></a></td>' +
+        '<td>' + ((user.tel === undefined || user.tel === "") ? '无' : user.tel) + '</td>' +
+        '<td>' + ((user.email === undefined || user.email === "") ? '无' : user.email) + '</td>' +
+        '<td>' +
+          '<ul class=list-inline>' +
+            '<li><a href="#" class="a-del-user">删除</a></li>' +
+            '</ul>' +
+          '</td>' +
+        '</tr>';
+      $("#user-list").append(new_row);
+    }, "json");
+  });
+
+  // 在现实modal的时候清空
+  $("#modal-add-bguser").on("shown.bs.modal",function(event){
+    $("#user-name").val("");
+    $("#user-password").val("");
+    $("#user-confirm").val("");
+    $("#user-tel").val("");
+    $("#user-email").val("");
+  });
 </script>
 {% endblock %}
 

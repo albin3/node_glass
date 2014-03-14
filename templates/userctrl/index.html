@@ -48,7 +48,6 @@
               <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="/appbg/userctrl/edituser/{{ user._id.toString() }}" class="a-edit-user">编辑</a></li>
                   <li><a href="#" class="a-del-user">删除</a></li>
                 </ul>
               </td>
@@ -63,6 +62,7 @@
 <script>
   // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
   $(".table-striped tbody").click(function(event){
+    event.preventDefault();   // 焦点不变
     if ($(event.target).context.className === "a-del-user"){  // 点击删除用户
       delete_user(event);
     }
@@ -95,7 +95,7 @@
       return;
     }
     var tr = $(event.target).parents("tr");
-    $.post("/appbg/userctrl/deluser",{
+    $.post("/appbg/userctrl/deluser/",{
       id: tr.attr("data-id")
       }, function(data) {
       data = JSON.parse(data);

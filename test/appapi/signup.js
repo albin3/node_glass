@@ -4,6 +4,7 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
+  nickname : "a",
   tel      : "a",
   email    : "a",
   password : "a",

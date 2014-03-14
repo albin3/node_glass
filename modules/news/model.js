@@ -147,3 +147,4 @@ exports.updatenews = function (req, callback) {
     }
   });
 };
+

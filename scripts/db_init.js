@@ -26,6 +26,7 @@ MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
 
             var root_user = config.root_user;
             root_user.password = password_hash.generate(root_user.password);
+            root_user.disable = false;
             dbaccount.insert(config.root_user, function(err, doc){
               console.log("root account inserted.");
             });

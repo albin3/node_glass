@@ -69,3 +69,4 @@ exports.updatenews = function (req, res) {
   });
 };
 
+
