@@ -10,4 +10,6 @@ exports.register = function (app) {
   app.all('/appapi/resetpassword/:userid', view.resetpassword);           // 重置用户密码
   app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);   // 用户登录
 
+  app.all('/appapi/newslist', view.newslist);
+
 };

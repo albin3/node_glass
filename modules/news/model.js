@@ -4,6 +4,8 @@ var qureystring = require("querystring");
 var fs = require("fs");
 var fileExists = require("path").exists;
 
+var async = require("async");
+
 var mongojs = require('mongojs');
 var db = mongojs(config.dbinfo.dbname);
 var dbnews = db.collection('news');
@@ -103,6 +105,17 @@ function judge_size(size) {
   return size > 0 && size < config.pic_size;
 }
 
+// 更新新闻内容时，需要用到面向过程的逻辑：
+//   新闻的details必须在上一条details处理完毕后再处理，
+//   变下事件订阅/发布模式解决。
+function UpdateNewsDetails(text, callback){
+  console.log("a");
+}
+/*
+emmiter.emit("updateOne", function(which, files, texts){
+  console.log(which);
+});
+*/
 // 更新新闻内容
 exports.updatenews = function (req, callback) {
   var files = req.files;
@@ -131,13 +144,38 @@ exports.updatenews = function (req, callback) {
     var old_details = doc.details;                // 更新新闻中的元素
     var new_details = new Array();
     var path = config.appPath() + "/static/img/news/" + newsid;
+
+    // **为了完成新闻内容更新的功能，需要用到同步的方式进行
+    // ******所有的项目调用同一个函数，用到了async.apply，放在数组里，再调用async.series
+    var funcArr = [];
+    for (text in texts){
+      funcArr.push(async.apply(function(text, callback){
+        var item = {};
+        if (text.toString().indexOf("pic") > 0){
+          item.type = 2;
+          // TODO: 4.14号到这里
+          text = text.replace("news-pic-","");
+          if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
+            fs.rename(path+text+".jpg", path+new_detail.length+".jpg", function(err){
+              callback();
+            });
+          }
+        }
+      },text));
+    }
+    async.series(
+        funcArr
+        ,function(err){
+      console.log("done");
+    });
+    
+    /*
     for (text in texts) {
       if (text.toString().indexOf("pic") > 0) {
         text = text.replace("news-pic-", "");
         if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
           fs.rename(path+text+".jpg", path+new_detail.length+".jpg", function(err){
             // TODO: 错误处理
-            
           });
         }
       } else if (text.indexOf("text") > 0) {
@@ -145,6 +183,8 @@ exports.updatenews = function (req, callback) {
         console.log("text" + old_details[text]);
       }
     }
+    */
+
   });
 };
 

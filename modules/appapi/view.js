@@ -41,3 +41,11 @@ exports.usersignin = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+// ###新闻接口
+// 新闻列表
+exports.newslist = function (req, res) {
+  model.allnews(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};

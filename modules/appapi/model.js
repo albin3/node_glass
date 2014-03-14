@@ -5,6 +5,7 @@ var password_hash = require('password-hash');
 var db = mongojs(config.dbinfo.dbname);
 
 var db_user = db.collection('appuser');
+var db_news = db.collection('news');
 var db_workerid = db.collection('workerid');
 var ObjectID = require('mongodb').ObjectID;
 
@@ -170,3 +171,13 @@ exports.updateuser = function (req, callback) {
 };
 
 
+// ###新闻接口
+// 新闻列表
+exports.allnews = function (callback) {
+  db_news.find({}, function(err, docs){
+    if (err){
+      return callback({ret: 2});
+    }
+    return callback({ret: 1, newslist: docs});
+  });
+};
