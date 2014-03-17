@@ -62,10 +62,13 @@ exports.delall = function (req, res) {
 // 更新新闻数据
 exports.updatenews = function (req, res) {
   model.updatenews(req, function (err, data) {
+    res.redirect('/appbg/news/edit/' + req.params.newsid);
+    /*
     if (err) {
       res.end(JSON.stringify({status: false}));
     }
     res.end(JSON.stringify({status: true}));
+    */
   });
 };
 

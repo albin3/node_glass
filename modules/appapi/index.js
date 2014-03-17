@@ -11,7 +11,7 @@ exports.register = function (app) {
   app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);   // 用户登录
 
   app.all('/appapi/newslist/:numPerPage/:pageNum', view.newslist);
-  app.all('/appapi/newsfocuspic/:num', view.newsfocus);
+  app.all('/appapi/newsfocuspic/:num', view.newsfocus);                   // 新闻焦点图片
   app.all('/appapi/newsdetails/:newsid', view.newsdetails);
 
 };

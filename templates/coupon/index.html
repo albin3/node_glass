@@ -6,64 +6,269 @@
 
 {% block content %}
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Help</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">优惠券列表</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-coupon">加优惠券</button>
+      <button class="btn btn-danger">删除所有</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">名称(状态)</th>
+              <th class="col-sm-4">内容</th>
+              <th class="col-sm-3">地点</th>
+              <th class="col-sm-3">时间</th>
+              <th class="col-sm-3">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for coupon in coupons%}
+            <tr data-id="{{ coupon._id.toString() }}">
+              <td>{{coupon.name}}</td>
+              <td class="normal">{{coupon.detail}}</td>
+              <td>{{coupon.range}}</td>
+              <td>{{coupon.time|date("Y-m-d")}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="#" class="a-del-coupon">删除</a></li>
+                </ul>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="container-fluid">
-      <div class="row">
-
-        {% include "../leftbars.html" %}
-
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">{{ Title }}</h1>
-
-          <h2 class="sub-header">优惠券列表</h2>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th class="col-sm-2">用户名(状态)</th>
-                  <th class="col-sm-4">奖券信息</th>
-                  <th class="col-sm-3">其他信息</th>
-                  <th class="col-sm-3">其他信息</th>
-                  <th class="col-md-3">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
-              </tbody>
-            </table>
+<div class="modal fade" id="modal-add-coupon">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">添加优惠券</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="coupon-name" class="col-sm-3 control-label">优惠券名称</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="coupon-name" name="coupon-name" placeholder="优惠券名称">
+            </div>
           </div>
-        </div>
+
+          <div class="form-group">
+            <label for="coupon-detail" class="col-sm-3 control-label">优惠券内容</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="coupon-detail" name="coupon-detail" placeholder="优惠券内容">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="coupon-retailer" class="col-sm-3 control-label">优惠券渠道</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="coupon-retailer" name="coupon-retailer" placeholder="请填一个字母">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-8">
+              <label>优惠券使用的渠道,请填一个字母，如：天猫用'T'表示</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="coupon-off" class="col-sm-3 control-label">优惠的力度</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="coupon-off" name="coupon-off" placeholder="请填1~9的数字">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-8">
+              <label>优惠力度可以理解为折扣，折扣越大，获得的概率越低</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="coupon-range" class="col-sm-3 control-label">使用的地点</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="coupon-range" name="coupon-range" placeholder="请输入使用地点的描述">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-8">
+              <label>描述优惠券使用的地点范围</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="coupon-time" class="col-sm-3 control-label">有效期</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="coupon-time" name="coupon-time" placeholder="请输入优惠券的有效期">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-8">
+              <label>优惠券的有效期至，格式为：2014-3-17</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确定</button>
       </div>
     </div>
+  </div>
+</div><!-- End modal -->
+<script>
+  $('.main .btn-danger').click(function(event){
+    if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+      return ;
+    }
+    $.post('/appbg/coupon/delall/',
+    {
+    },function(data){
+    if (data.ret === 1) {
+      return $("tbody").remove();
+    }
+    alert("删除出错");
+    },'json');
+  });
+  $('tbody').click(function(event){
+    if ($(event.target).context.className === "a-del-coupon") {
+      event.preventDefault();       // 页面的焦点不变
+      var tr = $(event.target).parent().parent().parent().parent();
+      var couponid = tr.attr("data-id");
+      deleteCoupon(couponid, tr);
+    }
+  });
+  // 删除优惠券
+  function deleteCoupon(id, target){
+    if (!confirm('确实要删除吗？')) {       // 要求确认
+      return ;
+    }
+    $.post(
+    '/appbg/coupon/del/',
+    {
+      _id: id
+    }, function(data){
+    if (data.ret === 1){
+      return target.remove();
+    }
+    alert("删除出错");
+    }, 'json');
+  }
+  $(".modal-footer .btn-primary").click(function(event){
+    var name = $("#coupon-name").val();
+    var detail = $("#coupon-detail").val();
+    var retailer = $("#coupon-retailer").val();
+    var off = $("#coupon-off").val();
+    var range = $("#coupon-range").val();
+    var time = $("#coupon-time").val();
+    if (!name.length){
+      alert("优惠券名不能为空");
+      return ;
+    }
+    if (retailer.length !== 1){
+      alert("输入 1 个字母作为渠道");
+      return ;
+    }
+    if (off.length !== 1 || isNaN(off)){
+      alert("输入一个数字作为折扣力度");
+      return ;
+    }
+    if (range.length === 0){
+      alert("券的使用地点不能为空");
+      return ;
+    }
+    if (parseDate(time) === null){
+      alert("请输入正确的日期格式");
+      return ;
+    }
+    $.post(
+      '/appbg/coupon/new',
+      {
+        name: name,
+        detail   : detail,
+        retailer : retailer,
+        off      : parseInt(off),
+        range    : range,
+        time     : parseDate(time)
+      }, function(data){
+      if (data.ret === 1) {
+        coupon = data.val;
+        var time = new Date(coupon.time);
+        var Y = time.getFullYear();
+        var M = time.getMonth() - -1; M = M.toString().length<2 ? "0" + M : M;
+        var D = time.getDate(); D = D.toString().length<2 ? "0" + D : D;
+        var strTime = Y + "-" + M + "-" + D;
+        var new_raw =
+            '<tr data-id="' + coupon._id + '">' +
+              '<td>' + coupon.name + '</td>' +
+              '<td class="normal">' + coupon.detail + '</td>' +
+              '<td>' + coupon.range + '</td>' +
+              '<td>' + strTime +'</td>' +
+              '<td>' +
+                '<ul class=list-inline>' +
+                  '<li><a href="#" class="a-del-coupon">删除</a></li>' + 
+                '</ul>' +
+              '</td>' +
+            '</tr>';
+        $('tbody').append(new_raw);
+        return $('#modal-add-coupon').modal('hide');
+      }
+      return alert("false");
+    }, 'json');
+  });
+  // 解析日期
+  function parseDate(str){
+    var results = str.match(/^ *(\d{4})-(\d{1,2})-(\d{1,2}) *$/);
+    if (results && results.length>3){
+      return new Date(parseInt(results[1]),parseInt(results[2])-1,parseInt(results[3]));
+    }
+    return null;
+  }
+</script>
 {% endblock %}
 
 

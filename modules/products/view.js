@@ -5,9 +5,9 @@ var model = require('./model');
 exports.index = function (req, res) {
   model.allobjs(function (err, docs) {
     if (!err) {
-      res.render('news/index', {Title: "产品及推送", newslist: docs});
+      res.render('products/index', {Title: "产品及推送", newslist: docs});
     } else {
-      res.render('news/index', {Title: "产品及推送"});
+      res.render('products/index', {Title: "产品及推送"});
     } 
   });
 };
@@ -18,7 +18,7 @@ exports.editnews = function (req, res) {
     if (err) {
       res.end(err);
     } else {
-      res.render("news/editnews", {Title: "产品及推送", _id: req.params.newsid, news: doc});
+      res.render("products/editnews", {Title: "产品及推送", _id: req.params.newsid, news: doc});
     }
   });
 };
@@ -78,5 +78,4 @@ exports.changestate = function (req, res) {
     res.end(JSON.stringify({status: true, state: data.state}));
   });
 };
-
 

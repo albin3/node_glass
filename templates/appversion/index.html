@@ -1,0 +1,120 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">推送IOS版本更新</a></li>
+        <li><a href="#">推送Android版本更新</a></li>
+        <li><a>                </a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="page-header">IOS版本管理</h2>
+      <form id="form-update" class="form-ios-version" role="form" enctype="multipart/form-data" method="post" action="/appbg/appversion/update/"> 
+        <dl class="des-list dl-horizontal">
+          <dd>
+          <label for="news-first-pic" class="col-sm-2 control-label">文件</label>
+          <div class="col-sm-6">
+            <label>当前版本号:1111</label>
+            <br>
+            <label><span>推送前请确认AppStore里已经有版本更新</span></label>
+            <input type="text" class="form-control" placeholder="版本号">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="push-text" class="col-sm-2 control-label">版本更新消息</label>
+          <div class="col-sm-6">
+            <textarea class="form-control" rows="6" id="push-text" name="push-text" placeholder="编辑消息"></textarea>
+          </div>
+          </dd>
+          <br>
+
+          <dd class="options">
+          <label for="" class="col-sm-2 control-label">操作</label>
+          <div class="col-sm-6">
+            <button type="button" class="btn btn-primary">保存</button>
+          </div>
+          <br>
+          </dd>
+
+        </dl>
+      </form>
+      <h2 class="page-header">Android版本管理</h2>
+      <form id="form-update" class="form-android-version" role="form" enctype="multipart/form-data" method="post" action="/appbg/appversion/update/"> 
+        <dl class="des-list dl-horizontal">
+          <dd>
+          <label for="news-first-pic" class="col-sm-2 control-label">文件</label>
+          <div class="col-sm-6">
+            <label>当前版本号:1111</label>
+            <input type="file" name="first-pic">
+            <input type="text" class="form-control" placeholder="版本号">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="push-text" class="col-sm-2 control-label">版本更新消息</label>
+          <div class="col-sm-6">
+            <textarea class="form-control" rows="6" id="push-text" name="push-text" placeholder="编辑消息"></textarea>
+          </div>
+          </dd>
+          <br>
+
+          <dd class="options">
+          <label for="" class="col-sm-2 control-label">操作</label>
+          <div class="col-sm-6">
+            <button type="button" class="btn btn-primary">保存</button>
+          </div>
+          <br>
+          </dd>
+
+        </dl>
+      </form>
+      <hr>
+    </div>
+  </div>
+</div>
+<script>
+  $(".options .btn-primary").click(function(event){
+    var pushtext = $("#pushtext").val();
+
+    $.post("/appbg/uvindex/push/", // 发送推送请求
+      {
+        pushtext: pushtext
+      }, function(data){
+      if (data.status) {
+        alert("推送请求发送成功, 服务器正在推送");
+      } else {
+        alert("请求失败");
+      }
+    }, "json");
+  });
+</script>
+{% endblock %}
