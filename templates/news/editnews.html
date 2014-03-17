@@ -52,7 +52,7 @@
           <dd>
           <label for="news-fir-pic-des" class="col-sm-2 control-label">首图描述</label>
           <div class="col-sm-6">
-            <textarea class="form-control" rows="1" id="news-fir-pic-des" name="news-fir-pic-des" placeholder="首图描述">{{ news.firstpic.describe }}</textarea>
+            <textarea class="form-control" rows="1" id="news-fir-pic-des" name="news-fir-pic-des" placeholder="首图描述">{{ news.firpicdes }}</textarea>
           </div>
           </dd>
           <br>
@@ -79,8 +79,26 @@
           <br>
 
           <dl id="news-details">
-            {%for detail in news.details%}
-            <label for="" class="col-sm-2 control-label">{{detail.content}}</label>
+            {%for index, detail in news.details%}
+            {%if detail.type === 1%}
+            <dd>
+            <label class="col-sm-2 control-label">新闻文本</label>
+            <div class="col-sm-6">
+              <textarea class="form-control" rows="2" id="news-text-{{index}}" name="news-text-{{index}}" placeholder="新闻内容">{{detail.content}}</textarea>
+              </div>
+            <button class="btn btn-danger" del="">x</button>
+            </dd>
+            {%else%}
+            <dd>
+            <label class="col-sm-2 control-label">新闻图片</label>
+            <div class="col-sm-6">
+              <img src="{{detail.content}}" width="300px" height="185px">
+              <input type="file" name="upload{{index}}" class="added-pic">
+              <textarea class="form-control" rows="1" id="news-pic-{{index}}" name="news-pic-{{index}}" placeholder="图片描述">{{detail.des}}</textarea>
+              </div>
+            <button class="btn btn-danger" del="">x</button>
+            </dd>
+            {%endif%}
             {%endfor%}
           </dl>
 

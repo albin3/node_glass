@@ -51,7 +51,6 @@
                 <tr>
                   <th>标题</th>
                   <th>内容</th>
-                  <th>链接</th>
                   <th>图片</th>
                   <th>操作</th>
                 </tr>
@@ -61,12 +60,16 @@
                 <tr data-id="{{ news._id.toString() }}">
                   <td class="td-title">{{ news.title }}</td>
                   <td class="td-summary">{{ news.summary }}</td>
-                  <td class="td-url"><a href="{{ news.url }}">{{ news.url }}</a></td>
                   <td class="td-picture">
                     <ul class=list-inline>
                       <label>首图&nbsp;</label>
                       <img src="/img/news/{{ news._id.toString() }}.jpg" width="50" height="31">
-                      <a href="#"><span class="label label-default">焦点图</span></a>
+                      <label></label>
+                      {%if news.focus%}
+                      <a href="#"><span class="label label-primary">焦点图</span></a>
+                      {%else%}
+                      <a href="#"><span class="label label-default">非焦点</span></a>
+                      {%endif%}
                     </ul>
                   </td>
                   <td>
@@ -94,8 +97,7 @@
         $.post("/appbg/news/add", {
           title: "标题",
           summary: "导语",
-          details: [{type: 1, content: "文本"}],
-          url: "http://www.baidu.com"
+          url: "http://www."
           },function(data){
           data = JSON.parse(data); // 解析返回的json数据
           if (!data.status) {
@@ -107,14 +109,14 @@
           '<tr data-id="' + data.doc._id.toString() + '">' +
             '<td class="td-title">' + data.doc.title + '</td>' +
             '<td class="td-summary">' + data.doc.summary + '</td>' +
-            '<td class="td-url"><a href="' + data.doc.url + '">' + data.doc.url + '</a></td>' +
             '<td class="td-picture">' +
               '<ul class=list-inline>' +
                 '<label>首图&nbsp;&nbsp;</label>' +
-                '<img src="/img/c.jpg" width="50" height="31">' +
-                '<p></p>' +
-                '</ul>' +
-              '</td>' +
+                '<img src="/img/news/' + data.doc._id.toString() + '.jpg' + '" width="50" height="31">' +
+                '<label>&nbsp;&nbsp;</label>' + 
+                '<a href="#"><span class="label label-default">非焦点</span></a>' +
+               '</ul>' +
+            '</td>' +
             '<td>' +
               '<ul class=list-inline>' +
                 '<p></p>' +
@@ -133,8 +135,31 @@
       $(".table-striped tbody").click(function(event){
         if ($(event.target).context.className === "a-del-news"){
           delete_news(event);
-          } 
+          } else if ($(event.target).context.localName === "span") {                // 点击作为焦点图
+          event.preventDefault();   // 页面的焦点不变
+          var _id = $(event.target).parent().parent().parent().parent().attr("data-id");
+          if($(event.target).text() === "焦点图"){
+            changestate({focus: false}, _id, event.target);
+            } else {
+            changestate({focus: true}, _id, event.target);
+          }
+        }
       });
+
+      // 改变焦点图状态
+      function changestate(state, id, target){
+        $.post("/appbg/news/changestate/"+id,
+        state,function(data){
+          if (data.status){
+            $(target).text(data.state);
+            if (state.focus){
+              $(target).removeClass("label-default").addClass("label-primary");
+              } else {
+              $(target).removeClass("label-primary").addClass("label-default");
+            }
+          }
+        },"json");
+      };
 
       // 删除新闻
       function delete_news(event) { 

@@ -28,6 +28,7 @@ exports.allnews = function (callback) {
 // 添加新闻，返回添加成功的对象
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
 exports.addnews =  function (news, callback) {
+  news.focus = false;     // 是否设置为焦点图
   dbnews.insert(news, function (err, doc) {
     if (doc) {
       var defaultimg = config.appPath() + "/static/img/default.jpg";
@@ -45,7 +46,7 @@ exports.addnews =  function (news, callback) {
 // 删除以id开头的所有图片
 function deletePicturesOfNews(newsid) {
   var imgpath = config.appPath() + "/static/img/news/" + newsid;
-  for (var i = 1; i < 10; i++) {
+  for (var i = 0; i < 10; i++) {
     try {
       console.log(imgpath+i+".jpg");
       fs.unlinkSync(imgpath+i+".jpg");
@@ -106,16 +107,6 @@ function judge_size(size) {
 }
 
 // 更新新闻内容时，需要用到面向过程的逻辑：
-//   新闻的details必须在上一条details处理完毕后再处理，
-//   变下事件订阅/发布模式解决。
-function UpdateNewsDetails(text, callback){
-  console.log("a");
-}
-/*
-emmiter.emit("updateOne", function(which, files, texts){
-  console.log(which);
-});
-*/
 // 更新新闻内容
 exports.updatenews = function (req, callback) {
   var files = req.files;
@@ -147,31 +138,40 @@ exports.updatenews = function (req, callback) {
 
     // **为了完成新闻内容更新的功能，需要用到同步的方式进行
     // ******所有的项目调用同一个函数，用到了async.apply，放在数组里，再调用async.series
+    console.log(texts);
     var funcArr = [];
     for (text in texts){
       funcArr.push(async.apply(function(text, callback){
         var item = {};
+        console.log("this is a judge.");
+        console.log(text);
         if (text.toString().indexOf("pic") > 0){
+          console.log("this is a picture.");
           item.type = 2;
-          item.content = "img/news/" + newsid + new_details.length + ".jpg";
-          item.describe = texts[text];
+          item.content = "/img/news/" + newsid + new_details.length + ".jpg";
+          item.des = texts[text];
           // TODO: 4.14号到这里
           text = text.replace("news-pic-","");
-          if (files["upload"+text] !== undefined) {                       // 有新上传的图片
+          if (files["upload"+text].size > 0) {                       // 有新上传的图片
             fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
+              new_details.push(item);
               callback();
             });
           }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
             fs.rename(path+text+".jpg", path+new_details.length+".jpg", function(err){
+              new_details.push(item);
               callback();
             });
           } else {
+            new_details.push(item);
             callback();
           }
         } else {
+          console.log("this is a text.");
           item.type = 1;
           item.content = texts[text];
-          item.describe = "";
+          item.des = "";
+          new_details.push(item);
           callback();
         }
       },text));
@@ -185,23 +185,22 @@ exports.updatenews = function (req, callback) {
         callback(err);
       });
     });
-    
-    /*
-    for (text in texts) {
-      if (text.toString().indexOf("pic") > 0) {
-        text = text.replace("news-pic-", "");
-        if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
-          fs.rename(path+text+".jpg", path+new_detail.length+".jpg", function(err){
-            // TODO: 错误处理
-          });
-        }
-      } else if (text.indexOf("text") > 0) {
-        text = text.replace("news-text-", "");
-        console.log("text" + old_details[text]);
-      }
-    }
-    */
-
   });
 };
 
+// 改变新闻的状态
+exports.changestate =  function (req, callback) {
+  var id = req.params.newsid;
+  var state = req.body.focus === "true" ? true : false;
+  dbnews.update({_id: new ObjectID(id)}, {
+    $set: { focus: state }
+  },function(err, doc) {
+    if(err) {
+      return callback(err);
+    }
+    if (state) {
+      return callback(err, {state: "焦点图"});
+    }
+    return callback(err, {state: "非焦点"});
+  });
+};

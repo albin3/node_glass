@@ -45,7 +45,19 @@ exports.usersignin = function (req, res) {
 // ###新闻接口
 // 新闻列表
 exports.newslist = function (req, res) {
-  model.allnews(function(ret){
+  model.pagednews(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 新闻焦点图片
+exports.newsfocus = function (req, res) {
+  model.newsfocus(req.params.num, function (ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+// 新闻详情
+exports.newsdetails = function (req, res) {
+  model.newsdetails(req.params.newsid, function (ret) {
     res.end(JSON.stringify(ret));
   });
 };

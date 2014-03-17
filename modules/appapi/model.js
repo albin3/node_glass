@@ -173,11 +173,55 @@ exports.updateuser = function (req, callback) {
 
 // ###新闻接口
 // 新闻列表
-exports.allnews = function (callback) {
-  db_news.find({}, function(err, docs){
+exports.pagednews = function (req, callback) {
+  var numPerPage = parseInt(req.params.numPerPage);
+  var pageNum = parseInt(req.params.pageNum);
+  console.log(numPerPage);
+  console.log(pageNum);
+  db_news.find({}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
-      return callback({ret: 2});
+      return callback({ret: 2});                                //RETURN: 查询出错
     }
-    return callback({ret: 1, newslist: docs});
+    for (index in docs) {
+      docs[index]._id = docs[index]._id.toString();
+      delete docs[index].details;
+      delete docs[index].focus;
+      delete docs[index].url;
+      docs[index].pic = "/img/news/" + docs[index]._id + ".jpg";
+    }
+    return callback({ret: 1, num:docs.length, list: docs});    // RETURN: 返回成功
+  });
+};
+// 新闻焦点图
+exports.newsfocus = function (num, callback) {
+  db_news.find({focus: true}).limit(parseInt(num), function(err, docs){
+    if (err){
+      return callback({ret: 2});                                // RETURN: 查询出错
+    }
+    var listnum = 0;
+    var imglist = new Array();
+    for (index in docs) {
+      imglist.push({
+        objid : docs[index]._id.toString(),
+        url   : "/img/news/" + docs[index]._id.toString() + ".jpg"
+      });
+      listnum += 1;
+    }
+    return callback({ret: 1, num: listnum, list: imglist});     // RETURN: 返回成功
+  });
+};
+// 新闻焦点图
+exports.newsdetails = function (newsid, callback) {
+  db_news.findOne({_id: new ObjectID(newsid)}, function(err, doc){
+    if (err){
+      return callback({ret: 3});                                // RETURN: 查询出错
+    }
+    if (!doc){
+      return callback({ret: 2});                                // RETURN: 新闻已经已经被删除
+    }
+
+    doc._id = doc._id.toString();
+    delete doc.url;
+    return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
   });
 };

@@ -69,4 +69,14 @@ exports.updatenews = function (req, res) {
   });
 };
 
+// 更新焦点图
+exports.changestate = function (req, res) {
+  model.changestate(req, function (err, data) {
+    if (err) {
+      res.end(JSON.stringify({status: false}));
+    }
+    res.end(JSON.stringify({status: true, state: data.state}));
+  });
+};
+
 
