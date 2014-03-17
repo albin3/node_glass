@@ -1,0 +1,200 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">推送焦点图</a></li>
+            <li><a href="#">推送新闻</a></li>
+            <li><a href="#">推送紫外警告</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+
+        {% include "../leftbars.html" %}
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">{{ Title }}</h1>
+
+          <div class="row">
+
+          <div class="inline-form">
+          <h2 class="sub-header">产品列表</h2>
+          <button class="btn btn-primary">添加产品</button>
+          <button class="btn btn-danger">删除所有</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>产品名</th>
+                  <th>介绍</th>
+                  <th>首图</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for news in newslist %}
+                <tr data-id="{{ news._id.toString() }}">
+                  <td class="td-title">{{ news.title }}</td>
+                  <td class="td-summary">{{ news.summary }}</td>
+                  <td class="td-picture">
+                    <ul class=list-inline>
+                      <label>首图&nbsp;</label>
+                      <img src="/img/news/{{ news._id.toString() }}.jpg" width="50" height="31">
+                      <label></label>
+                      {%if news.focus%}
+                      <a href="#"><span class="label label-primary">焦点图</span></a>
+                      {%else%}
+                      <a href="#"><span class="label label-default">非焦点</span></a>
+                      {%endif%}
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class=list-inline>
+                      <p></p>
+                      <li><a href="/appbg/news/edit/{{ news._id.toString() }}" class="a-edit-news">编辑</a></li>
+                      <li><a href="#" class="a-del-news">删除</a></li>
+                    </ul>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="modal-edit-news">
+      </div><!-- End modal -->
+    </div>
+    <script>
+      // 添加新闻
+      $(".main .btn-primary").click(function(){
+        $(".main .btn-primary").attr("disabled", true); // 灰掉按钮，免得点太快
+
+        $.post("/appbg/news/add", {
+          title: "标题",
+          summary: "导语",
+          url: "http://www."
+          },function(data){
+          data = JSON.parse(data); // 解析返回的json数据
+          if (!data.status) {
+            alert("添加新闻项失败");
+            return;
+          }
+
+          var new_raw = 
+          '<tr data-id="' + data.doc._id.toString() + '">' +
+            '<td class="td-title">' + data.doc.title + '</td>' +
+            '<td class="td-summary">' + data.doc.summary + '</td>' +
+            '<td class="td-picture">' +
+              '<ul class=list-inline>' +
+                '<label>首图&nbsp;&nbsp;</label>' +
+                '<img src="/img/news/' + data.doc._id.toString() + '.jpg' + '" width="50" height="31">' +
+                '<label>&nbsp;&nbsp;</label>' + 
+                '<a href="#"><span class="label label-default">非焦点</span></a>' +
+               '</ul>' +
+            '</td>' +
+            '<td>' +
+              '<ul class=list-inline>' +
+                '<p></p>' +
+                '<li><a href="/appbg/news/edit/' + data.doc._id.toString() + '" class="a-edit-news">编辑</a></li>' +
+                '<li><a href="#" class="a-del-news">删除</a></li>' +
+                '</ul>' +
+              '</td>' +
+            '</tr>';
+          $(".table-striped tbody").append(new_raw);
+          
+          $(".main .btn-primary").attr("disabled", false);
+        });
+      });
+
+      // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+      $(".table-striped tbody").click(function(event){
+        if ($(event.target).context.className === "a-del-news"){
+          delete_news(event);
+          } else if ($(event.target).context.localName === "span") {                // 点击作为焦点图
+          event.preventDefault();   // 页面的焦点不变
+          var _id = $(event.target).parent().parent().parent().parent().attr("data-id");
+          if($(event.target).text() === "焦点图"){
+            changestate({focus: false}, _id, event.target);
+            } else {
+            changestate({focus: true}, _id, event.target);
+          }
+        }
+      });
+
+      // 改变焦点图状态
+      function changestate(state, id, target){
+        $.post("/appbg/news/changestate/"+id,
+        state,function(data){
+          if (data.status){
+            $(target).text(data.state);
+            if (state.focus){
+              $(target).removeClass("label-default").addClass("label-primary");
+              } else {
+              $(target).removeClass("label-primary").addClass("label-default");
+            }
+          }
+        },"json");
+      };
+
+      // 删除新闻
+      function delete_news(event) { 
+        if (!confirm('确实要删除吗？')) {       // 要求确认
+          return;
+        }
+        var tr = $(event.target).parents("tr");
+        $.post("/appbg/news/del",{
+          id: tr.attr("data-id")
+          }, function(data) {
+          data = JSON.parse(data);
+          if (!data.status) {
+            alert("删除失败");
+            return;
+          }
+          tr.remove();
+        });
+      }; 
+
+      // 删除所有数据
+      $(".btn-danger").click(function(){
+        if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+          return;
+        }
+        $.post("/appbg/news/delall",function(data){
+          if(data.status) {
+            $(".table-striped tbody tr").remove();
+            alert("删除成功..");
+            } else {
+            alert("删除失败..");
+          }
+          },"json");
+      });
+    </script>
+{% endblock %}
+
+
+
