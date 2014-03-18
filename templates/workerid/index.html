@@ -1,0 +1,212 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">宝岛眼镜App后台</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">员工ID管理</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-obj">增加新ID</button>
+      <button class="btn btn-danger">删除所有</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">ID号</th>
+              <th class="col-sm-3">级别</th>
+              <th class="col-sm-3">介绍</th>
+              <th class="col-sm-3">操作</th>
+            </tr>
+          </thead>
+          <tbody id="obj-list">
+            {% for obj in objs %}
+            <tr data-id="{{ obj._id.toString() }}">
+              <td>{{obj.index}}</td>
+              <td>{{obj.level}}</td>
+              <td>{{obj.detail}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="#" class="a-del-user">删除</a></li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-add-obj">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">添加员工ID</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="worker-index" class="col-sm-2 control-label">ID号</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="worker-index" name="worker-index" placeholder="例如：E3F23">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="worker-detail" class="col-sm-2 control-label">描述</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="worker-detail" name="worker-detail" placeholder="对这类员工的描述">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="worker-level" class="col-sm-2 control-label">级别</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="worker-level" name="worker-level" placeholder="大于0的数字">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确定</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End modal -->
+
+<script>
+  // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+  $(".table-striped tbody").click(function(event){
+    event.preventDefault();                                   // 页面的焦点不变
+    if ($(event.target).context.className === "a-del-user"){  // 点击删除用户
+      delete_user(event);
+    }
+    if ($(event.target).attr("state") !== undefined){         // 点击改变用户状态
+      var _id = $(event.target).parent().parent().parent().attr("data-id");
+      if($(event.target).text() === "(正常)"){
+        changestate({disable: true}, _id, event.target);
+        } else {
+        changestate({disable: false}, _id, event.target);
+      }
+    }
+  });
+
+  function changestate(state, id, target){
+    $.post("/appbg/workerid/changestate/"+id,
+      state,function(data){
+        if (data.status){
+          $(target).text(data.state);
+          if (state.disable){
+            $(target).removeClass("label-primary").addClass("label-danger");
+            } else {
+            $(target).removeClass("label-danger").addClass("label-primary");
+          }
+        }
+    },"json");
+  };
+
+  function delete_user(event){
+    if (!confirm('确实要删除吗？')) {       // 要求确认
+      return;
+    }
+    var tr = $(event.target).parents("tr");
+    $.post("/appbg/workerid/delobj/",{
+      id: tr.attr("data-id")
+      }, function(data) {
+      data = JSON.parse(data);
+      if (!data.status) {
+        alert("删除失败");
+        return;
+      }
+      tr.remove();
+    });
+  };
+
+  // 删除所有数据
+  $(".btn-danger").click(function(){
+    if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+      return;
+    }
+    $.post("/appbg/workerid/delall/",function(data){
+      if(data.status) {
+        $(".table-striped tbody tr").remove();
+        alert("删除成功..");
+        } else {
+        alert("删除失败..");
+      }
+    },"json");
+  });
+
+  // 增加用户确认
+  $("#modal-add-obj .modal-footer .btn-primary").click(function(event){
+    var index = $("#worker-index").val();
+    var level = $("#worker-level").val();
+    var detail= $("#worker-detail").val();
+
+    if (index.length < 5){
+      alert("ID号至少为5位");
+      return ;
+    }
+    if (isNaN(level) || parseInt(level) <= 0){
+      alert("级别为大于0的数字");
+      return ;
+    }
+    $.post("/appbg/workerid/addobj/",{
+      index : index.toUpperCase(),
+      level : parseInt(level),
+      detail: detail
+      },function(data){
+      if (data.ret === 2){
+        alert("ID号已经存在");
+        return ;
+      }
+      $("#modal-add-obj").modal("hide");
+      var obj = data.obj;
+      var new_row = 
+      '<tr data-id="' + obj._id.toString() + '">' +
+        '<td>' + obj.index  + '</td>' + 
+        '<td>' + obj.level  + '</td>' +
+        '<td>' + obj.detail + '</td>' +
+        '<td>' +
+          '<ul class=list-inline>' +
+            '<li><a href="#" class="a-del-user">删除</a></li>' +
+            '</ul>' +
+          '</td>' +
+        '</tr>';
+      $("#obj-list").append(new_row);
+    }, "json");
+  });
+
+  // 在现实modal的时候清空数据
+  $("#modal-add-bguser").on("shown.bs.modal",function(event){
+    $("#worker-index").val("");
+    $("#worker-detail").val("");
+    $("#worker-level").val("");
+  });
+</script>
+{% endblock %}

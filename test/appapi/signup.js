@@ -8,6 +8,7 @@ var post_data={
   tel      : "a",
   email    : "a",
   password : "a",
+  workerid : "wWwWw",
   sex      : "a"
 };//这是需要提交的数据
 var content=qs.stringify(post_data);

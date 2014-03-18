@@ -55,7 +55,7 @@ exports.updateuser =  function (req, callback) {
   };
   dbappuser.findOne(query, function (err, doc) {
     if (err) {
-      return callback(err);       // RETURN: 查询错误
+      return callback(err);              // RETURN: 查询错误
     }
     doc.nickname = req.body.nickname;
     doc.tel = req.body.tel;

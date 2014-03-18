@@ -138,7 +138,6 @@ exports.updatenews = function (req, callback) {
 
     // **为了完成新闻内容更新的功能，需要用到同步的方式进行
     // ******所有的项目调用同一个函数，用到了async.apply，放在数组里，再调用async.series
-    console.log(texts);
     var funcArr = [];
     for (text in texts){
       funcArr.push(async.apply(function(text, callback){
@@ -150,7 +149,6 @@ exports.updatenews = function (req, callback) {
           item.type = 2;
           item.content = "/img/news/" + newsid + new_details.length + ".jpg";
           item.des = texts[text];
-          // TODO: 4.14号到这里
           text = text.replace("news-pic-","");
           if (files["upload"+text].size > 0) {                       // 有新上传的图片
             fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){

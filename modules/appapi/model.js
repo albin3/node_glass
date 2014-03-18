@@ -13,33 +13,37 @@ var ObjectID = require('mongodb').ObjectID;
  * 新用户注册
  */
 exports.newuser = function (user, callback) {
-  
+
+  if (!user.workerid) {     // 初始化
+    user.workerid = "";
+  }
+  console.log(user.workerid);
   // 验证员工号码
   user.isworker = 0;
-  if (user.workid !== undefined && user.workid !== ""){
-    db_workerid.findOne({workerid: user.workid}, function (err, doc) {
-      if (err) {
-        return callback({ret: 3});   // RETURN: 员工Id验证错误
+    db_workerid.findOne({index: user.workerid.toUpperCase()}, function (err, doc) {
+      if (err || !doc) {
+        if (user.workerid !== undefined && user.workerid !== ""){
+          return callback({ret: 3});            // RETURN: 员工Id验证错误 
+        }
+      } else {
+        user.isworker = parseInt(doc.level);// 用户可能分等级
       }
-      user.isworker = 1;
-    });
-  }
-
   // 插入数据库
-  user.password = user.password || "111111";
-  user.password = password_hash.generate(user.password);
-  user.disable = false;
-  db_user.insert(user, function (err, doc) {
-    if (err) {
-      console.log(err.message);
-      return callback({ret: 2});    // RETURN: 注册字段重复
-    }
-    return callback({                        // RETURN: 注册成功
-           ret      : 1, 
-           userid   : doc._id.toString(),
-           isworker : doc.isworker
+      user.password = user.password || "111111";
+      user.password = password_hash.generate(user.password);
+      user.disable = false;
+      db_user.insert(user, function (err, doc) {
+        if (err) {
+          console.log(err.message);
+          return callback({ret: 2});             // RETURN: 注册字段重复
+        }
+        return callback({                        // RETURN: 注册成功
+          ret      : 1, 
+               userid   : doc._id.toString(),
+               isworker : doc.isworker
+        });
+      });
     });
-  });
 };
 
 /**

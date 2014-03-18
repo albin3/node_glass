@@ -50,7 +50,7 @@
             {% for user in appusers %}
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.nickname}}</td>
-              <td>{%if user.isworker === 1%}是{%else%}否{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
+              <td>{%if user.isworker === 0%}否{%else%}是{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
               <td>{%if user.tel === undefined %}无{%else%}{{user.tel}}{%endif%}</td>
               <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
               <td>

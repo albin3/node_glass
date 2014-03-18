@@ -33,48 +33,83 @@
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
+      <h2 class="page-header">Android现有版本</h2>
+      {%if version !== undefined%}
+      <dl class="des-list dl-horizontal">
+        <dd>
+        <label class="col-sm-2 control-label">版本号</label>
+        <div class="col-sm-6">
+          <label>{{version.number}}</label>
+        </div>
+        </dd>
+        <br>
 
-      <h2 class="page-header">IOS版本管理</h2>
-      <form id="form-update" class="form-ios-version" role="form" enctype="multipart/form-data" method="post" action="/appbg/appversion/update/"> 
-        <dl class="des-list dl-horizontal">
-          <dd>
-          <label for="news-first-pic" class="col-sm-2 control-label">文件</label>
-          <div class="col-sm-6">
-            <label>当前版本号:1111</label>
-            <br>
-            <label><span>推送前请确认AppStore里已经有版本更新</span></label>
-            <input type="text" class="form-control" placeholder="版本号">
-          </div>
-          </dd>
-          <br>
+        <dd>
+        <label class="col-sm-2 control-label">版本名称</label>
+        <div class="col-sm-6">
+          <label>{{version.name}}</label>
+        </div>
+        </dd>
+        <br>
 
-          <dd>
-          <label for="push-text" class="col-sm-2 control-label">版本更新消息</label>
-          <div class="col-sm-6">
-            <textarea class="form-control" rows="6" id="push-text" name="push-text" placeholder="编辑消息"></textarea>
-          </div>
-          </dd>
-          <br>
+        <dd>
+        <label class="col-sm-2 control-label">下载地址</label>
+        <div class="col-sm-6">
+          <label>服务器地址 + {{version.url}}</label>
+        </div>
+        </dd>
+        <br>
 
-          <dd class="options">
-          <label for="" class="col-sm-2 control-label">操作</label>
-          <div class="col-sm-6">
-            <button type="button" class="btn btn-primary">保存</button>
-          </div>
-          <br>
-          </dd>
+        <dd>
+        <label class="col-sm-2 control-label">更新时间</label>
+        <div class="col-sm-6">
+          <label>{{version.time | date('Y-m-d H:i:s')}}</label>
+        </div>
+        </dd>
+        <br>
 
-        </dl>
-      </form>
+        <dd>
+        <label class="col-sm-2 control-label">版本描述</label>
+        <div class="col-sm-6">
+          <label>{{version.detail}}</label>
+        </div>
+        </dd>
+        <br>
+      </dl>
+      {%else%}
+      <dl class="des-list dl-horizontal">
+        <dd>
+        <label class="col-sm-2 control-label">版本号</label>
+        <div class="col-sm-6">
+          <label>无</label>
+        </div>
+        </dd>
+        <br>
+      </dl>
+      {%endif%}
       <h2 class="page-header">Android版本管理</h2>
       <form id="form-update" class="form-android-version" role="form" enctype="multipart/form-data" method="post" action="/appbg/appversion/update/"> 
         <dl class="des-list dl-horizontal">
           <dd>
           <label for="news-first-pic" class="col-sm-2 control-label">文件</label>
           <div class="col-sm-6">
-            <label>当前版本号:1111</label>
-            <input type="file" name="first-pic">
-            <input type="text" class="form-control" placeholder="版本号">
+            <input type="file" name="apkfile">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">版本号</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="version-number" name="version-number" placeholder="例如：1.0.0">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">版本名称</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="version-name" name="version-name" placeholder="例如：第一版">
           </div>
           </dd>
           <br>
@@ -82,7 +117,7 @@
           <dd>
           <label for="push-text" class="col-sm-2 control-label">版本更新消息</label>
           <div class="col-sm-6">
-            <textarea class="form-control" rows="6" id="push-text" name="push-text" placeholder="编辑消息"></textarea>
+            <textarea class="form-control" rows="6" id="version-detail" name="version-detail" placeholder="例如：增加登录注册功能"></textarea>
           </div>
           </dd>
           <br>
@@ -90,11 +125,10 @@
           <dd class="options">
           <label for="" class="col-sm-2 control-label">操作</label>
           <div class="col-sm-6">
-            <button type="button" class="btn btn-primary">保存</button>
+            <button type="submit" class="btn btn-primary">保存</button>
           </div>
           <br>
           </dd>
-
         </dl>
       </form>
       <hr>
@@ -102,12 +136,18 @@
   </div>
 </div>
 <script>
-  $(".options .btn-primary").click(function(event){
-    var pushtext = $("#pushtext").val();
+  $("").click(function(event){
+    var num   = $("#version-number").val();
+    var name  = $("#version-name").val();
+    var time  = new Date();
+    var detail= $("#version-detail").val();
 
-    $.post("/appbg/uvindex/push/", // 发送推送请求
+    $.post("/appbg/uvindex/update/", // 版本更新
       {
-        pushtext: pushtext
+        number: num,
+        name  : name,
+        time  : time,
+        detail: detail
       }, function(data){
       if (data.status) {
         alert("推送请求发送成功, 服务器正在推送");
