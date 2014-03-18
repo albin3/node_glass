@@ -1,6 +1,8 @@
 // userctrl model
 var config = require('../../config');
 var mongojs = require('mongojs');
+var xlsx = require('node-xlsx');
+var fs = require('fs');
 
 var db = mongojs(config.dbinfo.dbname);
 var dbappuser = db.collection('appuser');
@@ -83,8 +85,39 @@ exports.changestate = function (id, state, callback) {
     $set: state
   }, function(err, doc){
     if (err) {
-      callback(err);
+      callback(err);                // RETURN: 改变状态出错
     }
-    callback(null);
+    callback(null);                 // RETURN: 改变状态成功
+  });
+};
+
+// 导出到到Excel
+exports.exportexcel = function (callback) {
+  dbappuser.find({}, function(err, docs){
+    if (err) {
+      return callback({ret: 2});                            // RETURN: 查询出错
+    }
+    var th = new Array();
+    var data = new Array();
+    th = ["编号", "昵称", "电话", "邮箱", "第三方登录", "性别", "是否封停", "是否为员工(0表示非员工)"];
+    data.push(th);
+    for (index in docs){
+      var td = new Array();
+      td.push({value: docs[index]._id.toString(), formatCode: "General"});
+      td.push({value: docs[index].nickname      , formatCode: "General"});
+      td.push({value: docs[index].tel           , formatCode: "General"});
+      td.push({value: docs[index].email         , formatCode: "General"});
+      td.push({value: docs[index].thirdpath     , formatCode: "General"});
+      td.push({value: docs[index].sex           , formatCode: "General"});
+      td.push({value: docs[index].disable       , formatCode: "General"});
+      td.push({value: docs[index].isworker      , formatCode: "General"});
+      data.push(td);
+    }
+    var buffer = xlsx.build({worksheets: [
+      {name: "userData", data: data}
+      ]});
+    var appUserPath = config.appPath() + "/static/appuser/appuser.xlsx";
+    fs.writeFileSync(appUserPath, buffer);
+    return callback({ret: 1, appUserPath: appUserPath});                            // RETURN: 处理成功
   });
 };

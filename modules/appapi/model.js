@@ -13,33 +13,31 @@ var ObjectID = require('mongodb').ObjectID;
  * 新用户注册
  */
 exports.newuser = function (user, callback) {
-  console.log(user);
   
   // 验证员工号码
   user.isworker = 0;
   if (user.workid !== undefined && user.workid !== ""){
     db_workerid.findOne({workerid: user.workid}, function (err, doc) {
       if (err) {
-        return callback({ret: 3, val: ""});   // RETURN: 员工Id验证错误
+        return callback({ret: 3});   // RETURN: 员工Id验证错误
       }
       user.isworker = 1;
     });
   }
 
   // 插入数据库
+  user.password = user.password || "111111";
   user.password = password_hash.generate(user.password);
   user.disable = false;
   db_user.insert(user, function (err, doc) {
     if (err) {
       console.log(err.message);
-      return callback({ret: 2, val: ""});    // RETURN: 注册字段重复
+      return callback({ret: 2});    // RETURN: 注册字段重复
     }
     return callback({                        // RETURN: 注册成功
            ret      : 1, 
-           val      : {
            userid   : doc._id.toString(),
            isworker : doc.isworker
-           }
     });
   });
 };
@@ -60,24 +58,44 @@ exports.usersignin = function (user, callback) {
              break;
   }
   db_user.findOne(query, function(err, doc){
-    if (err || !doc) {
-      return callback({ret: 4, val: ""});         // RETURN: 账号不存在
-    }
-    if (doc.disable) {
-      return callback({ret: 3, val: ""});         // RETURN: 账号被停封
-    }
-    // 第三方登录不验证密码
-    if (parseInt(user.type) !== 3 &&
-      !password_hash.verify(user.password, doc.password)){
-      return callback({ret: 2, val: ""});         // RETURN: 账号密码不正确
-    }
-    return callback({                             // RETURN: 账号密码正确
+    if (parseInt(user.type) === 3){
+      if (!err && doc) {                        // RETURN: 第三方账号已存在
+        return callback({
            ret      : 1,
-           val      : {
            userid   : doc._id.toString(),
            isworker : doc.isworker
-           }
-    });
+        });
+      }
+      db_user.insert({
+        nickname : user.name,
+        thirdpath: user.name,
+        isworker : 0,
+        disable  : false
+      },function(err, u){
+        return callback({
+           ret      : 1,
+           userid   : u._id.toString(),
+           isworker : u.isworker
+        });
+      });
+    } else {
+      if (err || !doc) {
+        return callback({ret: 4});         // RETURN: 账号不存在
+      }
+      if (doc.disable) {
+        return callback({ret: 3});         // RETURN: 账号被停封
+      }
+      // 第三方登录不验证密码
+      if (parseInt(user.type) !== 3 &&
+          !password_hash.verify(user.password, doc.password)){
+        return callback({ret: 2});         // RETURN: 账号密码不正确
+      }
+      return callback({                             // RETURN: 账号密码正确
+        ret      : 1,
+             userid   : doc._id.toString(),
+             isworker : doc.isworker
+      });
+    }
   });
 };
 
@@ -89,26 +107,24 @@ exports.chpassword = function (user, callback) {
 
   db_user.findOne(query, function(err, doc){
     if (err || !doc) {
-      return callback({ret: 4, val: ""});         // RETURN: 账号不存在
+      return callback({ret: 4});         // RETURN: 账号不存在
     }
     if (doc.disable) {
-      return callback({ret: 3, val: ""});         // RETURN: 账号被停封
+      return callback({ret: 3});         // RETURN: 账号被停封
     }
     if (!password_hash.verify(user.oldpsd, doc.password)){
-      return callback({ret: 2, val: ""});         // RETURN: 账号密码不正确
+      return callback({ret: 2});         // RETURN: 账号密码不正确
     }
 
     doc.password = password_hash.generate(user.newpsd);
     db_user.update(query, doc, function(err, updated){
       if(err) {
-        return callback({ret: 5, val: ""});       // RETURN: 数据库错误
+        return callback({ret: 5});       // RETURN: 数据库错误
       }
       return callback({                           // RETURN: 账号密码正确
              ret      : 1,
-             val      : {
              userid   : doc._id.toString(),
              isworker : doc.isworker
-             }
       });
     });
   });
@@ -122,10 +138,10 @@ exports.resetpassword = function (user, callback) {
 
   db_user.findOne(query, function(err, doc){
     if (err || !doc) {
-      return callback({ret: 4, val: ""});         // RETURN: 账号不存在
+      return callback({ret: 4});         // RETURN: 账号不存在
     }
     if (doc.disable) {
-      return callback({ret: 3, val: ""});         // RETURN: 账号被停封
+      return callback({ret: 3});         // RETURN: 账号被停封
     }
 
     var Num = "";
@@ -135,15 +151,13 @@ exports.resetpassword = function (user, callback) {
     doc.password = password_hash.generate(Num);
     db_user.update(query, doc, function(err, updated){
       if(err) {
-        return callback({ret: 5, val: ""});       // RETURN: 数据库错误
+        return callback({ret: 5});       // RETURN: 数据库错误
       }
       return callback({                           // RETURN: 账号密码正确
              ret      : 1,
-             val      : {
              userid   : doc._id.toString(),
              isworker : doc.isworker,
              password : Num
-             }
       });
     });
   });
@@ -158,10 +172,10 @@ exports.updateuser = function (req, callback) {
 
   db_user.findOne(query, function(err, mid){
     if (err || !mid) {
-      return callback({ret: 4, val: ""});         // RETURN: 账号不存在
+      return callback({ret: 4});         // RETURN: 账号不存在
     }
     if (mid.disable) {
-      return callback({ret: 3, val: ""});         // RETURN: 账号被封停
+      return callback({ret: 3});         // RETURN: 账号被封停
     }
     
     mid.tel = user.tel || mid.tel;
@@ -169,14 +183,12 @@ exports.updateuser = function (req, callback) {
     mid.sex = user.sex || mid.sex;
     db_user.update(query, mid, function(err, doc){
       if (err) {
-        return callback({ret: 2, val: ""});       // RETURN: 邮箱或手机号已经被使用
+        return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
       }
       return callback({                  // RETURN: 修改成功
              ret      : 1,
-             val      : {
              userid   : mid._id.toString(),
              isworker : mid.isworker
-             }
       });
     });
   });
@@ -192,7 +204,7 @@ exports.pagednews = function (req, callback) {
   console.log(pageNum);
   db_news.find({}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
-      return callback({ret: 2, val: ""});                                //RETURN: 查询出错
+      return callback({ret: 2});                                //RETURN: 查询出错
     }
     for (index in docs) {
       docs[index]._id = docs[index]._id.toString();
@@ -201,14 +213,14 @@ exports.pagednews = function (req, callback) {
       delete docs[index].url;
       docs[index].pic = "/img/news/" + docs[index]._id + ".jpg";
     }
-    return callback({ret: 1, val: {num:docs.length, list: docs}});      // RETURN: 返回成功
+    return callback({ret: 1, num:docs.length, list: docs});      // RETURN: 返回成功
   });
 };
 // 新闻焦点图
 exports.newsfocus = function (num, callback) {
   db_news.find({focus: true}).limit(parseInt(num), function(err, docs){
     if (err){
-      return callback({ret: 2, val: ""});                                // RETURN: 查询出错
+      return callback({ret: 2});                                // RETURN: 查询出错
     }
     var listnum = 0;
     var imglist = new Array();
@@ -219,21 +231,21 @@ exports.newsfocus = function (num, callback) {
       });
       listnum += 1;
     }
-    return callback({ret: 1, val: {num: listnum, list: imglist}});     // RETURN: 返回成功
+    return callback({ret: 1, num: listnum, list: imglist});     // RETURN: 返回成功
   });
 };
 // 新闻详情
 exports.newsdetails = function (newsid, callback) {
   db_news.findOne({_id: new ObjectID(newsid)}, function(err, doc){
     if (err){
-      return callback({ret: 3, val: ""});                                // RETURN: 查询出错
+      return callback({ret: 3});                                // RETURN: 查询出错
     }
     if (!doc){
-      return callback({ret: 2, val: ""});                                // RETURN: 新闻已经已经被删除
+      return callback({ret: 2});                                // RETURN: 新闻已经已经被删除
     }
 
     doc._id = doc._id.toString();
     delete doc.url;
-    return callback({ret: 1, val: doc});                                 // RETURN: 返回成功
+    return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
   });
 };

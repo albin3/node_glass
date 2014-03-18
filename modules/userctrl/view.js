@@ -65,3 +65,12 @@ exports.changestate = function (req, res) {
   });
 };
 
+/**
+ * 导出到Excel
+ */
+exports.exportexcel = function (req, res) {
+  model.exportexcel(function(ret) {
+    res.download(ret.appUserPath);
+    // res.end(JSON.stringify(ret));
+  });
+}

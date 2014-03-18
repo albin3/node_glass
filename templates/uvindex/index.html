@@ -58,7 +58,7 @@
       {
         pushtext: pushtext
       }, function(data){
-      if (data.status) {
+      if (data.ret === 1) {
         alert("推送请求发送成功, 服务器正在推送");
       } else {
         alert("请求失败");
