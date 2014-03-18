@@ -12,7 +12,7 @@ exports.appversion = function (req, res) {
 exports.versionupdate = function (req, res) {
   model.versionupdate(req, function(data){
     if (data.ret === 1){
-      return res.redict('/appbg/appversion');
+      return res.redirect('/appbg/appversion');
     }
     if (data.ret === 3){
       return res.end("没有上传文件");

@@ -31,7 +31,7 @@ exports.versionupdate = function(req, callback) {
     if (req.files["apkfile"].size === 0) {
       return callback({ret: 3});                 // 未上传文件
     }
-    fs.renameSync(req.files["apkfile"].path, config.appPath() + "/apk/Essillor.apk")
+    fs.renameSync(req.files["apkfile"].path, config.appPath() + "/static/apk/Essillor.apk");
     dbversion.update({_id: version._id}, version, function(err) {
       if (err) {
         return callback({ret: 2});               // 数据库更新错误

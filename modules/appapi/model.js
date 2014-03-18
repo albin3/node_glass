@@ -231,6 +231,7 @@ exports.newsfocus = function (num, callback) {
     for (index in docs) {
       imglist.push({
         _id   : docs[index]._id.toString(),
+        des   : docs[index].firpicdes,
         pic   : "/img/news/" + docs[index]._id.toString() + ".jpg"
       });
       listnum += 1;
@@ -250,6 +251,7 @@ exports.newsdetails = function (newsid, callback) {
 
     doc._id = doc._id.toString();
     delete doc.url;
+    delete doc.firpicdes;
     return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
   });
 };
