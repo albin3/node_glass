@@ -48,7 +48,7 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
           if (err) { 
             console.log(err.message); 
           } else { 
-            console.log("create unique index success"); 
+            console.log("appuser create unique tel as index success"); 
           }
           db.close();
       });
@@ -66,7 +66,7 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
           if (err) { 
             console.log(err.message); 
           } else { 
-            console.log("create unique index success"); 
+            console.log("appuser create email as unique index success"); 
           }
           db.close();
       });
@@ -84,7 +84,41 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
           if (err) { 
             console.log(err.message); 
           } else { 
-            console.log("create unique index success"); 
+            console.log("appuser create thirdpathname as unique index success"); 
+          }
+          db.close();
+      });
+});
+
+// appversion 初始化
+MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.dbport 
+    + "/" + config.dbinfo.dbname + "?w=1", function (err, db) {
+      var dbaccount = db.collection('appversion');
+
+      dbaccount.insert({ index: 0.0.0 },
+        function (err) {
+          if (err) { 
+            console.log(err.message); 
+          } else { 
+            console.log("appversion collection init successed."); 
+          }
+          db.close();
+      });
+});
+
+// workerid 唯一index索引
+MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.dbport 
+    + "/" + config.dbinfo.dbname + "?w=1", function (err, db) {
+      var dbaccount = db.collection('workerid');
+
+      // 建索引
+      dbaccount.ensureIndex({ index: 1 },
+        { unique: true, dropDups: true, sparse: true },
+        function (err) {
+          if (err) { 
+            console.log(err.message); 
+          } else { 
+            console.log("workerid create workerid as unique index success"); 
           }
           db.close();
       });
