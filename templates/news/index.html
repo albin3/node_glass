@@ -49,17 +49,17 @@
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>标题</th>
-                  <th>内容</th>
-                  <th>图片</th>
-                  <th>操作</th>
+                  <th class="col-md-2">标题</th>
+                  <th class="col-md-4">内容</th>
+                  <th class="col-md-2">图片</th>
+                  <th class="col-md-2">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {% for news in newslist %}
                 <tr data-id="{{ news._id.toString() }}">
                   <td class="td-title">{{ news.title }}</td>
-                  <td class="td-summary">{{ news.summary }}</td>
+                  <td class="td-summary normal">{{ news.summary }}</td>
                   <td class="td-picture">
                     <ul class=list-inline>
                       <label>首图&nbsp;</label>
