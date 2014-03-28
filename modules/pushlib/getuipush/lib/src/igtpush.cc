@@ -28,7 +28,7 @@ Handle<Value> soPushInit(const Arguments& args) {
 
 void init_Module(Handle<Object> target) {
     NODE_SET_METHOD(target, "SayHello", SayHello);
-    NODE_SET_METHOD(target, "pushInit", soPushInit);
+    // NODE_SET_METHOD(target, "pushInit", soPushInit);
 }
 
 NODE_MODULE(gtpush, init_Module);           // 第一个参数必须与target_name一样

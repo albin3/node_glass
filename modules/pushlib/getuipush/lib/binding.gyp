@@ -4,7 +4,7 @@
       'target_name': 'gtpush',
       'sources': [
         './src/IGtPush.h',
-        './src/hello.cc'
+        './src/igtpush.cc'
       ],
       'link_settings': {
       'libraries':[
