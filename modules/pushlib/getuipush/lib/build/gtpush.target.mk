@@ -66,7 +66,7 @@ INCS_Release := \
 	-I/root/.node-gyp/0.10.24/deps/v8/include
 
 OBJS := \
-	$(obj).target/$(TARGET)/src/hello.o
+	$(obj).target/$(TARGET)/src/igtpush.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)

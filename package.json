@@ -22,7 +22,8 @@
     "underscore": "~1.6.0",
     "async": "~0.2.10",
     "node-xlsx": ">=0.4.0",
-    "apn": ">=1.4.4"
+    "apn": ">=1.4.4",
+    "urlencode": ">=0.1.1"
   },
   "devDependencies": {
     "mocha": "~1.17.1"
