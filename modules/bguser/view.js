@@ -1,12 +1,13 @@
 // App用户管理页面
 var model = require("./model");
+var config = require("../../config");
 
 /**
  * 后台用户管理首页
  */
 exports.userctrl = function (req, res) {
   model.alluser(function(err, docs) {
-    if (req.session.current_user !== "admin") {
+    if (req.session.current_user !== config.root_user.username) {
       res.end('只有root用户才能管理这个页面');
     }
     if (err || docs.length === 0) {
