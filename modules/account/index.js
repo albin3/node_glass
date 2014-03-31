@@ -7,5 +7,6 @@ exports.register = function (app) {
   app.post('/account/new', view.newaccount);
   app.post('/account/signin', view.authenticate);
   app.post('/account/signout', view.signout);
+  app.post('/account/currentuser', view.currentuser);
   app.get('/account/signin', view.signin);
 };

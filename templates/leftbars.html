@@ -11,7 +11,7 @@
     <li {% if Title === 'App版本管理' %}class="active"{% endif %}><a href="/appbg/appversion/">App版本管理</a></li>
   </ul>
   <ul class="nav nav-sidebar">
-    <li {% if Title === '后台用户管理' %}class="active"{% endif %}><a href="/appbg/bguser/">后台用户管理</a></li>
+    <li {% if Title === '后台用户管理' %}class="active"{% endif %}><a href="#" onclick="bguserctrl(); return false">后台用户管理</a></li>
   </ul>
   <ul class="nav nav-sidebar">
     <li><a id="signout" href="#" onclick="signout(); return false">{{ current_user }}登出</a></li>

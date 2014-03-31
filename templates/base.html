@@ -26,6 +26,15 @@
           window.location.href='/account/signin';
         }, 'json');
       };
+      var bguserctrl = function(event) {
+        $.post('/account/currentuser', {
+          }, function(data){
+          if (data.current_user !== "admin") {
+            return alert("只有root用户才能管理这个页面.");
+          }
+          window.location.href='/appbg/bguser/';
+        }, 'json');
+      };
     </script>
   </head>
 
@@ -33,3 +42,4 @@
     {% block content %}{% endblock %}
   </body>
 </html>
+

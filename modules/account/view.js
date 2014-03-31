@@ -12,6 +12,11 @@ exports.signout = function (req, res) {
   res.end(JSON.stringify({ret: 1}));        // 返回注销成功
 };
 
+// 获取当前用户
+exports.currentuser = function (req, res) {
+  res.end(JSON.stringify(req.session));        // 返回注销成功
+};
+
 exports.newaccount = function (req, res) {
   var account = req.body;
   model.newaccount(account, function (err, data) {
