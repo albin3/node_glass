@@ -1,5 +1,5 @@
 {
-  "name": "node-skeleton",
+  "name": "node_glass",
   "version": "0.0.0",
   "description": "Skeleton for node projects",
   "main": "run.js",
@@ -17,7 +17,7 @@
     "express-form": "~0.10.1",
     "moment": "~2.5.1",
     "colors": "~0.6.2",
-    "node-twinkle": "~0.0.4",
+    "node-twinkle": "*",
     "current-user": "~0.0.1",
     "underscore": "~1.6.0",
     "async": "~0.2.10",

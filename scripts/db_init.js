@@ -95,7 +95,7 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
     + "/" + config.dbinfo.dbname + "?w=1", function (err, db) {
       var dbaccount = db.collection('appversion');
 
-      dbaccount.insert({ index: 0.0.0 },
+      dbaccount.insert({ index: "0.0.0" },
         function (err) {
           if (err) { 
             console.log(err.message); 
