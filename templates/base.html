@@ -14,6 +14,19 @@
     <link rel="stylesheet" href="/css/utils/dashboard.css"/>
     <link rel="stylesheet" href="/css/userself/base.css"/>
     {% endblock %}
+
+    <script>
+      var signout = function(event) {
+        if (!confirm("确实要注销吗？"))     return false;
+        $.post('/account/signout',{
+          }, function(data){
+          if (data.ret !== 1) {
+            return alert("注销失败");
+          }
+          window.location.href='/account/signin';
+        }, 'json');
+      };
+    </script>
   </head>
 
   <body>

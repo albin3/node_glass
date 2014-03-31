@@ -6,6 +6,9 @@ var model = require("./model");
  */
 exports.userctrl = function (req, res) {
   model.alluser(function(err, docs) {
+    if (req.session.current_user !== "admin") {
+      res.end('只有root用户才能管理这个页面');
+    }
     if (err || docs.length === 0) {
       return res.render('bguser/index', { Title: "后台用户管理" });
     }

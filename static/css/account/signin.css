@@ -39,8 +39,7 @@ body {
   border-top-right-radius: 0;
 }
 
-/* 让两个按钮在同一行并排显示 */
 .btn-lg {
-  min-width: 148px;
+  min-width: 300px;
 }
 

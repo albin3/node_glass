@@ -1,8 +1,15 @@
 // view.js 界面
 var model = require('./model');
 
+// 登录
 exports.signin = function (req, res) {
   res.render('account/signin',{});
+};
+
+// 注销登录
+exports.signout = function (req, res) {
+  req.logout_user();
+  res.end(JSON.stringify({ret: 1}));        // 返回注销成功
 };
 
 exports.newaccount = function (req, res) {
@@ -28,18 +35,23 @@ exports.authenticate = function(req, res) {
       } else if (LastErr === 2) {
         return res.end("invalid password..");
         //return res.end(JSON.stringify({status: false, message: "用户名密码不匹配"}));
+      } else if (LastErr === 3) {
+        return res.end("用户已经被禁用..");
       }
     } else {
       // return res.end("success..");
-        res.redirect('/ourspace/hall');
+        req.login_user(username);
+        res.redirect('/appbg/news');
     }
   });
 };
 
 exports.checksignin = function (req, res, next) {
-  if (req.session!== undefined && req.session.username !== undefined) {
+  if (req.session!== undefined && req.session.current_user && req.session.current_user.is_authenticated !== false) {
     next();
   } else {
     res.render('account/signin',{});
   }
 };
+
+exports.require_signin = require("current-user").require_login; // 用外部库里的登录控制逻辑[目前不使用]

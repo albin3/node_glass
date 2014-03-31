@@ -25,7 +25,10 @@ exports.authenticate = function(user, callback) {
     }, function(err, doc) {
       db.close();
       if (err || !doc) {
-        return callback(err, 1); // 没有用户
+        return callback(err, 1);       // 没有用户
+      }
+      if (doc.disable) {
+        return callback(err, 3);       // 用户已经被禁用
       }
       if (password_hash.verify(user.password, doc.password)) {
         return callback(null);

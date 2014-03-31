@@ -3,14 +3,17 @@
     <li {% if Title === '新闻及推送' %}class="active"{% endif %}><a href="/appbg/news/">新闻及推送</a></li>
     <li {% if Title === '产品及推送' %}class="active"{% endif %}><a href="/appbg/prod/">产品及推送</a></li>
     <li {% if Title === '紫外线指数推送' %}class="active"{% endif %}><a href="/appbg/uvindex/">紫外线指数推送</a></li>
+  </ul>
+  <ul class="nav nav-sidebar">
     <li {% if Title === '优惠券管理' %}class="active"{% endif %}><a href="/appbg/coupon/">优惠券管理</a></li>
+    <li {% if Title === '员工ID管理' %}class="active"{% endif %}><a href="/appbg/workerid/">员工ID管理</a></li>
     <li {% if Title === 'App用户管理' %}class="active"{% endif %}><a href="/appbg/userctrl/">App用户管理</a></li>
     <li {% if Title === 'App版本管理' %}class="active"{% endif %}><a href="/appbg/appversion/">App版本管理</a></li>
+  </ul>
+  <ul class="nav nav-sidebar">
     <li {% if Title === '后台用户管理' %}class="active"{% endif %}><a href="/appbg/bguser/">后台用户管理</a></li>
-    <li {% if Title === '员工ID管理' %}class="active"{% endif %}><a href="/appbg/workerid/">员工ID管理</a></li>
   </ul>
   <ul class="nav nav-sidebar">
-  </ul>
-  <ul class="nav nav-sidebar">
+    <li><a id="signout" href="#" onclick="signout(); return false">{{ current_user }}登出</a></li>
   </ul>
 </div>
