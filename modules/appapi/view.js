@@ -61,3 +61,29 @@ exports.newsdetails = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+// ###游戏接口
+// 紫外线收割机
+exports.uvcatcher = function (req, res) {
+  model.uvcatcher(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 紫外线收割机排行榜
+exports.uvrank = function (req, res) {
+  model.uvrank(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 寻找黄眼镜
+exports.findglass = function (req, res) {
+  model.findglass(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 寻找黄眼镜排行榜
+exports.fgrank = function (req, res) {
+  model.fgrank(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};

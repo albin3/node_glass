@@ -4,10 +4,12 @@ var mongojs = require('mongojs');
 var password_hash = require('password-hash');
 var db = mongojs(config.dbinfo.dbname);
 
-var db_user = db.collection('appuser');
-var db_news = db.collection('news');
-var db_workerid = db.collection('workerid');
-var ObjectID = require('mongodb').ObjectID;
+var db_user      = db.collection('appuser');
+var db_news      = db.collection('news');
+var db_workerid  = db.collection('workerid');
+var db_uvcatcher = db.collection('uvcatcher');  // Games
+var db_findglass = db.collection('findglass');  // Games
+var ObjectID     = require('mongodb').ObjectID;
 
 /**
  * 新用户注册
@@ -253,5 +255,56 @@ exports.newsdetails = function (newsid, callback) {
     delete doc.url;
     delete doc.firpicdes;
     return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
+  });
+};
+
+// ###游戏接口
+// 紫外线收割机
+exports.uvcatcher = function(data, callback) {
+  var id       = data._id;
+  var nickname = data.nickname || "none";
+  var score    = parseInt(data.score) || 0;
+  db_uvcatcher.update({userid: id}, 
+      {$set: {userid: id}, $set:{nickname: nickname}, $set:{score: score}},
+      {upsert: true}, function(err, doc) {
+    if (err || !doc) {
+      return callback({ret: 2});                               // RETURN: 返回更新错误
+    }
+    return callback({ret: 1});                                 // RETURN: 返回更新成功
+  });
+};
+// 紫外线收割机排行
+exports.uvrank = function(callback) {
+  console.log("hear this");
+  db_uvcatcher.find({}).sort({score: -1}).limit(8,function(err, docs){
+    if (err || docs.length === 0) {
+  console.log("hear this 2");
+      return callback({ret: 2});                               // RETURN: 返回获取错误
+    }
+  console.log("hear this 3");
+    return callback({ret: 1, rank: docs});                     // RETURN: 返回获取成功
+  });
+};
+// 寻找黄眼镜
+exports.findglass = function(data, callback) {
+  var id       = data._id;
+  var nickname = data.nickname;
+  var score    = parseInt(data.score) || 100000;
+  db_findglass.update({userid: id},
+      {$set:{userid: id}, $set:{nickname: nickname}, $set:{score: score}},
+      {upsert: true}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 2});                               // RETURN: 返回更新错误
+    }
+    return callback({ret: 1});                                 // RETURN: 返回更新成功
+  });
+};
+// 获取寻找晃眼睛排行榜
+exports.fgrank = function(callback) {
+  db_findglass.find({}).sort({score: 1}).limit(8,function(err, docs){
+    if (err || docs.length === 0) {
+      return callback({ret: 2});                               // RETURN: 返回获取错误
+    }
+    return callback({ret: 1, rank: docs});                     // RETURN: 返回获取成功
   });
 };

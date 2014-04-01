@@ -14,4 +14,8 @@ exports.register = function (app) {
   app.all('/appapi/newsfocuspic/:num', view.newsfocus);                   // 新闻焦点图片
   app.all('/appapi/newsdetails/:newsid', view.newsdetails);               // 新闻详情
 
+  app.post('/appapi/games/uvcatcher', view.uvcatcher);                    // 游戏-紫外线收割机
+  app.post('/appapi/games/uvrank', view.uvrank);                          // 游戏-紫外线收割机排行榜
+  app.post('/appapi/games/findglass', view.findglass);                    // 游戏-寻找黄眼镜
+  app.post('/appapi/games/fgrank', view.fgrank);                          // 游戏-寻找黄眼镜排行榜
 };
