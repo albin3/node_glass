@@ -8,6 +8,12 @@ var ObjectID = require('mongodb').ObjectID;
 
 // 新建优惠券
 exports.newcoupon = function (coupon, callback) {
+  var strP = (coupon.off).toString();
+  for (var i=strP.length; i<4; i++) {
+    strP = "0" + strP;
+  }
+  coupon.index = coupon.retailer + strP;
+  coupon.pravided = 0;
   dbcoupon.insert(coupon, function(err, doc){
     if (err) {
       return callback({ret: 2});                    // RETURN: 数据库插入出错

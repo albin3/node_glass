@@ -9,6 +9,8 @@ var db_news      = db.collection('news');
 var db_workerid  = db.collection('workerid');
 var db_uvcatcher = db.collection('uvcatcher');  // Games
 var db_findglass = db.collection('findglass');  // Games
+var db_coupon    = db.collection('coupon');
+var db_pra_coupon= db.collection('pravidedcoupon');
 var ObjectID     = require('mongodb').ObjectID;
 
 /**
@@ -306,5 +308,45 @@ exports.fgrank = function(callback) {
       return callback({ret: 2});                               // RETURN: 返回获取错误
     }
     return callback({ret: 1, rank: docs});                     // RETURN: 返回获取成功
+  });
+};
+// ###优惠券
+// 获得优惠券
+exports.getcoupon = function(data, callback) { 
+  var userid   = data._id;
+  var isworker = data.isworker;
+  var gotcoupon = false;
+  db_coupon.find({}, function(err, docs) { 
+    for (var i=0; i<docs.length; i++) {
+      var doc = docs[i];
+      if (Math.random() >= parseFloat('0.' + doc.off)) {    // 概率产生优惠券
+        continue;
+      }
+      doc.pravided = doc.pravided + 1;
+      db_coupon.update({_id: doc._id},doc, function(err, msg){
+        if (err) {
+          return callback({ret: 3});                            // RETURN: 数据库错误
+        }
+        var couponkey = doc.index + (Array(8).join(0) + doc.pravided).slice(-8);
+        // 生成四位随机数
+        for (var i=0; i<4; i++) {
+          couponkey += parseInt(Math.random()*10);
+        }
+        db_pra_coupon.insert({
+          couponkey : couponkey,
+          userid    : userid
+        }, function(err, rtn_doc) {
+          if (err) {
+            return callback({ret: 3});                          // RETURN: 数据库错误
+          }
+          return callback({ret: 1, couponkey: couponkey});      // RETURN: 产生优惠券
+        });
+      });
+      gotcoupon = true;   // 异步执行，所以需要标志位
+      break;
+    }
+    console.log(gotcoupon);
+    if (gotcoupon === false)
+      return callback({ret: 2});                                // RETURN: 没有产生优惠券
   });
 };

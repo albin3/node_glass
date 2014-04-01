@@ -45,6 +45,7 @@
         <table class="table table-striped">
           <thead>
             <tr>
+              <th class="col-sm-1">识别码</th>
               <th class="col-sm-2">名称(状态)</th>
               <th class="col-sm-4">内容</th>
               <th class="col-sm-3">地点</th>
@@ -55,6 +56,7 @@
           <tbody>
             {%for coupon in coupons%}
             <tr data-id="{{ coupon._id.toString() }}">
+              <td>{{coupon.index}}</td>
               <td>{{coupon.name}}</td>
               <td class="normal">{{coupon.detail}}</td>
               <td>{{coupon.range}}</td>
@@ -111,16 +113,16 @@
           </div>
 
           <div class="form-group">
-            <label for="coupon-off" class="col-sm-3 control-label">优惠的力度</label>
+            <label for="coupon-off" class="col-sm-3 control-label">生成概率</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-off" name="coupon-off" placeholder="请填1~9的数字">
+              <input type="text" class="form-control" id="coupon-off" name="coupon-off" placeholder="请填4位数字不够补零">
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-sm-3 control-label"></label>
             <div class="col-sm-8">
-              <label>优惠力度可以理解为折扣，折扣越大，获得的概率越低</label>
+              <label>一万次中生成几张这种优惠券，如：0099</label>
             </div>
           </div>
 
@@ -213,8 +215,8 @@
       alert("输入 1 个字母作为渠道");
       return ;
     }
-    if (off.length !== 1 || isNaN(off)){
-      alert("输入一个数字作为折扣力度");
+    if (off.length !== 4 || isNaN(off)){
+      alert("输入4个数字作为生成概率");
       return ;
     }
     if (range.length === 0){
@@ -231,7 +233,7 @@
         name: name,
         detail   : detail,
         retailer : retailer,
-        off      : parseInt(off),
+        off      : off,
         range    : range,
         time     : parseDate(time)
       }, function(data){
@@ -244,6 +246,7 @@
         var strTime = Y + "-" + M + "-" + D;
         var new_raw =
             '<tr data-id="' + coupon._id + '">' +
+              '<td>' + coupon.index + '</td>' +
               '<td>' + coupon.name + '</td>' +
               '<td class="normal">' + coupon.detail + '</td>' +
               '<td>' + coupon.range + '</td>' +
@@ -257,7 +260,7 @@
         $('tbody').append(new_raw);
         return $('#modal-add-coupon').modal('hide');
       }
-      return alert("false");
+      return alert("同渠道同概率的优惠券已经存在");
     }, 'json');
   });
   // 解析日期
@@ -270,5 +273,4 @@
   }
 </script>
 {% endblock %}
-
 

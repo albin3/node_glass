@@ -123,3 +123,21 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
           db.close();
       });
 });
+
+// coupon 唯一index索引
+MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.dbport 
+    + "/" + config.dbinfo.dbname + "?w=1", function (err, db) {
+      var dbaccount = db.collection('coupon');
+
+      // 建索引
+      dbaccount.ensureIndex({ index: 1 },
+        { unique: true, dropDups: true, sparse: true },
+        function (err) {
+          if (err) { 
+            console.log(err.message); 
+          } else { 
+            console.log("coupon create workerid as unique index success"); 
+          }
+          db.close();
+      });
+});

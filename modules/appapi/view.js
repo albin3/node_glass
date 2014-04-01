@@ -87,3 +87,11 @@ exports.fgrank = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+// ###优惠券
+// 获得优惠券
+exports.getcoupon = function(req, res) {
+  model.getcoupon(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
