@@ -81,6 +81,12 @@ exports.findglass = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+// 寻找黄眼镜获取图片数据
+exports.findglasspulldata = function (req, res) {
+  model.findglasspulldata(req.params, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
 // 寻找黄眼镜排行榜
 exports.fgrank = function (req, res) {
   model.fgrank(function(ret){

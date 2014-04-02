@@ -4,14 +4,15 @@ var mongojs = require('mongojs');
 var password_hash = require('password-hash');
 var db = mongojs(config.dbinfo.dbname);
 
-var db_user      = db.collection('appuser');
-var db_news      = db.collection('news');
-var db_workerid  = db.collection('workerid');
-var db_uvcatcher = db.collection('uvcatcher');  // Games
-var db_findglass = db.collection('findglass');  // Games
-var db_coupon    = db.collection('coupon');
-var db_pra_coupon= db.collection('pravidedcoupon');
-var ObjectID     = require('mongodb').ObjectID;
+var db_user         = db.collection('appuser');
+var db_news         = db.collection('news');
+var db_workerid     = db.collection('workerid');
+var db_uvcatcher    = db.collection('uvcatcher');     // Games
+var db_findglass    = db.collection('findglass');     // Games
+var db_findglasspic = db.collection('findglasspic');  // Games
+var db_coupon       = db.collection('coupon');
+var db_pra_coupon   = db.collection('pravidedcoupon');
+var ObjectID        = require('mongodb').ObjectID;
 
 /**
  * 新用户注册
@@ -299,6 +300,15 @@ exports.findglass = function(data, callback) {
       return callback({ret: 2});                               // RETURN: 返回更新错误
     }
     return callback({ret: 1});                                 // RETURN: 返回更新成功
+  });
+};
+// 寻找黄眼镜获取图片数据
+exports.findglasspulldata = function(req, callback) {
+  db_findglasspic.find({dt: {$gt: parseInt(req.timestamp)}}).sort({_id: -1},function(err, docs){
+    if (err || docs.length===0) {
+      return callback({ret: 2});                               // RETURN: 返回更新错误
+    }
+    return callback({ret: 1, pics: docs});                     // RETURN: 返回更新成功
   });
 };
 // 获取寻找晃眼睛排行榜

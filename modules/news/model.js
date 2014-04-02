@@ -48,7 +48,6 @@ function deletePicturesOfNews(newsid) {
   var imgpath = config.appPath() + "/static/img/news/" + newsid;
   for (var i = 0; i < 10; i++) {
     try {
-      console.log(imgpath+i+".jpg");
       fs.unlinkSync(imgpath+i+".jpg");
     } catch (e){
     }
@@ -142,17 +141,13 @@ exports.updatenews = function (req, callback) {
     for (text in texts){
       funcArr.push(async.apply(function(text, callback){
         var item = {};
-        console.log("this is a judge.");
-        console.log(text);
         if (text.toString().indexOf("pic") > 0){
-          console.log("this is a picture.");
           item.type = 2;
           item.content = "/img/news/" + newsid + new_details.length + ".jpg";
           item.des = texts[text];
           text = text.replace("news-pic-","");
           if (files["upload"+text].size > 0) {                       // 有新上传的图片
             fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
-              new_details.push(item);
               callback();
             });
           }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名

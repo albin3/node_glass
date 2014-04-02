@@ -1,0 +1,163 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">依视路App后台</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="page-header">游戏后台</h2>
+      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass"> 
+        <dl class="des-list dl-horizontal">
+          <dd>
+          <label for="upload" class="col-sm-2 control-label">上传图片</label>
+          <div class="col-sm-2">
+            <input type="file" id="upload" name="upload">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="pic-width" class="col-sm-2 control-label">图片的宽(像素)</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" id="pic-width" name="pic-width" placeholder="图片的宽(pixel)">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="pic-height" class="col-sm-2 control-label">图片的高(像素)</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" id="pic-height" name="pic-height" placeholder="图片的高(pixel)">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="glass-width" class="col-sm-2 control-label">黄眼镜宽(像素)</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" id="glass-width" name="glass-width" placeholder="眼镜的宽(pixel)">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="glass-height" class="col-sm-2 control-label">黄眼镜高(像素)</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" id="glass-height" name="glass-height" placeholder="眼镜的高(pixel)">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="" class="col-sm-2 control-label">操作</label>
+          <div class="col-sm-6">
+            <button type="button" id="btn-save" class="btn btn-primary">保存</button>
+            <button type="submit" id="btn-upload" class="btn btn-default">上传</button>
+          </div>
+          <br>
+          </dd>
+        </dl>
+      </form>
+      <hr>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">宽高(像素)</th>
+              <th class="col-sm-3">眼镜位置</th>
+              <th class="col-sm-3">图片</th>
+              <th class="col-sm-3">操作</th>
+            </tr>
+          </thead>
+          <tbody id="user-list">
+            {% for obj in objs %}
+            <tr data-id="{{ obj._id.toString() }}">
+              <td>( {{obj.picwidth}}, {{obj.picheight}} )</td>
+              <td>( {{obj.glasswidth}}, {{obj.glassheight}} )</td>
+              <td><img src="/img/findglass/{{obj._id.toString()}}.jpg" width="100" height="62"></td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="#" class="a-del-pic">删除</a></li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $().ready(function(){
+    $("#btn-upload").hide();    // 隐藏上传按钮
+  });
+  // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+  $(".table-striped tbody").click(function(event){
+    event.preventDefault();                             // 页面的焦点不变
+    if ($(event.target).context.className === "a-del-pic") {
+      delete_pic(event);
+    }
+  });
+  // 删除图片
+  function delete_pic(event) { 
+    if (!confirm('确实要删除吗？')) {       // 要求确认
+      return;
+    }
+    var tr = $(event.target).parents("tr");
+    $.post("/appbg/findglass/del",{
+      id: tr.attr("data-id")
+      }, function(data) {
+      data = JSON.parse(data);
+      if (data.ret !== 1) {
+        alert("删除失败");
+        return;
+      }
+      tr.remove();
+    });
+  }; 
+
+  $("#btn-save").click(function(event){
+    if ($("#upload").val() === "") {
+      alert("没有选择要上传的图片");
+      return ;
+    }
+    var picwidth    = parseInt($("#pic-width").val());
+    var picheight   = parseInt($("#pic-height").val());
+    var glasswidth  = parseInt($("#glass-width").val());
+    var glassheight = parseInt($("#glass-height").val());
+    if (isNaN(picwidth) || isNaN(picheight) || isNaN(glasswidth) || isNaN(glassheight)) {
+      alert("确保输入的都是数字");
+      return ;
+    }
+    if ( picwidth < glasswidth || picheight < glassheight) {
+      alert("眼镜位置超出图片大小");
+      return ;
+    }
+    // 模拟提交表单
+    $("#btn-upload").trigger("click");
+  });
+</script>
+{% endblock %}
