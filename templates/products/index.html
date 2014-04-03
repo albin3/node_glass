@@ -44,7 +44,9 @@
           <div class="inline-form">
           <button class="btn btn-primary">添加产品</button>
           <button class="btn btn-danger">删除所有</button>
+          <label>&nbsp;&nbsp;&nbsp;</label>
           <button class="btn btn-success" data-toggle="modal" data-target="#modal-upload-movies">上传视频</button>
+          <a class="btn btn-info" target="_blank" href="/movies/prod1.mp4">检查上传</a>
           </div>
           <div class="table-responsive">
             <table class="table table-striped">
@@ -95,53 +97,62 @@
               <h4 class="modal-title">上传产品视频</h4>
             </div>
             <div class="modal-body">
-              <form class="form-horizontal" role="form">
+              <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post" action="/appbg/prod/uploadmovies">
                 <div class="form-group">
-                  <label for="user-name" class="col-sm-2 control-label">用户名</label>
+                  <label for="" class="col-sm-2 control-label">视频文件</label>
                   <div class="col-sm-4">
-                    <input type="text" class="form-control" id="user-name" name="user-name" placeholder="登录名">
+                    <input type="file" id="upload1" name="upload1">
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="user-password" class="col-sm-2 control-label">密码</label>
+                <div class="cls-hidden form-group">
+                  <label for="" class="col-sm-2 control-label">文件2</label>
                   <div class="col-sm-4">
-                    <input type="password" class="form-control" id="user-password" name="user-password" placeholder="登录密码">
+                    <input type="file" id="upload2" name="upload2">
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="user-confirm" class="col-sm-2 control-label">确认密码</label>
+                <div class="cls-hidden form-group">
+                  <label for="" class="col-sm-2 control-label">文件3</label>
                   <div class="col-sm-4">
-                    <input type="password" class="form-control" id="user-confirm" name="user-confirm" placeholder="确认">
+                    <input type="file" id="upload3" name="upload3">
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="user-tel" class="col-sm-2 control-label">电话</label>
+                <div id="div-submit" class="cls-hidden form-group">
                   <div class="col-sm-4">
-                    <input type="text" class="form-control" id="user-tel" name="user-tel" placeholder="可不填">
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="user-confirm" class="col-sm-2 control-label">Email</label>
-                  <div class="col-sm-4">
-                    <input type="text" class="form-control" id="user-email" name="user-email" placeholder="可不填">
+                    <input type="submit" id="btn-upload" name="btn-upload">
                   </div>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-primary">确定</button>
+              <button type="button" id="btn-save" class="btn btn-primary">确定</button>
             </div>
           </div>
         </div>
       </div><!-- End modal -->
     </div>
     <script>
-      // 添加新闻
+      $().ready(function(){
+        $(".cls-hidden").hide();
+      });
+      $("#btn-save").click(function(event){
+        var file_chosen = false;
+        for (var i=1; i<=3; i++) {
+          if ($("#upload"+i).val() !== "") {
+            file_chosen = true;
+            break;
+          }
+        }
+        if (file_chosen) {
+          return $("#btn-upload").trigger("click");
+        }
+        return alert("请选择视频文件");
+      });
+      // *** 这后面的暂时未定
+      // 添加商品
       $(".main .btn-primary").click(function(){
         $(".main .btn-primary").attr("disabled", true); // 灰掉按钮，免得点太快
 

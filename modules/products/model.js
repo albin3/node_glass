@@ -204,3 +204,14 @@ exports.changestate =  function (req, callback) {
     return callback(err, {state: "非焦点"});
   });
 };
+
+// 上传视频文件
+exports.uploadmovies =  function (req, callback) {
+  for (var i=1; i<=3; i++) {
+    if (req.files["upload"+i].size !== 0) {
+      var defaultpath = config.appPath() + "/static/movies/prod";
+      fs.renameSync(req.files["upload"+i].path, defaultpath + i +".mp4");
+    }
+  }
+  callback({ret: 1});
+};

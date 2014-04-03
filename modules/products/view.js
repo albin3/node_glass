@@ -79,3 +79,10 @@ exports.changestate = function (req, res) {
   });
 };
 
+// 上传视频文件
+exports.uploadmovies = function (req, res) {
+  model.uploadmovies(req, function (ret) {
+    res.redirect("/appbg/prod");
+  });
+};
+
