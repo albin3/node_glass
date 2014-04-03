@@ -18,11 +18,15 @@ exports.allpics = function(callback) {
 exports.newpic = function(req, callback) {
   var picwidth    = parseInt(req.body["pic-width"]);
   var picheight   = parseInt(req.body["pic-height"]);
+  var glassx      = parseInt(req.body["glass-x"]);
+  var glassy      = parseInt(req.body["glass-y"]);
   var glasswidth  = parseInt(req.body["glass-width"]);
   var glassheight = parseInt(req.body["glass-height"]);
   dbfindglass.insert({
     picwidth   : picwidth,
     picheight  : picheight,
+    glassx     : glassx,
+    glassy     : glassy,
     glasswidth : glasswidth,
     glassheight: glassheight,
     dt         : new Date().getTime()

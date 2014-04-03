@@ -44,6 +44,7 @@
           <div class="inline-form">
           <button class="btn btn-primary">添加产品</button>
           <button class="btn btn-danger">删除所有</button>
+          <button class="btn btn-success" data-toggle="modal" data-target="#modal-upload-movies">上传视频</button>
           </div>
           <div class="table-responsive">
             <table class="table table-striped">
@@ -86,7 +87,57 @@
           </div>
         </div>
       </div>
-      <div class="modal fade" id="modal-edit-news">
+      <div class="modal fade" id="modal-upload-movies">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">上传产品视频</h4>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal" role="form">
+                <div class="form-group">
+                  <label for="user-name" class="col-sm-2 control-label">用户名</label>
+                  <div class="col-sm-4">
+                    <input type="text" class="form-control" id="user-name" name="user-name" placeholder="登录名">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-password" class="col-sm-2 control-label">密码</label>
+                  <div class="col-sm-4">
+                    <input type="password" class="form-control" id="user-password" name="user-password" placeholder="登录密码">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-confirm" class="col-sm-2 control-label">确认密码</label>
+                  <div class="col-sm-4">
+                    <input type="password" class="form-control" id="user-confirm" name="user-confirm" placeholder="确认">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-tel" class="col-sm-2 control-label">电话</label>
+                  <div class="col-sm-4">
+                    <input type="text" class="form-control" id="user-tel" name="user-tel" placeholder="可不填">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="user-confirm" class="col-sm-2 control-label">Email</label>
+                  <div class="col-sm-4">
+                    <input type="text" class="form-control" id="user-email" name="user-email" placeholder="可不填">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary">确定</button>
+            </div>
+          </div>
+        </div>
       </div><!-- End modal -->
     </div>
     <script>
