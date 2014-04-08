@@ -102,7 +102,7 @@
           <thead>
             <tr>
               <th class="col-sm-2">宽高(像素)</th>
-              <th class="col-sm-3">眼镜位置</th>
+              <th class="col-sm-3">眼镜位置 / 宽高</th>
               <th class="col-sm-3">图片</th>
               <th class="col-sm-3">操作</th>
             </tr>
@@ -111,7 +111,7 @@
             {% for obj in objs %}
             <tr data-id="{{ obj._id.toString() }}">
               <td>( {{obj.picwidth}}, {{obj.picheight}} )</td>
-              <td>( {{obj.glassx}}, {{obj.glassy}} ), ( {{obj.glasswidth}}, {{obj.glassheight}} )</td>
+              <td>( {{obj.glassx}}, {{obj.glassy}} ) / ( {{obj.glasswidth}}, {{obj.glassheight}} )</td>
               <td><img src="/img/findglass/{{obj._id.toString()}}.jpg" width="100" height="62"></td>
               <td>
                 <ul class=list-inline>

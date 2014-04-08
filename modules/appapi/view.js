@@ -101,3 +101,21 @@ exports.getcoupon = function(req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+// 验证优惠券
+exports.checkcoupon = function(req, res) {
+  model.checkcoupon(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 使用优惠券
+exports.usecoupon = function(req, res) {
+  model.usecoupon(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 优惠券列表
+exports.couponlist = function(req, res) {
+  model.couponlist(req.params, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};

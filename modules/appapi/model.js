@@ -11,7 +11,7 @@ var db_uvcatcher    = db.collection('uvcatcher');     // Games
 var db_findglass    = db.collection('findglass');     // Games
 var db_findglasspic = db.collection('findglasspic');  // Games
 var db_coupon       = db.collection('coupon');
-var db_pra_coupon   = db.collection('pravidedcoupon');
+var db_pra_coupon   = db.collection('couponpravided');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -333,7 +333,7 @@ exports.getcoupon = function(data, callback) {
         continue;
       }
       doc.pravided = doc.pravided + 1;
-      db_coupon.update({_id: doc._id},doc, function(err, msg){
+      db_coupon.update({_id: doc._id}, doc, function(err, msg){
         if (err) {
           return callback({ret: 3});                            // RETURN: 数据库错误
         }
@@ -344,7 +344,8 @@ exports.getcoupon = function(data, callback) {
         }
         db_pra_coupon.insert({
           couponkey : couponkey,
-          userid    : userid
+          userid    : userid,
+          coupon    : doc
         }, function(err, rtn_doc) {
           if (err) {
             return callback({ret: 3});                          // RETURN: 数据库错误
@@ -355,8 +356,56 @@ exports.getcoupon = function(data, callback) {
       gotcoupon = true;   // 异步执行，所以需要标志位
       break;
     }
-    console.log(gotcoupon);
     if (gotcoupon === false)
       return callback({ret: 2});                                // RETURN: 没有产生优惠券
+  });
+};
+
+// 验证优惠券
+exports.checkcoupon = function(data, callback) { 
+  var couponkey = data.couponkey || "null";
+  db_pra_coupon.findOne({couponkey: couponkey, isdeleted: null}, function(err, doc) { 
+    if (err || !doc) {
+      return callback({ret: 2});                                // RETURN: 优惠券不存在
+    }
+    return callback({ret: 1});                                  // RETURN: 优惠券存在
+  });
+};
+
+// 使用优惠券
+exports.usecoupon = function(data, callback) { 
+  var couponkey = data.couponkey || "not a couponkey";
+  var couponid  = couponkey.slice(0,5);
+  db_coupon.findOne({index: couponid},function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 6});                                // RETURN: 这类优惠券不存在
+    } else if (doc.time < new Date()) {
+      return callback({ret: 5});                                // RETURN: 这类优惠券已过期
+    }
+    db_pra_coupon.findOne({couponkey: couponkey}, function(err, doc) { 
+      if (err || !doc) {
+        return callback({ret: 4});                              // RETURN: 这张优惠券不存在
+      }
+      if (doc.isdeleted) {
+        return callback({ret: 3});                              // RETURN: 这张优惠券已使用
+      }
+      db_pra_coupon.update({couponkey: couponkey}, {$set: {isdeleted: true}}, function(err, data){
+        if (err) {
+          return callback({ret: 2});                            // RETURN: 优惠券使用失败
+        }
+        return callback({ret: 1});                              // RETURN: 这张优惠券使用成功
+      });
+    });
+  });
+};
+
+// 优惠券列表(用户)
+exports.couponlist = function(data, callback) { 
+  var userid = data.userid;
+  db_pra_coupon.find({userid: userid, isdeleted: {$not: {$gte: true}}}, function(err, docs) { 
+    if (err) {
+      return callback({ret: 2});                                // RETURN: 查询错误
+    }
+    return callback({ret: 1, couponlist: docs});                // RETURN: 优惠券列表
   });
 };

@@ -21,4 +21,7 @@ exports.register = function (app) {
   app.all('/appapi/games/fgrank', view.fgrank);                                     // 游戏-寻找黄眼镜排行榜
                                                                                    
   app.post('/appapi/coupon/getcoupon', view.getcoupon);                             // 优惠券获得
+  app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
+  app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
+  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
 };
