@@ -406,6 +406,21 @@ exports.couponlist = function(data, callback) {
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
     }
-    return callback({ret: 1, couponlist: docs});                // RETURN: 优惠券列表
+    var couponlist = new Array();
+    for (var i in docs) {
+      var doc    = docs[i];
+      var coupon = {};
+      coupon._id       = doc._id;
+      coupon.couponkey = doc.couponkey;
+      coupon.userid    = doc.userid;
+      coupon.detail    = doc.coupon.detail;
+      coupon.index     = doc.coupon.index;
+      coupon.off       = doc.coupon.off;
+      coupon.name      = doc.coupon.name;
+      coupon.range     = doc.coupon.range;
+      coupon.time      = new Date(doc.coupon.time).getTime();
+      couponlist.push(coupon);
+    }
+    return callback({ret: 1, couponlist: couponlist});                // RETURN: 优惠券列表
   });
 };
