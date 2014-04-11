@@ -19,10 +19,12 @@ var ObjectID        = require('mongodb').ObjectID;
  */
 exports.newuser = function (user, callback) {
 
+  if (user.tel === undefined && user.email === undefined && user.thirdpath === undefined) {
+    return callback({ret: 2});
+  }
   if (!user.workerid) {     // 初始化
     user.workerid = "";
   }
-  console.log(user.workerid);
   // 验证员工号码
   user.isworker = 0;
     db_workerid.findOne({index: user.workerid.toUpperCase()}, function (err, doc) {
