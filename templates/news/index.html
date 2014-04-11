@@ -134,6 +134,7 @@
       // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
       $(".table-striped tbody").click(function(event){
         if ($(event.target).context.className === "a-del-news"){
+          event.preventDefault();   // 页面的焦点不变
           delete_news(event);
           } else if ($(event.target).context.localName === "span") {                // 点击作为焦点图
           event.preventDefault();   // 页面的焦点不变

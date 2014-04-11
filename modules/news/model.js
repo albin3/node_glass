@@ -148,6 +148,7 @@ exports.updatenews = function (req, callback) {
           text = text.replace("news-pic-","");
           if (files["upload"+text].size > 0) {                       // 有新上传的图片
             fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
+              new_details.push(item);
               callback();
             });
           }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
@@ -173,6 +174,7 @@ exports.updatenews = function (req, callback) {
         funcArr
         ,function(err){
       doc.details = new_details;
+      console.log(new_details);
       dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
         console.log("done");
         callback(err);
