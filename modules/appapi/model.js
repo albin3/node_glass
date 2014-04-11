@@ -325,11 +325,19 @@ exports.fgrank = function(callback) {
 exports.getcoupon = function(data, callback) { 
   var userid   = data._id;
   var isworker = data.isworker;
+  if (isNaN(isworker)) {
+    isworker = 1;
+  }
+  if (isworker > 1) {
+    isworker = 10;
+  } else {
+    isworker = 1;
+  }
   var gotcoupon = false;
   db_coupon.find({}, function(err, docs) { 
     for (var i=0; i<docs.length; i++) {
       var doc = docs[i];
-      if (Math.random() >= parseFloat('0.' + doc.off)) {    // 概率产生优惠券
+      if (Math.random() >= parseFloat('0.' + doc.off)*isworker) {    // 概率产生优惠券
         continue;
       }
       doc.pravided = doc.pravided + 1;
