@@ -67,7 +67,7 @@ function Config(extend) {
 exports.development = new Config({
   APP_NAME: 'node-skeleton',
   DEBUG: true,
-  PORT: 3000,
+  PORT: 3006,
   DB_URI: 'mongodb://localhost/node_glass'
 });
 
@@ -81,7 +81,7 @@ exports.development = new Config({
 exports.testing = new Config({
   APP_NAME: 'node_glass',
   DEBUG: true,
-  PORT: 3001,
+  PORT: 3006,
   DB_URI: 'mongodb://localhost/node_glass'
 });
 
@@ -95,7 +95,7 @@ exports.testing = new Config({
 exports.production = new Config({
   APP_NAME: 'node-skeleton',
   DEBUG: false,
-  PORT: 80,
+  PORT: 3006,
   DB_URI: 'mongodb://localhost/node_glass'
 });
 
