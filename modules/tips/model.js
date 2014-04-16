@@ -7,7 +7,9 @@ var dbtips = db.collection('tips');
 var ObjectID = require('mongodb').ObjectID;
 
 // 新建tips
-exports.newtips = function (tips, callback) {
+exports.newtips = function (req, callback) {
+  var tips = req.body;
+  tips.lan = req.params.lan;
   dbtips.insert(tips, function(err, doc){
     if (err) {
       return callback({ret: 2});                    // RETURN: 数据库插入出错
@@ -18,8 +20,8 @@ exports.newtips = function (tips, callback) {
 };
 
 // 查询所有优惠券
-exports.alltips = function (callback) {
-  dbtips.find({}, function(err,docs){
+exports.alltips = function (req, callback) {
+  dbtips.find({lan : req.params.lan}, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
@@ -38,8 +40,8 @@ exports.deltips = function (tips, callback) {
 };
 
 // 删除所有
-exports.delall = function (callback) {
-  dbtips.remove({}, function(err){
+exports.delall = function (req, callback) {
+  dbtips.remove({lan : req.params.lan}, function(err){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }

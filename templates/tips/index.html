@@ -82,10 +82,22 @@
             <label for="weather" class="col-sm-3 control-label">Weather</label>
             <div class="col-sm-8">
               <select class="form-control" type="text" id="weather" name="weather" placeholder="Weather">
+                {% if language === "simplified" %}
+                <option>晴天</option>
+                <option>多云</option>
+                <option>雨天</option>
+                <option>下雪</option>
+                {% elseif language === "traditional" %}
                 <option>sunny</option>
                 <option>cloudy</option>
                 <option>rain</option>
                 <option>snow</option>
+                {% elseif language === "english" %}
+                <option>sunny</option>
+                <option>cloudy</option>
+                <option>rain</option>
+                <option>snow</option>
+                {% endif %}
               </select>
             </div>
           </div>
@@ -110,7 +122,7 @@
     if (!confirm('Do you really want to delete all data？')) {       // 要求确认
       return ;
     }
-    $.post('/appbg/tips/delall/',{},function(data){
+    $.post('/appbg/tips/delall/{{language}}',{},function(data){
       if (data.ret === 1) {
         return $("tbody").empty();
       }
@@ -149,7 +161,7 @@
       return ;
     }
     $.post(
-      '/appbg/tips/new',
+      '/appbg/tips/new/{{language}}',
       {
         weather: weather,
         detail   : detail
