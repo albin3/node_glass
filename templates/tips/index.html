@@ -1,0 +1,189 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Help</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">Tips List</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-tips">Add Tips</button>
+      <button class="btn btn-danger">Delete All</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-1">Weather</th>
+              <th class="col-sm-4">Content</th>
+              <th class="col-sm-1">Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for tip in tips%}
+            <tr data-id="{{ tip._id.toString() }}">
+              <td>{{tip.weather}}</td>
+              <td class="normal">{{tip.detail}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="#" class="a-del-tip">delete</a></li>
+                </ul>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-add-tips">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add Tips</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="weather" class="col-sm-3 control-label">Weather</label>
+            <div class="col-sm-8">
+              <select class="form-control" type="text" id="weather" name="weather" placeholder="Weather">
+                {% if language === "simplified" %}
+                <option>晴天</option>
+                <option>多云</option>
+                <option>雨天</option>
+                <option>下雪</option>
+                {% elseif language === "traditional" %}
+                <option>sunny</option>
+                <option>cloudy</option>
+                <option>rain</option>
+                <option>snow</option>
+                {% elseif language === "english" %}
+                <option>sunny</option>
+                <option>cloudy</option>
+                <option>rain</option>
+                <option>snow</option>
+                {% endif %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tips-detail" class="col-sm-3 control-label">Tips Content</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="tips-detail" name="tips-detail" placeholder="Tips Content">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End modal -->
+<script>
+  $('.main .btn-danger').click(function(event){
+    if (!confirm('Do you really want to delete all data？')) {       // 要求确认
+      return ;
+    }
+    $.post('/appbg/tips/delall/{{language}}',{},function(data){
+      if (data.ret === 1) {
+        return $("tbody").empty();
+      }
+      alert("Delete error!");
+    },'json');
+  });
+  $('tbody').click(function(event){
+    if ($(event.target).context.className === "a-del-tip") {
+      event.preventDefault();       // 页面的焦点不变
+      var tr = $(event.target).parent().parent().parent().parent();
+      var tipid = tr.attr("data-id");
+      deleteTip(tipid, tr);
+    }
+  });
+  // 删除tip
+  function deleteTip(id, target){
+    if (!confirm('Do you really want to delete it？')) {       // 要求确认
+      return ;
+    }
+    $.post(
+    '/appbg/tips/del/',
+    {
+      _id: id
+    }, function(data){
+    if (data.ret === 1){
+      return target.remove();
+    }
+    alert("Delete error!");
+    }, 'json');
+  }
+  $(".modal-footer .btn-primary").click(function(event){
+    var weather = $("#weather").val();
+    var detail = $("#tips-detail").val();
+    if (!detail.length){
+      alert("Tips can not be empty");
+      return ;
+    }
+    $.post(
+      '/appbg/tips/new/{{language}}',
+      {
+        weather: weather,
+        detail   : detail
+      }, function(data){
+      if (data.ret === 1) {
+        tip = data.val;
+        var new_raw =
+            '<tr data-id="' + tip._id + '">' +
+              '<td>' + tip.weather + '</td>' +
+              '<td class="normal">' + tip.detail + '</td>' +
+              '<td>' +
+                '<ul class=list-inline>' +
+                  '<li><a href="#" class="a-del-tip">Delete</a></li>' + 
+                '</ul>' +
+              '</td>' +
+            '</tr>';
+        $('tbody').append(new_raw);
+        return $('#modal-add-tips').modal('hide');
+      }
+      return alert("Same weather tips already exists.");
+    }, 'json');
+  });
+</script>
+{% endblock %}
+
