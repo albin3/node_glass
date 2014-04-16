@@ -15,7 +15,6 @@ var config = require('../config');
 MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
       
       // 清空数据库
-      db.dropDatabase(function () {
         var dbaccount = db.collection('account');
 
         // 建索引
@@ -37,7 +36,6 @@ MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
             db.close();
           }
           );
-      });
 });
 
 // appuser 唯一tel索引
@@ -169,8 +167,6 @@ var load_regional = function() {
   for (var i=0; i<objs.length; i++) {
     var obj = objs[i];
     if (typeof obj[4].value !== "number" || obj[4].value !== 2) {
-      console.log(obj[4].value);
-      console.log("it's string or it's not 2");
       continue;
     }
     var data = {};
@@ -178,7 +174,7 @@ var load_regional = function() {
     data.prov  = obj[1].value;
     data.city  = obj[2].value;
     data.county= obj[3].value;
-    dbregional.insert(data, function(err) {
+    dbregional.insert(data, function(err, doc) {
     });
   }
 };

@@ -17,7 +17,7 @@ var root_dir = __dirname;
  * @final
  */
 var default_config = {
-  APP_NAME: 'node_glass',
+  APP_NAME: 'glass',
   SECRET_KEY: 'My Secret Key',
   DEBUG: false,
   TESTING: false,
@@ -68,7 +68,7 @@ exports.development = new Config({
   APP_NAME: 'node-skeleton',
   DEBUG: true,
   PORT: 3006,
-  DB_URI: 'mongodb://localhost/node_glass'
+  DB_URI: 'mongodb://localhost/glass'
 });
 
 /**
@@ -79,10 +79,10 @@ exports.development = new Config({
  * @final
  */
 exports.testing = new Config({
-  APP_NAME: 'node_glass',
+  APP_NAME: 'glass',
   DEBUG: true,
   PORT: 3006,
-  DB_URI: 'mongodb://localhost/node_glass'
+  DB_URI: 'mongodb://localhost/glass'
 });
 
 /**
@@ -96,7 +96,7 @@ exports.production = new Config({
   APP_NAME: 'node-skeleton',
   DEBUG: false,
   PORT: 3006,
-  DB_URI: 'mongodb://localhost/node_glass'
+  DB_URI: 'mongodb://localhost/glass'
 });
 
 exports.dbinfo = {
