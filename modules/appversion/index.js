@@ -2,6 +2,6 @@
 var view = require('./view');
 
 exports.register = function (app) {
-  app.get('/appbg/appversion', view.appversion);
-  app.post('/appbg/appversion/update', view.versionupdate);
+  app.get('/appbg/appversion/:lan', view.appversion);
+  app.post('/appbg/appversion/update/:lan', view.versionupdate);
 };

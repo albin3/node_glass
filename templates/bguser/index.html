@@ -14,7 +14,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
   </div>
 </div>
@@ -27,18 +27,18 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="sub-header">后台用户列表</h2>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-bguser">增加用户</button>
-      <button class="btn btn-danger">删除所有</button>
+      <h2 class="sub-header">Background User List</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-bguser">Add new</button>
+      <button class="btn btn-danger">Delete all</button>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-2">登录名</th>
-              <th class="col-sm-3">状态<small class="alert-danger">(点击改变状态)</small></th>
-              <th class="col-sm-3">电话</th>
+              <th class="col-sm-2">Username</th>
+              <th class="col-sm-3">State<small class="alert-danger">(click to change state)</small></th>
+              <th class="col-sm-3">Tel</th>
               <th class="col-sm-3">E-mail</th>
-              <th class="col-sm-3">操作</th>
+              <th class="col-sm-3">Options</th>
             </tr>
           </thead>
           <tbody id="user-list">
@@ -46,11 +46,11 @@
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.username}}</td>
               <td><a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
-              <td>{%if user.tel === undefined %}无{%else%}{{user.tel}}{%endif%}</td>
-              <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
+              <td>{%if user.tel === undefined %}none{%else%}{{user.tel}}{%endif%}</td>
+              <td>{%if user.email === undefined %}none{%else%}{{user.email}}{%endif%}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="#" class="a-del-user">删除</a></li>
+                  <li><a href="#" class="a-del-user">delete</a></li>
                 </ul>
               </td>
             </tr>
@@ -67,49 +67,49 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">添加后台用户</h4>
+        <h4 class="modal-title">Add Background User</h4>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label for="user-name" class="col-sm-2 control-label">用户名</label>
+            <label for="user-name" class="col-sm-2 control-label">Username</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="user-name" name="user-name" placeholder="登录名">
+              <input type="text" class="form-control" id="user-name" name="user-name" placeholder="username when signin.">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="user-password" class="col-sm-2 control-label">密码</label>
+            <label for="user-password" class="col-sm-2 control-label">password</label>
             <div class="col-sm-4">
-              <input type="password" class="form-control" id="user-password" name="user-password" placeholder="登录密码">
+              <input type="password" class="form-control" id="user-password" name="user-password" placeholder="password when signin.">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="user-confirm" class="col-sm-2 control-label">确认密码</label>
+            <label for="user-confirm" class="col-sm-2 control-label">confirm</label>
             <div class="col-sm-4">
-              <input type="password" class="form-control" id="user-confirm" name="user-confirm" placeholder="确认">
+              <input type="password" class="form-control" id="user-confirm" name="user-confirm" placeholder="confirm password.">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="user-tel" class="col-sm-2 control-label">电话</label>
+            <label for="user-tel" class="col-sm-2 control-label">Telephone</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="user-tel" name="user-tel" placeholder="可不填">
+              <input type="text" class="form-control" id="user-tel" name="user-tel" placeholder="can be none.">
             </div>
           </div>
 
           <div class="form-group">
             <label for="user-confirm" class="col-sm-2 control-label">Email</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="user-email" name="user-email" placeholder="可不填">
+              <input type="text" class="form-control" id="user-email" name="user-email" placeholder="can be none.">
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary">确定</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+        <button type="button" class="btn btn-primary">submit</button>
       </div>
     </div>
   </div>
@@ -147,7 +147,7 @@
   };
 
   function delete_user(event){
-    if (!confirm('确实要删除吗？')) {       // 要求确认
+    if (!confirm('Delete it?')) {       // 要求确认
       return;
     }
     var tr = $(event.target).parents("tr");
@@ -156,7 +156,7 @@
       }, function(data) {
       data = JSON.parse(data);
       if (!data.status) {
-        alert("删除失败");
+        alert("Fail to delete.");
         return;
       }
       tr.remove();
@@ -165,15 +165,15 @@
 
   // 删除所有数据
   $(".btn-danger").click(function(){
-    if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+    if (!confirm('Delete all?')) {       // 要求确认
       return;
     }
     $.post("/appbg/bguser/delall/",function(data){
       if(data.status) {
         $(".table-striped tbody tr").remove();
-        alert("删除成功..");
+        alert("Success ..");
         } else {
-        alert("删除失败..");
+        alert("Fail ..");
       }
     },"json");
   });
@@ -187,11 +187,11 @@
     var email    = $("#user-email").val();
 
     if (username === "" || password === ""){
-      alert("用户名和密码不能为空");
+      alert("username or password can't be none.");
       return ;
     }
     if (password !== _confirm){
-      alert("两次密码不一致");
+      alert("confirm your password.");
       return ;
     }
 
@@ -202,7 +202,7 @@
       email:    email
       },function(data){
       if (data.ret === 2){
-        alert("用户名已存在");
+        alert("user exists.");
         return ;
       }
       $("#modal-add-bguser").modal("hide");
@@ -211,11 +211,11 @@
       '<tr data-id="' + user._id.toString() + '">' +
         '<td>' + user.username + '</td>' + 
         '<td><a href="#"><span state="" class="label ' + (user.disable ? 'label-danger' : 'label-primary') + '">(' + (user.disable ? '封停' : '正常') + ')</span></a></td>' +
-        '<td>' + ((user.tel === undefined || user.tel === "") ? '无' : user.tel) + '</td>' +
-        '<td>' + ((user.email === undefined || user.email === "") ? '无' : user.email) + '</td>' +
+        '<td>' + ((user.tel === undefined || user.tel === "") ? 'none' : user.tel) + '</td>' +
+        '<td>' + ((user.email === undefined || user.email === "") ? 'none' : user.email) + '</td>' +
         '<td>' +
           '<ul class=list-inline>' +
-            '<li><a href="#" class="a-del-user">删除</a></li>' +
+            '<li><a href="#" class="a-del-user">delete</a></li>' +
             '</ul>' +
           '</td>' +
         '</tr>';

@@ -17,22 +17,22 @@
 
     <script>
       var signout = function(event) {
-        if (!confirm("确实要注销吗？"))     return false;
+        if (!confirm("sign out?"))     return false;
         $.post('/account/signout',{
           }, function(data){
           if (data.ret !== 1) {
-            return alert("注销失败");
+            return alert("signout fail.");
           }
-          window.location.href='/account/signin';
+          window.location.href='/account/signin/{{language}}';
         }, 'json');
       };
       var bguserctrl = function(event) {
         $.post('/account/currentuser', {
           }, function(data){
           if (data.current_user !== "admin") {
-            return alert("只有root用户才能管理这个页面.");
+            return alert("Only root canagement this page.");
           }
-          window.location.href='/appbg/bguser/';
+          window.location.href='/appbg/bguser/{{language}}';
         }, 'json');
       };
     </script>

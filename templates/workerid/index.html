@@ -14,7 +14,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
   </div>
 </div>
@@ -27,17 +27,17 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="sub-header">员工ID管理</h2>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-obj">增加新ID</button>
-      <button class="btn btn-danger">删除所有</button>
+      <h2 class="sub-header">Worker ID Management</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-obj">Add new</button>
+      <button class="btn btn-danger">Delete all</button>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-2">ID号</th>
-              <th class="col-sm-3">级别</th>
-              <th class="col-sm-3">介绍</th>
-              <th class="col-sm-3">操作</th>
+              <th class="col-sm-2">ID</th>
+              <th class="col-sm-3">Number</th>
+              <th class="col-sm-3">Description</th>
+              <th class="col-sm-3">Option</th>
             </tr>
           </thead>
           <tbody id="obj-list">
@@ -48,7 +48,7 @@
               <td>{{obj.detail}}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="#" class="a-del-user">删除</a></li>
+                  <li><a href="#" class="a-del-user">delete</a></li>
                 </ul>
               </td>
             </tr>
@@ -65,35 +65,35 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">添加员工ID</h4>
+        <h4 class="modal-title">Add Worker ID</h4>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label for="worker-index" class="col-sm-2 control-label">ID号</label>
+            <label for="worker-index" class="col-sm-2 control-label">ID</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="worker-index" name="worker-index" placeholder="例如：E3F23">
+              <input type="text" class="form-control" id="worker-index" name="worker-index" placeholder="example: E3F23">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="worker-detail" class="col-sm-2 control-label">描述</label>
+            <label for="worker-detail" class="col-sm-2 control-label">Description</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="worker-detail" name="worker-detail" placeholder="对这类员工的描述">
+              <input type="text" class="form-control" id="worker-detail" name="worker-detail" placeholder="description">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="worker-level" class="col-sm-2 control-label">级别</label>
+            <label for="worker-level" class="col-sm-2 control-label">number</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="worker-level" name="worker-level" placeholder="大于0的数字">
+              <input type="text" class="form-control" id="worker-level" name="worker-level" placeholder="just type 1">
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary">确定</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+        <button type="button" class="btn btn-primary">submit</button>
       </div>
     </div>
   </div>
@@ -131,7 +131,7 @@
   };
 
   function delete_user(event){
-    if (!confirm('确实要删除吗？')) {       // 要求确认
+    if (!confirm('Delete it?')) {       // 要求确认
       return;
     }
     var tr = $(event.target).parents("tr");
@@ -140,7 +140,7 @@
       }, function(data) {
       data = JSON.parse(data);
       if (!data.status) {
-        alert("删除失败");
+        alert("Delete fail.");
         return;
       }
       tr.remove();
@@ -149,15 +149,15 @@
 
   // 删除所有数据
   $(".btn-danger").click(function(){
-    if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+    if (!confirm('Delete all?')) {       // 要求确认
       return;
     }
-    $.post("/appbg/workerid/delall/",function(data){
+    $.post("/appbg/workerid/delall/"+$("body").attr("lan"),function(data){
       if(data.status) {
         $(".table-striped tbody tr").remove();
-        alert("删除成功..");
+        alert("Delete success..");
         } else {
-        alert("删除失败..");
+        alert("Delete fail..");
       }
     },"json");
   });
@@ -169,20 +169,20 @@
     var detail= $("#worker-detail").val();
 
     if (index.length < 5){
-      alert("ID号至少为5位");
+      alert("ID is short than 5.");
       return ;
     }
     if (isNaN(level) || parseInt(level) <= 0){
-      alert("级别为大于0的数字");
+      alert("number should be bigger than zero.");
       return ;
     }
-    $.post("/appbg/workerid/addobj/",{
+    $.post("/appbg/workerid/addobj/"+$("body").attr("lan"),{
       index : index.toUpperCase(),
       level : parseInt(level),
       detail: detail
       },function(data){
       if (data.ret === 2){
-        alert("ID号已经存在");
+        alert("ID exists.");
         return ;
       }
       $("#modal-add-obj").modal("hide");
@@ -194,7 +194,7 @@
         '<td>' + obj.detail + '</td>' +
         '<td>' +
           '<ul class=list-inline>' +
-            '<li><a href="#" class="a-del-user">删除</a></li>' +
+            '<li><a href="#" class="a-del-user">delete</a></li>' +
             '</ul>' +
           '</td>' +
         '</tr>';

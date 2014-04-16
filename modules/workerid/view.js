@@ -5,11 +5,11 @@ var model = require("./model");
  * 模块主页
  */
 exports.objctrl = function (req, res) {
-  model.allobjs(function(err, docs) {
+  model.allobjs(req, function(err, docs) {
     if (err || docs.length === 0) {
-      return res.render('workerid/index', { Title: "员工ID管理" });
+      return res.render('workerid/index', { Title: "Worker ID Management", language: req.params.lan });
     }
-    return res.render('workerid/index', { Title: "员工ID管理", objs: docs });
+    return res.render('workerid/index', { Title: "Worker ID Management", language: req.params.lan, objs: docs });
   });
 };
 
@@ -29,7 +29,7 @@ exports.objdel = function (req, res) {
  * 删除所有项目
  */
 exports.delall = function (req, res) {
-  model.delall(function(ret) {
+  model.delall(req, function(ret) {
     return res.end(JSON.stringify(ret));
   });
 };
@@ -54,7 +54,7 @@ exports.changestate = function (req, res) {
  * 增加一个项目
  */
 exports.objadd = function (req, res) {
-  model.objadd(req.body, function (ret) {
+  model.objadd(req, function (ret) {
     return res.end(JSON.stringify(ret));
   });
 };

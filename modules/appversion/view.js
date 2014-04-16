@@ -3,8 +3,8 @@ var model = require('./model');
 
 // 主页
 exports.appversion = function (req, res) {
-  model.currentVersion(function(ret){
-    res.render('appversion/index', {Title: 'App版本管理', version: ret.doc});
+  model.currentVersion(req, function(ret){
+    res.render('appversion/index', {Title: 'App Version Management', language: req.params.lan, version: ret.doc});
   });
 };
 
@@ -12,13 +12,13 @@ exports.appversion = function (req, res) {
 exports.versionupdate = function (req, res) {
   model.versionupdate(req, function(data){
     if (data.ret === 1){
-      return res.redirect('/appbg/appversion');
+      return res.redirect('/appbg/appversion/'+req.params.lan);
     }
     if (data.ret === 3){
-      return res.end("没有上传文件");
+      return res.end("No file uploaded.");
     }
     if (data.ret === 2){
-      return res.end("更新版本出错");
+      return res.end("An err occurred.");
     }
   });
 };

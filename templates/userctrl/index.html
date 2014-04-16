@@ -14,11 +14,11 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a class="export-excel" href="/appbg/userctrl/exportexcel/">导出到Excel</a></li>
+        <li><a class="export-excel" href="/appbg/userctrl/exportexcel/">Export to excel</a></li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
         <li><a class="export-excel"></a></li>
       </ul>
@@ -34,28 +34,28 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="sub-header">App用户列表</h2>
+      <h2 class="sub-header">App User List</h2>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-2">昵称</th>
-              <th class="col-sm-3">是否为员工<small class="alert-danger">(点击改变状态)</small></th>
-              <th class="col-sm-3">电话</th>
+              <th class="col-sm-2">Nickname</th>
+              <th class="col-sm-3">Worker<small class="alert-danger">(click to change state)</small></th>
+              <th class="col-sm-3">Tel</th>
               <th class="col-sm-3">E-mail</th>
-              <th class="col-sm-3">操作</th>
+              <th class="col-sm-3">Options</th>
             </tr>
           </thead>
           <tbody>
             {% for user in appusers %}
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.nickname}}</td>
-              <td>{%if user.isworker === 0%}否{%else%}是{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
-              <td>{%if user.tel === undefined %}无{%else%}{{user.tel}}{%endif%}</td>
-              <td>{%if user.email === undefined %}无{%else%}{{user.email}}{%endif%}</td>
+              <td>{%if user.isworker === 0%}no{%else%}yes{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
+              <td>{%if user.tel === undefined %}none{%else%}{{user.tel}}{%endif%}</td>
+              <td>{%if user.email === undefined %}none{%else%}{{user.email}}{%endif%}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="#" class="a-del-user">删除</a></li>
+                  <li><a href="#" class="a-del-user">delete</a></li>
                 </ul>
               </td>
             </tr>
@@ -98,7 +98,7 @@
   };
 
   function delete_user(event){
-    if (!confirm('确实要删除吗？')) {       // 要求确认
+    if (!confirm('Delete it?')) {       // 要求确认
       return;
     }
     var tr = $(event.target).parents("tr");
@@ -107,7 +107,7 @@
       }, function(data) {
       data = JSON.parse(data);
       if (!data.status) {
-        alert("删除失败");
+        alert("Fail to delete.");
         return;
       }
       tr.remove();

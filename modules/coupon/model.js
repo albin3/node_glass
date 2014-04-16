@@ -7,7 +7,9 @@ var dbcoupon = db.collection('coupon');
 var ObjectID = require('mongodb').ObjectID;
 
 // 新建优惠券
-exports.newcoupon = function (coupon, callback) {
+exports.newcoupon = function (req, callback) {
+  var coupon = req.body;
+  coupon.lan = req.params.lan;
   var strP = (coupon.off).toString();
   for (var i=strP.length; i<4; i++) {
     strP = "0" + strP;
@@ -24,8 +26,8 @@ exports.newcoupon = function (coupon, callback) {
 };
 
 // 查询所有优惠券
-exports.allcoupon = function (callback) {
-  dbcoupon.find({}, function(err,docs){
+exports.allcoupon = function (req, callback) {
+  dbcoupon.find({lan: req.params.lan}, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
@@ -44,11 +46,12 @@ exports.delcoupon = function (coupon, callback) {
 };
 
 // 删除所有
-exports.delall = function (callback) {
-  dbcoupon.remove({}, function(err){
+exports.delall = function (req, callback) {
+  dbcoupon.remove({lan: req.params.lan}, function(err){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
     callback({ret: 1});                             // RETURN: 返回成功
   });
 };
+

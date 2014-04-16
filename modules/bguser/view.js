@@ -8,12 +8,12 @@ var config = require("../../config");
 exports.userctrl = function (req, res) {
   model.alluser(function(err, docs) {
     if (req.session.current_user !== config.root_user.username) {
-      res.end('只有root用户才能管理这个页面');
+      res.end('Only root user can management this page.');
     }
     if (err || docs.length === 0) {
-      return res.render('bguser/index', { Title: "后台用户管理" });
+      return res.render('bguser/index', { Title: "Background User", language: req.params.lan });
     }
-    return res.render('bguser/index', { Title: "后台用户管理", users: docs });
+    return res.render('bguser/index', { Title: "Background User", language: req.params.lan, users: docs });
   });
 };
 

@@ -2,7 +2,7 @@
 var view = require('./view');
 
 exports.register = function (app) {
-  app.get('/appbg/bguser', view.userctrl);
+  app.get('/appbg/bguser/:lan', view.userctrl);
   app.post('/appbg/bguser/adduser/', view.adduser);
   app.post('/appbg/bguser/deluser/', view.userdel);
   app.get('/appbg/bguser/edituser/:userid', view.edituser);
