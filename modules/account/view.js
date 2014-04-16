@@ -28,6 +28,7 @@ exports.newaccount = function (req, res) {
 exports.authenticate = function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
+  var language = req.params.language;
 
   model.authenticate({
     username: username,
@@ -46,7 +47,7 @@ exports.authenticate = function(req, res) {
     } else {
       // return res.end("success..");
         req.login_user(username);
-        res.redirect('/appbg/news');
+        res.redirect('/appbg/news/'+language);
     }
   });
 };

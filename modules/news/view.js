@@ -3,11 +3,11 @@ var model = require('./model');
 
 // 获取页面首页 
 exports.index = function (req, res) {
-  model.allnews(function (err, docs) {
+  model.allnews(req.params.lan, function (err, docs) {
     if (!err) {
-      res.render('news/index', {Title: "新闻及推送", newslist: docs});
+      res.render('news/index', {Title: "新闻及推送", language: req.params.lan, newslist: docs});
     } else {
-      res.render('news/index', {Title: "新闻及推送"});
+      res.render('news/index', {Title: "新闻及推送", language: req.params.lan});
     } 
   });
 };
@@ -25,7 +25,7 @@ exports.editnews = function (req, res) {
 
 // 增加新闻，返回在数据库中的id
 exports.addnews = function (req, res) {
-  model.addnews(req.body, function (err, doc) {
+  model.addnews(req, function (err, doc) {
     if (!err) {
       res.end(JSON.stringify({
         status: true,

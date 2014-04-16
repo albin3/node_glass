@@ -90,7 +90,7 @@
             </dd>
             {%else%}
             <dd>
-            <label class="col-sm-2 control-label">新闻图片</label>
+            <label class="col-sm-2 control-label">news pic</label>
             <div class="col-sm-6">
               <img src="{{detail.content}}" width="300px" height="185px">
               <input type="file" name="upload{{index}}" class="added-pic">
@@ -103,10 +103,10 @@
           </dl>
 
           <dd>
-          <label for="news-options" class="col-sm-2 control-label">操作</label>
+          <label for="news-options" class="col-sm-2 control-label">options</label>
           <div class="col-sm-6">
-            <button type="submit" class="btn btn-primary">保存修改</button>
-            <a href="/appbg/news/" class="btn btn-default">返回列表</a>
+            <button type="submit" class="btn btn-primary">save</button>
+            <a href="/appbg/news/{{language}}" class="btn btn-default">back</a>
           </div>
           </dd>
           <br>

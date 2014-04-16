@@ -121,3 +121,5 @@ exports.root_user = {
   tel      : "12345678901",
   level    : 0            // root level
 };
+
+exports.languages = ["simplified", "traditional", "english"];
