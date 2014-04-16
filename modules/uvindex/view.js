@@ -2,7 +2,7 @@
 var model = require('./model');
 
 exports.uvindex = function (req, res) {
-  res.render("uvindex/index", {Title: "紫外线指数推送"});
+  res.render("uvindex/index", {Title: "UVIndex And Push", language: req.params.lan});
 };
 
 // 推送

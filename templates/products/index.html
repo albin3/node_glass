@@ -14,18 +14,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">依视路App后台</a>
+          <a class="navbar-brand" href="#">Essilor App Background</a>
         </div>
         <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">推送焦点图</a></li>
-            <li><a href="#">推送新闻</a></li>
-            <li><a href="#">推送紫外警告</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
         </div>
       </div>
     </div>
@@ -37,25 +28,25 @@
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">{{ Title }}</h1>
-          <h2 class="sub-header">产品列表</h2>
+          <h2 class="sub-header">Products List</h2>
 
           <div class="row">
 
           <div class="inline-form">
-          <button class="btn btn-primary">添加产品</button>
-          <button class="btn btn-danger">删除所有</button>
+          <button class="btn btn-primary">Add new</button>
+          <button class="btn btn-danger">Delete all</button>
           <label>&nbsp;&nbsp;&nbsp;</label>
-          <button class="btn btn-success" data-toggle="modal" data-target="#modal-upload-movies">上传视频</button>
-          <a class="btn btn-info" target="_blank" href="/movies/prod1.mp4">检查上传</a>
+          <button class="btn btn-success" data-toggle="modal" data-target="#modal-upload-movies">Upload video</button>
+          <a class="btn btn-info" target="_blank" href="/movies/prod1.mp4">Check uploaded</a>
           </div>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th>产品名</th>
-                  <th>介绍</th>
-                  <th>首图</th>
-                  <th>操作</th>
+                  <th>Production Name</th>
+                  <th>Description</th>
+                  <th>Primary Picture</th>
+                  <th>Options</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,21 +56,24 @@
                   <td class="td-summary">{{ news.summary }}</td>
                   <td class="td-picture">
                     <ul class=list-inline>
-                      <label>首图&nbsp;</label>
+                      <label>firstPic&nbsp;</label>
                       <img src="/img/news/{{ news._id.toString() }}.jpg" width="50" height="31">
                       <label></label>
+                      {% if false %}
                       {%if news.focus%}
                       <a href="#"><span class="label label-primary">焦点图</span></a>
                       {%else%}
                       <a href="#"><span class="label label-default">非焦点</span></a>
+                      {%endif%}
                       {%endif%}
                     </ul>
                   </td>
                   <td>
                     <ul class=list-inline>
                       <p></p>
-                      <li><a href="/appbg/news/edit/{{ news._id.toString() }}" class="a-edit-news">编辑</a></li>
-                      <li><a href="#" class="a-del-news">删除</a></li>
+                      <li><a href="/appbg/news/edit/{{ news._id.toString() }}" class="a-edit-news">edit</a></li>
+                      <li><a href="#" class="a-del-news">delete</a></li>
+                      <li><a href="#" class="a-push-prod">push</a></li>
                     </ul>
                   </td>
                 </tr>
@@ -94,12 +88,12 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">上传产品视频</h4>
+              <h4 class="modal-title">Upload Video</h4>
             </div>
             <div class="modal-body">
               <form class="form-horizontal" role="form" enctype="multipart/form-data" method="post" action="/appbg/prod/uploadmovies">
                 <div class="form-group">
-                  <label for="" class="col-sm-2 control-label">视频文件</label>
+                  <label for="" class="col-sm-2 control-label">Video file</label>
                   <div class="col-sm-4">
                     <input type="file" id="upload1" name="upload1">
                   </div>
@@ -127,8 +121,8 @@
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-              <button type="button" id="btn-save" class="btn btn-primary">确定</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+              <button type="button" id="btn-save" class="btn btn-primary">submit</button>
             </div>
           </div>
         </div>
@@ -149,7 +143,7 @@
         if (file_chosen) {
           return $("#btn-upload").trigger("click");
         }
-        return alert("请选择视频文件");
+        return alert("Please choose a video.");
       });
       // *** 这后面的暂时未定
       // 添加商品
