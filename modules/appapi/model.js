@@ -19,10 +19,12 @@ var ObjectID        = require('mongodb').ObjectID;
  */
 exports.newuser = function (user, callback) {
 
+  if (user.tel === undefined && user.email === undefined && user.thirdpath === undefined) {
+    return callback({ret: 2});
+  }
   if (!user.workerid) {     // 初始化
     user.workerid = "";
   }
-  console.log(user.workerid);
   // 验证员工号码
   user.isworker = 0;
     db_workerid.findOne({index: user.workerid.toUpperCase()}, function (err, doc) {
@@ -325,11 +327,19 @@ exports.fgrank = function(callback) {
 exports.getcoupon = function(data, callback) { 
   var userid   = data._id;
   var isworker = data.isworker;
+  if (isNaN(isworker)) {
+    isworker = 1;
+  }
+  if (isworker > 1) {
+    isworker = 10;
+  } else {
+    isworker = 1;
+  }
   var gotcoupon = false;
   db_coupon.find({}, function(err, docs) { 
     for (var i=0; i<docs.length; i++) {
       var doc = docs[i];
-      if (Math.random() >= parseFloat('0.' + doc.off)) {    // 概率产生优惠券
+      if (Math.random() >= parseFloat('0.' + doc.off)*isworker) {    // 概率产生优惠券
         continue;
       }
       doc.pravided = doc.pravided + 1;
@@ -406,6 +416,21 @@ exports.couponlist = function(data, callback) {
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
     }
-    return callback({ret: 1, couponlist: docs});                // RETURN: 优惠券列表
+    var couponlist = new Array();
+    for (var i in docs) {
+      var doc    = docs[i];
+      var coupon = {};
+      coupon._id       = doc._id;
+      coupon.couponkey = doc.couponkey;
+      coupon.userid    = doc.userid;
+      coupon.detail    = doc.coupon.detail;
+      coupon.index     = doc.coupon.index;
+      coupon.off       = doc.coupon.off;
+      coupon.name      = doc.coupon.name;
+      coupon.range     = doc.coupon.range;
+      coupon.time      = new Date(doc.coupon.time).getTime();
+      couponlist.push(coupon);
+    }
+    return callback({ret: 1, couponlist: couponlist});                // RETURN: 优惠券列表
   });
 };

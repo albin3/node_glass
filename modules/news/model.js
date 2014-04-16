@@ -19,16 +19,19 @@ exports.findOneNews = function (id, callback) {
 };
 
 // 获取到所有新闻信息
-exports.allnews = function (callback) {
-  dbnews.find({}, function (err, docs) {
+exports.allnews = function (language, callback) {
+  dbnews.find({lan: language}, function (err, docs) {
     callback(err, docs);
   });
 };
 
 // 添加新闻，返回添加成功的对象
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
-exports.addnews =  function (news, callback) {
+exports.addnews =  function (req, callback) {
+  var news = req.body;
+  var language = req.params.lan;
   news.focus = false;     // 是否设置为焦点图
+  news.lan = language;
   dbnews.insert(news, function (err, doc) {
     if (doc) {
       var defaultimg = config.appPath() + "/static/img/default.jpg";
@@ -148,6 +151,7 @@ exports.updatenews = function (req, callback) {
           text = text.replace("news-pic-","");
           if (files["upload"+text].size > 0) {                       // 有新上传的图片
             fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
+              new_details.push(item);
               callback();
             });
           }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
@@ -173,6 +177,7 @@ exports.updatenews = function (req, callback) {
         funcArr
         ,function(err){
       doc.details = new_details;
+      console.log(new_details);
       dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
         console.log("done");
         callback(err);

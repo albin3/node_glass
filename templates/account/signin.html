@@ -7,15 +7,37 @@
 
 {% block content %}
 <div class="container">
-  <form class="form-signin" action="/account/signin" method="post" role="form">
-    <h2 class="form-signin-heading">登录</h2>
-    <input type="text" class="form-control" name="username" id="signin-username" placeholder="用户名" required autofocus></br>
-    <input type="password" class="form-control" name="password" id="signin-password" placeholder="密码" required></br>
-    <button class="btn btn-lg btn-primary" type="submit">提交</button>
+  <form class="form-signin" action="/account/signin/simplified" method="post" role="form">
+    <h2 class="form-signin-heading">Sign In</h2>
+    <div class="btn-group" data-toggle="buttons">
+      <button class="lanch btn btn-primary">Simplified</button>
+      <button class="lanch btn btn-default">Traditional</button>
+      <button class="lanch btn btn-default">English</button>
+    </div>
+    <br>
+    <br>
+    <input type="text" class="form-control" name="username" id="signin-username" placeholder="Username" required autofocus></br>
+    <input type="password" class="form-control" name="password" id="signin-password" placeholder="Password" required></br>
+    <button class="btn btn-lg btn-primary" type="submit">Submit</button>
     </form>
   </form>
 </div><!-- End .container -->
 
 <script>
+  $(".lanch").click(function(event){
+    event.preventDefault();
+    var chosen = $(this).text();
+    $("form").attr("action", "/account/signin/"+chosen.toLowerCase());
+    $(".lanch").each(function(){
+      if ($(this).text() === chosen) {
+        $(this).removeClass("btn-default");
+        $(this).addClass("btn-primary");
+        } else {
+        $(this).removeClass("btn-primary");
+        $(this).addClass("btn-default");
+      }
+      $(this).removeClass("active");
+    });
+  });
 </script>
 {% endblock %}

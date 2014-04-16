@@ -210,7 +210,7 @@ exports.uploadmovies =  function (req, callback) {
   for (var i=1; i<=3; i++) {
     if (req.files["upload"+i].size !== 0) {
       var defaultpath = config.appPath() + "/static/movies/prod";
-      fs.renameSync(req.files["upload"+i].path, defaultpath + i +".mp4");
+      fs.rename(req.files["upload"+i].path, defaultpath + i +".mp4", function(err){});
     }
   }
   callback({ret: 1});
