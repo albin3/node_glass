@@ -5,9 +5,9 @@ var model = require('./model');
 exports.index = function (req, res) {
   model.allnews(req.params.lan, function (err, docs) {
     if (!err) {
-      res.render('news/index', {Title: "新闻及推送", language: req.params.lan, newslist: docs});
+      res.render('news/index', {Title: "News And Push", language: req.params.lan, newslist: docs});
     } else {
-      res.render('news/index', {Title: "新闻及推送", language: req.params.lan});
+      res.render('news/index', {Title: "News And Push", language: req.params.lan});
     } 
   });
 };
@@ -18,14 +18,14 @@ exports.editnews = function (req, res) {
     if (err) {
       res.end(err);
     } else {
-      res.render("news/editnews", {Title: "新闻及推送", _id: req.params.newsid, news: doc});
+      res.render("news/editnews", {Title: "News And Push", _id: req.params.newsid, news: doc, language: doc.lan});
     }
   });
 };
 
 // 增加新闻，返回在数据库中的id
 exports.addnews = function (req, res) {
-  model.addnews(req, function (err, doc) {
+  model.addnews(req, res.locals.current_user, function (err, doc) {
     if (!err) {
       res.end(JSON.stringify({
         status: true,
@@ -50,7 +50,7 @@ exports.delnews = function (req, res) {
 
 // 删除所有商品
 exports.delall = function (req, res) {
-  model.delall(function (err) {
+  model.delall(req, function (err) {
     if (!err) {
       res.end(JSON.stringify({status: true}));
     } else {
@@ -61,7 +61,7 @@ exports.delall = function (req, res) {
 
 // 更新新闻数据
 exports.updatenews = function (req, res) {
-  model.updatenews(req, function (err, data) {
+  model.updatenews(req, res.locals.current_user, function (err, data) {
     res.redirect('/appbg/news/edit/' + req.params.newsid);
     /*
     if (err) {

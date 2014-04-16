@@ -20,18 +20,20 @@ exports.findOneNews = function (id, callback) {
 
 // 获取到所有新闻信息
 exports.allnews = function (language, callback) {
-  dbnews.find({lan: language}, function (err, docs) {
+  dbnews.find({lan: language}).sort({_id: -1}, function (err, docs) {
     callback(err, docs);
   });
 };
 
 // 添加新闻，返回添加成功的对象
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
-exports.addnews =  function (req, callback) {
+exports.addnews =  function (req, current_user, callback) {
   var news = req.body;
   var language = req.params.lan;
   news.focus = false;     // 是否设置为焦点图
   news.lan = language;
+  news.time = new Date().getTime();
+  news.author = current_user;
   dbnews.insert(news, function (err, doc) {
     if (doc) {
       var defaultimg = config.appPath() + "/static/img/default.jpg";
@@ -91,8 +93,8 @@ function deleteFolderRecursive(path) {
 };
 
 // 删除所有新闻
-exports.delall =  function (callback) {
-  dbnews.remove(function(err) {
+exports.delall =  function (req, callback) {
+  dbnews.remove({lan: req.params.lan}, function(err) {
     if(err) {
       return callback(err);
     }
@@ -110,7 +112,7 @@ function judge_size(size) {
 
 // 更新新闻内容时，需要用到面向过程的逻辑：
 // 更新新闻内容
-exports.updatenews = function (req, callback) {
+exports.updatenews = function (req, current_user, callback) {
   var files = req.files;
   var texts = req.body;
   var newsid = texts["_id"];
@@ -178,6 +180,8 @@ exports.updatenews = function (req, callback) {
         ,function(err){
       doc.details = new_details;
       console.log(new_details);
+      doc.time = new Date().getTime();      // 更新时间
+      doc.author = current_user;            // 更新作者
       dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
         console.log("done");
         callback(err);
