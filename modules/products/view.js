@@ -5,9 +5,9 @@ var model = require('./model');
 exports.index = function (req, res) {
   model.allobjs(function (err, docs) {
     if (!err) {
-      res.render('products/index', {Title: "产品及推送", newslist: docs});
+      res.render('products/index', {Title: "Products And Push", language: req.params.lan, newslist: docs});
     } else {
-      res.render('products/index', {Title: "产品及推送"});
+      res.render('products/index', {Title: "Products And Push", language: req.params.lan});
     } 
   });
 };
@@ -18,7 +18,7 @@ exports.editnews = function (req, res) {
     if (err) {
       res.end(err);
     } else {
-      res.render("products/editnews", {Title: "产品及推送", _id: req.params.newsid, news: doc});
+      res.render("products/editnews", {Title: "Products And Push", _id: req.params.newsid, news: doc});
     }
   });
 };
@@ -82,7 +82,7 @@ exports.changestate = function (req, res) {
 // 上传视频文件
 exports.uploadmovies = function (req, res) {
   model.uploadmovies(req, function (ret) {
-    res.redirect("/appbg/prod");
+    res.redirect("/appbg/prod/"+req.params.lan);
   });
 };
 

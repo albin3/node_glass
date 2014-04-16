@@ -1,4 +1,4 @@
-// news model
+// prods model
 var config = require("../../config"); // 为了获取到路径
 var qureystring = require("querystring");
 var fs = require("fs");
