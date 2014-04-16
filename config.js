@@ -24,7 +24,7 @@ var default_config = {
   PORT: 3000,
   DB_URI: null,
 
-  MODULES: [ 'account', 'appapi', 'coupon', 'news', 'products', 'userctrl', 'uvindex', 'bguser', 'appversion', 'workerid', 'findglass' ],
+  MODULES: [ 'account', 'appapi', 'coupon', 'news', 'products', 'userctrl', 'uvindex', 'bguser', 'appversion', 'workerid', 'findglass','tips' ],
   STATIC_ROUTER: '/',
   ROOT_DIR: root_dir,
   MODULE_DIR: path.join(root_dir, 'modules'),

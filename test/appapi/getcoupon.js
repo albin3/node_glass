@@ -4,13 +4,13 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  _id      : "aaaaaaaaa",
-  isworker : true
+  _id      : "532ffdb4eecbfeb103000001",
+  isworker : 1
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
-  host: '127.0.0.1',
+  host: '10.0.1.8',
   port: 3000,
   path: '/appapi/coupon/getcoupon',
   method: 'POST',
