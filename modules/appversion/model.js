@@ -5,6 +5,7 @@ var fs = require('fs');
 
 var db = mongojs(config.dbinfo.dbname);
 var dbversion = db.collection('appversion');
+var db_user = db.collection("appuser");
 var ObjectID = require('mongodb').ObjectID;
 
 // 返回当前版本
@@ -19,7 +20,7 @@ exports.currentVersion = function(req, callback) {
 
 // 更新版本
 exports.versionupdate = function(req, callback) {
-  dbversion.findOne({}, function(err, version){
+  dbversion.findOne({lan: req.params.lan}, function(err, version){
     if (version === null) {
       version = {};
     }
@@ -32,8 +33,8 @@ exports.versionupdate = function(req, callback) {
     if (req.files["apkfile"].size === 0) {
       return callback({ret: 3});                 // 未上传文件
     }
-    fs.renameSync(req.files["apkfile"].path, config.appPath() + "/static/apk/Essillor_"+req.params.lan+".apk");
-    dbversion.update({_id: version._id}, version, function(err) {
+    fs.renameSync(req.files["apkfile"].path, config.appPath() + "/static/apk/Essilor_"+req.params.lan+".apk");
+    dbversion.update({_id: version._id, lan: req.params.lan}, version, function(err) {
       if (err) {
         return callback({ret: 2});               // 数据库更新错误
       }
@@ -41,3 +42,19 @@ exports.versionupdate = function(req, callback) {
     });
   });
 };
+
+// 分享链接
+exports.sharelink = function(req, callback){
+  var userid = req.params.userid;
+  var language = req.params.lan;
+  dbversion.findOne({lan: language}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 1}, "/apk/Essilor_simplified.apk");
+    }
+    db_user.update({_id: new ObjectID(userid)}, {$inc: {clicknum: 1}}, function(err){
+      return callback({ret: 1}, doc.url);
+    });
+  });
+};
+
+

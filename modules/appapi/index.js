@@ -1,4 +1,4 @@
-// appapi模块
+// appapi 模块
 var view = require('./view');
 
 exports.register = function (app) { 
@@ -10,18 +10,20 @@ exports.register = function (app) {
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
   app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);             // 用户登录
                                                                                     
-  app.all('/appapi/newslist/:numPerPage/:pageNum', view.newslist);                  // 新闻列表
-  app.all('/appapi/newsfocuspic/:num', view.newsfocus);                             // 新闻焦点图片
-  app.all('/appapi/newsdetails/:newsid', view.newsdetails);                         // 新闻详情
+  app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);             // 新闻列表
+  app.all('/appapi/newsfocuspic/:num/:lan', view.newsfocus);                        // 新闻焦点图片
+  app.all('/appapi/newsdetails/:newsid/:lan', view.newsdetails);                    // 新闻详情
                                                                                     
-  app.post('/appapi/games/uvcatcher', view.uvcatcher);                              // 游戏-紫外线收割机
-  app.all('/appapi/games/uvrank', view.uvrank);                                     // 游戏-紫外线收割机排行榜
-  app.post('/appapi/games/findglass', view.findglass);                              // 游戏-寻找黄眼镜
-  app.all('/appapi/games/findglass/pulldata/:timestamp', view.findglasspulldata);   // 游戏-寻找黄眼镜拉图片数据
-  app.all('/appapi/games/fgrank', view.fgrank);                                     // 游戏-寻找黄眼镜排行榜
+  app.post('/appapi/games/uvcatcher/:lan', view.uvcatcher);                         // 游戏-紫外线收割机
+  app.all('/appapi/games/uvrank/:lan', view.uvrank);                                // 游戏-紫外线收割机排行榜
+  app.post('/appapi/games/findglass/:lan', view.findglass);                         // 游戏-寻找黄眼镜
+  app.all('/appapi/games/findglass/pulldata/:timestamp/:lan', view.findglasspulldata);   // 游戏-寻找黄眼镜拉图片数据
+  app.all('/appapi/games/fgrank/:lan', view.fgrank);                                // 游戏-寻找黄眼镜排行榜
                                                                                    
-  app.post('/appapi/coupon/getcoupon', view.getcoupon);                             // 优惠券获得
-  app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
-  app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
-  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
+  app.post('/appapi/coupon/getcoupon/:lan', view.getcoupon);                        // 优惠券获得
+  app.post('/appapi/coupon/checkcoupon/:lan', view.checkcoupon);                    // 优惠券有效性验证
+  app.post('/appapi/coupon/usecoupon/:lan', view.usecoupon);                        // 优惠券使用
+  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                    // 优惠券列表
+
+  app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
 };

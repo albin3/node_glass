@@ -4,7 +4,9 @@ var model = require("./model");
 /**
  * 用户管理首页
  */
-exports.userctrl = function (req, res) {
+exports.userctrl = function (req, res, next) {
+  if (req.params.lan!=="simplified" && req.params.lan!=="traditional" && req.params.lan!=="english")
+    return next();
   model.alluser(function(err, docs) {
     if (err || docs.length === 0) {
       return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan });
@@ -70,7 +72,8 @@ exports.changestate = function (req, res) {
  */
 exports.exportexcel = function (req, res) {
   model.exportexcel(function(ret) {
-    res.download(ret.appUserPath);
+    res.redirect("/appuser/appuser.xlsx");
+    // res.download(ret.appUserPath);
     // res.end(JSON.stringify(ret));
   });
 }

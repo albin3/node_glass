@@ -38,7 +38,9 @@ exports.newuser = function (user, callback) {
   // 插入数据库
       user.password = user.password || "111111";
       user.password = password_hash.generate(user.password);
-      user.disable = false;
+      user.disable  = false;
+      user.sharenum = 0;      // 分享链接的次数
+      user.clicknum = 0;      // 链接点击的次数
       db_user.insert(user, function (err, doc) {
         if (err) {
           console.log(err.message);
@@ -213,7 +215,7 @@ exports.pagednews = function (req, callback) {
   var pageNum = parseInt(req.params.pageNum);
   console.log(numPerPage);
   console.log(pageNum);
-  db_news.find({}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
+  db_news.find({lan: req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
     }
@@ -228,8 +230,9 @@ exports.pagednews = function (req, callback) {
   });
 };
 // 新闻焦点图
-exports.newsfocus = function (num, callback) {
-  db_news.find({focus: true}).limit(parseInt(num), function(err, docs){
+exports.newsfocus = function (req, callback) {
+  var num = req.params.num;
+  db_news.find({focus: true, lan: req.params.lan}).limit(parseInt(num), function(err, docs){
     if (err){
       return callback({ret: 2});                                // RETURN: 查询出错
     }
@@ -247,8 +250,9 @@ exports.newsfocus = function (num, callback) {
   });
 };
 // 新闻详情
-exports.newsdetails = function (newsid, callback) {
-  db_news.findOne({_id: new ObjectID(newsid)}, function(err, doc){
+exports.newsdetails = function (req, callback) {
+  var newsid = req.params.newsid;
+  db_news.findOne({_id: new ObjectID(newsid), lan: req.params.lan}, function(err, doc){
     if (err){
       return callback({ret: 3});                                // RETURN: 查询出错
     }
@@ -265,11 +269,12 @@ exports.newsdetails = function (newsid, callback) {
 
 // ###游戏接口
 // 紫外线收割机
-exports.uvcatcher = function(data, callback) {
+exports.uvcatcher = function(req, callback) {
+  var data     = req.body;
   var id       = data._id;
   var nickname = data.nickname || "none";
   var score    = parseInt(data.score) || 0;
-  db_uvcatcher.update({userid: id}, 
+  db_uvcatcher.update({userid: id, lan: req.params.lan}, 
       {$set: {userid: id}, $set:{nickname: nickname}, $set:{score: score}},
       {upsert: true}, function(err, doc) {
     if (err || !doc) {
@@ -279,9 +284,9 @@ exports.uvcatcher = function(data, callback) {
   });
 };
 // 紫外线收割机排行
-exports.uvrank = function(callback) {
+exports.uvrank = function(req, callback) {
   console.log("hear this");
-  db_uvcatcher.find({}).sort({score: -1}).limit(8,function(err, docs){
+  db_uvcatcher.find({lan: req.params.lan}).sort({score: -1}).limit(8,function(err, docs){
     if (err || docs.length === 0) {
   console.log("hear this 2");
       return callback({ret: 2});                               // RETURN: 返回获取错误
@@ -291,11 +296,12 @@ exports.uvrank = function(callback) {
   });
 };
 // 寻找黄眼镜
-exports.findglass = function(data, callback) {
+exports.findglass = function(req, callback) {
+  var data     = req.body;
   var id       = data._id;
   var nickname = data.nickname;
   var score    = parseInt(data.score) || 100000;
-  db_findglass.update({userid: id},
+  db_findglass.update({userid: id, lan: req.params.lan},
       {$set:{userid: id}, $set:{nickname: nickname}, $set:{score: score}},
       {upsert: true}, function(err, doc){
     if (err || !doc) {
@@ -306,7 +312,7 @@ exports.findglass = function(data, callback) {
 };
 // 寻找黄眼镜获取图片数据
 exports.findglasspulldata = function(req, callback) {
-  db_findglasspic.find({dt: {$gt: parseInt(req.timestamp)}}).sort({_id: -1},function(err, docs){
+  db_findglasspic.find({dt: {$gt: parseInt(req.params.timestamp)}, lan: req.params.lan}).sort({_id: -1},function(err, docs){
     if (err || docs.length===0) {
       return callback({ret: 2});                               // RETURN: 返回更新错误
     }
@@ -314,8 +320,8 @@ exports.findglasspulldata = function(req, callback) {
   });
 };
 // 获取寻找晃眼睛排行榜
-exports.fgrank = function(callback) {
-  db_findglass.find({}).sort({score: 1}).limit(8,function(err, docs){
+exports.fgrank = function(req, callback) {
+  db_findglass.find({lan: req.params.lan}).sort({score: 1}).limit(8,function(err, docs){
     if (err || docs.length === 0) {
       return callback({ret: 2});                               // RETURN: 返回获取错误
     }
@@ -324,7 +330,8 @@ exports.fgrank = function(callback) {
 };
 // ###优惠券
 // 获得优惠券
-exports.getcoupon = function(data, callback) { 
+exports.getcoupon = function(req, callback) { 
+  var data     = req.body;
   var userid   = data._id;
   var isworker = data.isworker;
   if (isNaN(isworker)) {
@@ -336,7 +343,7 @@ exports.getcoupon = function(data, callback) {
     isworker = 1;
   }
   var gotcoupon = false;
-  db_coupon.find({}, function(err, docs) { 
+  db_coupon.find({lan: req.params.lan}, function(err, docs) { 
     for (var i=0; i<docs.length; i++) {
       var doc = docs[i];
       if (Math.random() >= parseFloat('0.' + doc.off)*isworker) {    // 概率产生优惠券
@@ -372,9 +379,10 @@ exports.getcoupon = function(data, callback) {
 };
 
 // 验证优惠券
-exports.checkcoupon = function(data, callback) { 
+exports.checkcoupon = function(req, callback) { 
+  var data      = req.body;
   var couponkey = data.couponkey || "null";
-  db_pra_coupon.findOne({couponkey: couponkey, isdeleted: null}, function(err, doc) { 
+  db_pra_coupon.findOne({couponkey: couponkey, isdeleted: null, lan: req.params.lan}, function(err, doc) { 
     if (err || !doc) {
       return callback({ret: 2});                                // RETURN: 优惠券不存在
     }
@@ -383,23 +391,24 @@ exports.checkcoupon = function(data, callback) {
 };
 
 // 使用优惠券
-exports.usecoupon = function(data, callback) { 
+exports.usecoupon = function(req, callback) { 
+  var data      = req.body;
   var couponkey = data.couponkey || "not a couponkey";
   var couponid  = couponkey.slice(0,5);
-  db_coupon.findOne({index: couponid},function(err, doc){
+  db_coupon.findOne({index: couponid, lan: req.params.lan},function(err, doc){
     if (err || !doc) {
       return callback({ret: 6});                                // RETURN: 这类优惠券不存在
     } else if (doc.time < new Date()) {
       return callback({ret: 5});                                // RETURN: 这类优惠券已过期
     }
-    db_pra_coupon.findOne({couponkey: couponkey}, function(err, doc) { 
+    db_pra_coupon.findOne({couponkey: couponkey, lan: req.params.lan}, function(err, doc) { 
       if (err || !doc) {
         return callback({ret: 4});                              // RETURN: 这张优惠券不存在
       }
       if (doc.isdeleted) {
         return callback({ret: 3});                              // RETURN: 这张优惠券已使用
       }
-      db_pra_coupon.update({couponkey: couponkey}, {$set: {isdeleted: true}}, function(err, data){
+      db_pra_coupon.update({couponkey: couponkey, lan: req.params.lan}, {$set: {isdeleted: true}}, function(err, data){
         if (err) {
           return callback({ret: 2});                            // RETURN: 优惠券使用失败
         }
@@ -410,7 +419,8 @@ exports.usecoupon = function(data, callback) {
 };
 
 // 优惠券列表(用户)
-exports.couponlist = function(data, callback) { 
+exports.couponlist = function(req, callback) { 
+  var data   = req.body;
   var userid = data.userid;
   db_pra_coupon.find({userid: userid, isdeleted: {$not: {$gte: true}}}, function(err, docs) { 
     if (err) {
@@ -432,5 +442,14 @@ exports.couponlist = function(data, callback) {
       couponlist.push(coupon);
     }
     return callback({ret: 1, couponlist: couponlist});                // RETURN: 优惠券列表
+  });
+};
+
+// 统计分享次数
+exports.sharelink = function(req, callback) {
+  var userid = req.params.userid;
+  var lan    = req.params.lan;
+  db_user.update({_id: new ObjectID(userid)}, {$inc: {sharenum: 1}}, function(err){
+    return callback({ret: 1});                                       // 操作完成
   });
 };

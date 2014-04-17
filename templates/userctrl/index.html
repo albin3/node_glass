@@ -40,9 +40,11 @@
           <thead>
             <tr>
               <th class="col-sm-2">Nickname</th>
-              <th class="col-sm-3">Worker<small class="alert-danger">(click to change state)</small></th>
+              <th class="col-sm-2">Worker<small class="alert-danger">(click to change state)</small></th>
               <th class="col-sm-3">Tel</th>
               <th class="col-sm-3">E-mail</th>
+              <th class="col-sm-3">Share times</th>
+              <th class="col-sm-3">Click times</th>
               <th class="col-sm-3">Options</th>
             </tr>
           </thead>
@@ -53,6 +55,8 @@
               <td>{%if user.isworker === 0%}no{%else%}yes{%endif%}<a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
               <td>{%if user.tel === undefined %}none{%else%}{{user.tel}}{%endif%}</td>
               <td>{%if user.email === undefined %}none{%else%}{{user.email}}{%endif%}</td>
+              <td>{{ user.sharenum }}</td>
+              <td>{{ user.clicknum }}</td>
               <td>
                 <ul class=list-inline>
                   <li><a href="#" class="a-del-user">delete</a></li>
@@ -62,11 +66,18 @@
             {% endfor %}
           </tbody>
         </table>
+        <div class="pagination">
+          <ul></ul>
+        </div>
       </div>
     </div>
   </div>
 </div>
 <script>
+  $(".pagination").pagy({
+    totalPages: 20,
+    currentPage: 1
+  });
   // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
   $(".table-striped tbody").click(function(event){
     event.preventDefault();   // 焦点不变

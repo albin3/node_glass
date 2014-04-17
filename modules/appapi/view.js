@@ -51,13 +51,13 @@ exports.newslist = function (req, res) {
 };
 // 新闻焦点图片
 exports.newsfocus = function (req, res) {
-  model.newsfocus(req.params.num, function (ret) {
+  model.newsfocus(req, function (ret) {
     res.end(JSON.stringify(ret));
   });
 };
 // 新闻详情
 exports.newsdetails = function (req, res) {
-  model.newsdetails(req.params.newsid, function (ret) {
+  model.newsdetails(req, function (ret) {
     res.end(JSON.stringify(ret));
   });
 };
@@ -65,31 +65,31 @@ exports.newsdetails = function (req, res) {
 // ###游戏接口
 // 紫外线收割机
 exports.uvcatcher = function (req, res) {
-  model.uvcatcher(req.body, function(ret){
+  model.uvcatcher(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 紫外线收割机排行榜
 exports.uvrank = function (req, res) {
-  model.uvrank(function(ret){
+  model.uvrank(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 寻找黄眼镜
 exports.findglass = function (req, res) {
-  model.findglass(req.body, function(ret){
+  model.findglass(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 寻找黄眼镜获取图片数据
 exports.findglasspulldata = function (req, res) {
-  model.findglasspulldata(req.params, function(ret){
+  model.findglasspulldata(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 寻找黄眼镜排行榜
 exports.fgrank = function (req, res) {
-  model.fgrank(function(ret){
+  model.fgrank(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
@@ -97,25 +97,33 @@ exports.fgrank = function (req, res) {
 // ###优惠券
 // 获得优惠券
 exports.getcoupon = function(req, res) {
-  model.getcoupon(req.body, function(ret){
+  model.getcoupon(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 验证优惠券
 exports.checkcoupon = function(req, res) {
-  model.checkcoupon(req.body, function(ret){
+  model.checkcoupon(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 使用优惠券
 exports.usecoupon = function(req, res) {
-  model.usecoupon(req.body, function(ret){
+  model.usecoupon(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
 // 优惠券列表
 exports.couponlist = function(req, res) {
-  model.couponlist(req.params, function(ret){
+  model.couponlist(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// ###分享链接
+// 统计分享次数
+exports.sharelink = function(req, res) {
+  model.sharelink(req, function(ret) {
     res.end(JSON.stringify(ret));
   });
 };
