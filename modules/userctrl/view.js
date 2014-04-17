@@ -7,9 +7,9 @@ var model = require("./model");
 exports.userctrl = function (req, res) {
   model.alluser(function(err, docs) {
     if (err || docs.length === 0) {
-      return res.render('userctrl/index', { Title: "App用户管理" });
+      return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan });
     }
-    return res.render('userctrl/index', { Title: "App用户管理", appusers: docs });
+    return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan, appusers: docs });
   });
 };
 

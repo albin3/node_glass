@@ -7,8 +7,8 @@ var db = mongojs(config.dbinfo.dbname);
 var dbfindglass = db.collection('findglasspic');
 var ObjectID = require('mongodb').ObjectID;
 
-exports.allpics = function(callback) {
-  dbfindglass.find({}).sort({_id: -1}, function(err, docs){
+exports.allpics = function(req, callback) {
+  dbfindglass.find({ lan: req.params.lan }).sort({_id: -1}, function(err, docs){
     if (err)  
       docs = new Array();
     callback(docs);
@@ -29,7 +29,8 @@ exports.newpic = function(req, callback) {
     glassy     : glassy,
     glasswidth : glasswidth,
     glassheight: glassheight,
-    dt         : new Date().getTime()
+    dt         : new Date().getTime(),
+    lan        : req.params.lan
   }, function(err, doc){
     fs.renameSync(req.files["upload"].path, config.appPath()+"/static/img/findglass/"+doc._id.toString()+".jpg");
     callback({ret: 1});

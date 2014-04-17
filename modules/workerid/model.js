@@ -8,8 +8,8 @@ var ObjectID = require('mongodb').ObjectID;
 var password_hash = require('password-hash');
 
 // 找到所有数据
-exports.allobjs =  function (callback) {
-  dbobj.find({ },function (err, docs) {
+exports.allobjs =  function (req, callback) {
+  dbobj.find({ lan: req.params.lan },function (err, docs) {
     if (err) {
       callback(err);
     } else {
@@ -52,8 +52,8 @@ exports.changestate = function (id, state, callback) {
 };
 
 // 删除所有项目
-exports.delall = function (callback) {
-  dbobj.remove({ },function (err){
+exports.delall = function (req, callback) {
+  dbobj.remove({ lan: req.params.lan },function (err){
     if (err) {
       return callback({status: false});
     } else {
@@ -63,7 +63,9 @@ exports.delall = function (callback) {
 };
 
 // 增加一个项目
-exports.objadd = function (obj, callback) {
+exports.objadd = function (req, callback) {
+  var obj = req.body;
+  obj.lan = req.params.lan;
   dbobj.insert(obj, function (err, doc) {
     if (err){
       return callback({ret: 2});              // RETURN: 唯一项重复

@@ -3,14 +3,14 @@ var model = require('./model');
 
 // 优惠券管理主页
 exports.coupon = function (req, res) {
-  model.allcoupon(function(ret){
-    res.render('coupon/index', {Title: "优惠券管理", coupons: ret.val});
+  model.allcoupon(req, function(ret){
+    res.render('coupon/index', {Title: "Coupon Management", language: req.params.lan, coupons: ret.val});
   });
 };
 
 // 新增优惠券
 exports.newcoupon = function (req, res) {
-  model.newcoupon(req.body, function(ret) {
+  model.newcoupon(req, function(ret) {
     res.end(JSON.stringify(ret));
   });
 };
@@ -24,7 +24,7 @@ exports.delcoupon = function (req, res) {
 
 // 删除所有
 exports.delall = function (req, res) {
-  model.delall (function(ret) {
+  model.delall (req, function(ret) {
     res.end(JSON.stringify(ret));
   });
 };

@@ -14,18 +14,9 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
     <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Dashboard</a></li>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">Profile</a></li>
-        <li><a href="#">Help</a></li>
-      </ul>
-      <form class="navbar-form navbar-right">
-        <input type="text" class="form-control" placeholder="Search...">
-      </form>
     </div>
   </div>
 </div>
@@ -38,19 +29,19 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="sub-header">优惠券列表</h2>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-coupon">加优惠券</button>
-      <button class="btn btn-danger">删除所有</button>
+      <h2 class="sub-header">Coupon List</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-coupon">Add coupon</button>
+      <button class="btn btn-danger">Delete all</button>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-1">识别码</th>
-              <th class="col-sm-2">名称(状态)</th>
-              <th class="col-sm-4">内容</th>
-              <th class="col-sm-3">地点</th>
-              <th class="col-sm-3">时间</th>
-              <th class="col-sm-3">操作</th>
+              <th class="col-sm-1">Type</th>
+              <th class="col-sm-2">State</th>
+              <th class="col-sm-4">Details</th>
+              <th class="col-sm-3">Range</th>
+              <th class="col-sm-3">Expires</th>
+              <th class="col-sm-3">Options</th>
             </tr>
           </thead>
           <tbody>
@@ -63,7 +54,7 @@
               <td>{{coupon.time|date("Y-m-d")}}</td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="#" class="a-del-coupon">删除</a></li>
+                  <li><a href="#" class="a-del-coupon">delete</a></li>
                 </ul>
               </td>
             </tr>
@@ -80,14 +71,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">添加优惠券</h4>
+        <h4 class="modal-title">Add Coupon</h4>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label for="coupon-name" class="col-sm-3 control-label">优惠券名称</label>
+            <label for="coupon-name" class="col-sm-3 control-label">Coupon Name</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-name" name="coupon-name" placeholder="优惠券名称">
+              <input type="text" class="form-control" id="coupon-name" name="coupon-name" placeholder="Name">
             </div>
           </div>
 
@@ -164,16 +155,16 @@
 </div><!-- End modal -->
 <script>
   $('.main .btn-danger').click(function(event){
-    if (!confirm('确实要删除所有数据吗？')) {       // 要求确认
+    if (!confirm('Delete All?')) {       // 要求确认
       return ;
     }
-    $.post('/appbg/coupon/delall/',
+    $.post('/appbg/coupon/delall/'+$("body").attr("lan"),
     {
     },function(data){
     if (data.ret === 1) {
       return $("tbody").remove();
     }
-    alert("删除出错");
+    alert("Fail to delete.");
     },'json');
   });
   $('tbody').click(function(event){
@@ -186,7 +177,7 @@
   });
   // 删除优惠券
   function deleteCoupon(id, target){
-    if (!confirm('确实要删除吗？')) {       // 要求确认
+    if (!confirm('Delete it?')) {       // 要求确认
       return ;
     }
     $.post(
@@ -197,7 +188,7 @@
     if (data.ret === 1){
       return target.remove();
     }
-    alert("删除出错");
+    alert("Fail to delete.");
     }, 'json');
   }
   $(".modal-footer .btn-primary").click(function(event){
@@ -208,7 +199,7 @@
     var range = $("#coupon-range").val();
     var time = $("#coupon-time").val();
     if (!name.length){
-      alert("优惠券名不能为空");
+      alert("no empty name.");
       return ;
     }
     if (retailer.length !== 1){
@@ -228,7 +219,7 @@
       return ;
     }
     $.post(
-      '/appbg/coupon/new',
+      '/appbg/coupon/new/'+$("body").attr("lan"),
       {
         name: name,
         detail   : detail,

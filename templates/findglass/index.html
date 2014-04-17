@@ -14,7 +14,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
   </div>
 </div>
@@ -27,11 +27,11 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="page-header">游戏后台</h2>
-      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass"> 
+      <h2 class="page-header">Games Management</h2>
+      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass/{{language}}"> 
         <dl class="des-list dl-horizontal">
           <dd>
-          <label for="upload" class="col-sm-2 control-label">上传图片</label>
+          <label for="upload" class="col-sm-2 control-label">Upload Picture</label>
           <div class="col-sm-2">
             <input type="file" id="upload" name="upload">
           </div>
@@ -39,58 +39,58 @@
           <br>
 
           <dd>
-          <label for="pic-width" class="col-sm-2 control-label">图片的宽(像素)</label>
+          <label for="pic-width" class="col-sm-2 control-label">Picture Width(Pixel)</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="pic-width" name="pic-width" placeholder="图片的宽(pixel)">
+            <input type="text" class="form-control" id="pic-width" name="pic-width" placeholder="picture width(pixel)">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="pic-height" class="col-sm-2 control-label">图片的高(像素)</label>
+          <label for="pic-height" class="col-sm-2 control-label">Picture Height(Pixel)</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="pic-height" name="pic-height" placeholder="图片的高(pixel)">
+            <input type="text" class="form-control" id="pic-height" name="pic-height" placeholder="picture height(pixel)">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="glass-x" class="col-sm-2 control-label">黄眼镜位置x</label>
+          <label for="glass-x" class="col-sm-2 control-label">Glass x</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="glass-x" name="glass-x" placeholder="离左下角位置">
+            <input type="text" class="form-control" id="glass-x" name="glass-x" placeholder="x of left-top point.">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="glass-y" class="col-sm-2 control-label">黄眼镜位置y</label>
+          <label for="glass-y" class="col-sm-2 control-label">Glass y</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="glass-y" name="glass-y" placeholder="离左下角位置">
+            <input type="text" class="form-control" id="glass-y" name="glass-y" placeholder="y of left-top point.">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="glass-width" class="col-sm-2 control-label">黄眼镜宽(像素)</label>
+          <label for="glass-width" class="col-sm-2 control-label">Glass Width(Pixel)</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="glass-width" name="glass-width" placeholder="眼镜的宽(pixel)">
+            <input type="text" class="form-control" id="glass-width" name="glass-width" placeholder="glass width(pixel)">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="glass-height" class="col-sm-2 control-label">黄眼镜高(像素)</label>
+          <label for="glass-height" class="col-sm-2 control-label">Glass Height(Pixel)</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" id="glass-height" name="glass-height" placeholder="眼镜的高(pixel)">
+            <input type="text" class="form-control" id="glass-height" name="glass-height" placeholder="glass height(pixel)">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="" class="col-sm-2 control-label">操作</label>
+          <label for="" class="col-sm-2 control-label">Option</label>
           <div class="col-sm-6">
-            <button type="button" id="btn-save" class="btn btn-primary">保存</button>
-            <button type="submit" id="btn-upload" class="btn btn-default">上传</button>
+            <button type="button" id="btn-save" class="btn btn-primary">save</button>
+            <button type="submit" id="btn-upload" class="btn btn-default">upload</button>
           </div>
           <br>
           </dd>
@@ -139,7 +139,7 @@
   });
   // 删除图片
   function delete_pic(event) { 
-    if (!confirm('确实要删除吗？')) {       // 要求确认
+    if (!confirm('Delete it?')) {       // 要求确认
       return;
     }
     var tr = $(event.target).parents("tr");
@@ -148,7 +148,7 @@
       }, function(data) {
       data = JSON.parse(data);
       if (data.ret !== 1) {
-        alert("删除失败");
+        alert("Fail to delete.");
         return;
       }
       tr.remove();
@@ -157,7 +157,7 @@
 
   $("#btn-save").click(function(event){
     if ($("#upload").val() === "") {
-      alert("没有选择要上传的图片");
+      alert("No picture selected.");
       return ;
     }
     var picwidth    = parseInt($("#pic-width").val());
@@ -167,11 +167,11 @@
     var glasswidth  = parseInt($("#glass-width").val());
     var glassheight = parseInt($("#glass-height").val());
     if (isNaN(picwidth) || isNaN(picheight) || isNaN(glasswidth) || isNaN(glassheight) || isNaN(glassx) || isNaN(glassy)) {
-      alert("确保输入的都是数字");
+      alert("Be sure all numbers.");
       return ;
     }
     if ( picwidth < glassx || picheight < glassy) {
-      alert("眼镜位置超出图片大小");
+      alert("Glass is out of the picture.");
       return ;
     }
     // 模拟提交表单
