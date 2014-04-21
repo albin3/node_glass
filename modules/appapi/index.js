@@ -1,4 +1,4 @@
-// appapi模块
+// appapi 模块
 var view = require('./view');
 
 exports.register = function (app) { 
@@ -14,11 +14,11 @@ exports.register = function (app) {
   app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                             // 新闻焦点图片
   app.all('/appapi/newsdetails/:newsid', view.newsdetails);                         // 新闻详情
                                                                                     
-  app.post('/appapi/games/uvcatcher', view.uvcatcher);                              // 游戏-紫外线收割机
-  app.all('/appapi/games/uvrank', view.uvrank);                                     // 游戏-紫外线收割机排行榜
-  app.post('/appapi/games/findglass', view.findglass);                              // 游戏-寻找黄眼镜
-  app.all('/appapi/games/findglass/pulldata/:timestamp', view.findglasspulldata);   // 游戏-寻找黄眼镜拉图片数据
-  app.all('/appapi/games/fgrank', view.fgrank);                                     // 游戏-寻找黄眼镜排行榜
+  app.post('/appapi/games/uvcatcher/:lan', view.uvcatcher);                         // 游戏-紫外线收割机
+  app.all('/appapi/games/uvrank/:lan', view.uvrank);                                // 游戏-紫外线收割机排行榜
+  app.post('/appapi/games/findglass/:lan', view.findglass);                         // 游戏-寻找黄眼镜
+  app.all('/appapi/games/findglass/pulldata/:timestamp/:lan', view.findglasspulldata);   // 游戏-寻找黄眼镜拉图片数据
+  app.all('/appapi/games/fgrank/:lan', view.fgrank);                                // 游戏-寻找黄眼镜排行榜
                                                                                    
   app.post('/appapi/coupon/getcoupon', view.getcoupon);                             // 优惠券获得
   app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
@@ -28,5 +28,7 @@ exports.register = function (app) {
   app.get('/appapi/regional', view.regional);  //获取省市县
   app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
 
-  app.get('/appapi/random',view.random);
+  app.get('/appapi/random',view.random);                   // 优惠券列表
+
+  app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
 };
