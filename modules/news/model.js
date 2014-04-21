@@ -9,6 +9,7 @@ var async = require("async");
 var mongojs = require('mongojs');
 var db = mongojs(config.dbinfo.dbname);
 var dbnews = db.collection('news');
+var dbslide = db.collection('slide');
 var ObjectID = require('mongodb').ObjectID;
 
 // 获取到某条新闻的全部信息
@@ -48,6 +49,40 @@ exports.addnews =  function (req, current_user, callback) {
   });
 };
 
+// 查询所有幻灯片
+exports.allslide = function (req, callback) {
+  dbslide.find({lan : req.params.lan}, function(err,docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+  });
+};
+
+// 添加幻灯片，返回添加成功的对象
+exports.addslide =  function (req, callback) {
+  var files = req.files;
+  var slide = req.body;
+  var language = req.params.lan;
+  slide.focus = 0;     // 是否设置为焦点图
+  slide.lan = language;
+  dbslide.insert(slide, function (err, doc) {
+    if (doc) {
+      console.log(doc);
+      if (files["picture"].size > 0){ 
+        if (judge_size(files["picture"].size)) { 
+          fs.readFile(files["picture"].path, function (err, data) {
+            var path = config.appPath() + "/static/img/slide/" + doc._id + ".jpg";
+            fs.writeFile(path, data, function(err){
+            });
+          });
+        }
+      }
+      return callback(doc);
+    }
+  });
+};
+
 // 删除以id开头的所有图片
 function deletePicturesOfNews(newsid) {
   var imgpath = config.appPath() + "/static/img/news/" + newsid;
@@ -69,6 +104,21 @@ exports.delnews =  function (news, callback) {
       fs.unlinkSync(newsfirstimg);
       deletePicturesOfNews(news.id);
     } catch (e) {
+    }
+
+    callback(err);
+  });
+};
+
+// 删除幻灯片
+exports.delslide =  function (news, callback) {
+  dbslide.remove({ _id: new ObjectID(news.id) }, function (err) {
+    
+    // 删除新闻首图
+    var pic = config.appPath() + "/static/img/slide/" + news.id + ".jpg";
+    try {
+      fs.unlinkSync(pic);
+      } catch (e) {
     }
 
     callback(err);
@@ -100,6 +150,19 @@ exports.delall =  function (req, callback) {
     }
     deleteFolderRecursive(config.appPath() + "/static/img/news");  // 递归删除文件夹
     fs.mkdir(config.appPath() + "/static/img/news", function(err){
+      return callback(err);
+    });
+  });
+};
+
+// 删除所有幻灯片
+exports.delallslide =  function (req, callback) {
+  dbslide.remove({lan: req.params.lan}, function(err) {
+    if(err) {
+      return callback(err);
+    }
+    deleteFolderRecursive(config.appPath() + "/static/img/slide");  // 递归删除文件夹
+    fs.mkdir(config.appPath() + "/static/img/slide", function(err){
       return callback(err);
     });
   });

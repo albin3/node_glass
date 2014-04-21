@@ -1,0 +1,125 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Help</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">Store List</h2>
+      <button class="btn btn-primary" id="addstore">Add Store</button>
+      <button class="btn btn-danger">Delete All</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-1">Store</th>
+              <th class="col-sm-1">Province</th>
+              <th class="col-sm-1">Municipality</th>
+              <th class="col-sm-1">Area</th>
+              <th class="col-sm-3">Address</th>
+              <th class="col-sm-2">Telephone</th>
+              <th class="col-sm-1">Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for store in stores%}
+            <tr data-id="{{ store._id.toString() }}">
+              <td>{{store.name}}</td>
+              <td>{{store.province}}</td>
+              <td>{{store.municipality}}</td>
+              <td>{{store.area}}</td>
+              <td>{{store.address}}</td>
+              <td>{{store.telephone}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="edit/{{ store._id.toString() }}/{{language}}" class="a-edit-store">edit</a></li>
+                  <li><a href="#" class="a-del-store">delete</a></li>
+                </ul>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 增加门店
+  $("#addstore").click(function(){
+    window.location.href="new/{{language}}";
+  });
+  $('.main .btn-danger').click(function(event){
+    if (!confirm('Do you really want to delete all data？')) {       // 要求确认
+      return ;
+    }
+    $.post('/appbg/store/delall/{{language}}',{},function(data){
+      if (data.ret === 1) {
+        return $("tbody").empty();
+      }
+      alert("Delete error!");
+    },'json');
+  });
+  $('tbody').click(function(event){
+    if ($(event.target).context.className === "a-del-store") {
+      event.preventDefault();       // 页面的焦点不变
+      var tr = $(event.target).parent().parent().parent().parent();
+      var storeid = tr.attr("data-id");
+      deleteStore(storeid, tr);
+    }
+  });
+  // 删除store
+  function deleteStore(id, target){
+    if (!confirm('Do you really want to delete it？')) {       // 要求确认
+      return ;
+    }
+    $.post(
+    '/appbg/store/del/',
+    {
+      _id: id
+    }, function(data){
+    if (data.ret === 1){
+      return target.remove();
+    }
+    alert("Delete error!");
+    }, 'json');
+  }
+
+
+</script>
+{% endblock %}
+

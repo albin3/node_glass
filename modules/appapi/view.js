@@ -50,8 +50,8 @@ exports.newslist = function (req, res) {
   });
 };
 // 新闻焦点图片
-exports.newsfocus = function (req, res) {
-  model.newsfocus(req.params.num, function (ret) {
+exports.slide = function (req, res) {
+  model.slide(req, function (ret) {
     res.end(JSON.stringify(ret));
   });
 };
@@ -119,3 +119,21 @@ exports.couponlist = function(req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+// 地区列表
+exports.regional = function(req, res) {
+  model.regional(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// 门店列表
+exports.store = function(req, res){
+  model.store(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 紫外线随机数
+exports.random = function(req, res){
+  model.random(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}

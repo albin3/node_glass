@@ -1,0 +1,104 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2>Edit Store</h2>
+      <hr>
+      <form id="form-edit-store" class="form-edit-store" role="form" enctype="multipart/form-data" method="post" 
+
+
+      action="/appbg/store/new/{{ language }}"
+
+      > 
+        <dl class="des-list dl-horizontal">
+          <h3>Store </h3>
+          <dd>
+          <label for="name" class="col-sm-2 control-label">Name</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="name" name="name" value="{{ store.name }}" placeholder="name">
+            <input hidden="hidden" id="_id" name="_id" value="{{store._id.toString()}}">
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="province" class="col-sm-2 control-label">Province</label>
+            <div class="col-sm-4">
+              <select class="form-control" type="text" id="province" name="province" placeholder="Province">
+                <option>上海</option>
+              </select>
+            </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="municipality" class="col-sm-2 control-label">Municipality</label>
+          <div class="col-sm-4">
+            <select class="form-control" type="text" id="municipality" name="municipality" placeholder="Municipality">
+              <option>上海</option>
+              <option>北京</option>
+            </select>
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="area" class="col-sm-2 control-label">Area</label>
+            <div class="col-sm-4">
+              <select class="form-control" type="text" id="area" name="area" placeholder="Area">
+                <option>静安</option>
+              </select>
+            </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store-address" class="col-sm-2 control-label">Address</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="address" name="address" value="{{ store.address }}" placeholder="address">
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store-telephone" class="col-sm-2 control-label">telephone</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="telephone" name="telephone" value="{{ store.telephone }}" placeholder="telephone">
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store-options" class="col-sm-2 control-label">Options</label>
+          <div class="col-sm-6">
+            <button type="submit" class="btn btn-primary">save</button>
+            <a href="/appbg/store/{{language}}" class="btn btn-default">back</a>
+          </div>
+          </dd>
+          <br>
+        </dl>
+      </form>
+      <hr>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -12,6 +12,9 @@ var db_findglass    = db.collection('findglass');     // Games
 var db_findglasspic = db.collection('findglasspic');  // Games
 var db_coupon       = db.collection('coupon');
 var db_pra_coupon   = db.collection('couponpravided');
+var db_regional     = db.collection('regional');
+var db_store        = db.collection('store');
+var db_slide        = db.collection('slide');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -213,7 +216,7 @@ exports.pagednews = function (req, callback) {
   var pageNum = parseInt(req.params.pageNum);
   console.log(numPerPage);
   console.log(pageNum);
-  db_news.find({}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
+  db_news.find({lan:req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
     }
@@ -222,14 +225,16 @@ exports.pagednews = function (req, callback) {
       delete docs[index].details;
       delete docs[index].focus;
       delete docs[index].url;
+      delete docs[index].lan;
       docs[index].pic = "/img/news/" + docs[index]._id + ".jpg";
     }
     return callback({ret: 1, num:docs.length, list: docs});      // RETURN: 返回成功
   });
 };
 // 新闻焦点图
-exports.newsfocus = function (num, callback) {
-  db_news.find({focus: true}).limit(parseInt(num), function(err, docs){
+exports.slide = function (req, callback) {
+  num = req.params.num;
+  db_slide.find({lan: req.params.lan}).limit(parseInt(num), function(err, docs){
     if (err){
       return callback({ret: 2});                                // RETURN: 查询出错
     }
@@ -238,8 +243,9 @@ exports.newsfocus = function (num, callback) {
     for (index in docs) {
       imglist.push({
         _id   : docs[index]._id.toString(),
-        des   : docs[index].firpicdes,
-        pic   : "/img/news/" + docs[index]._id.toString() + ".jpg"
+        title   : docs[index].title,
+        summary : docs[index].summary,
+        picture   : "/img/slide/" + docs[index]._id.toString() + ".jpg"
       });
       listnum += 1;
     }
@@ -434,3 +440,57 @@ exports.couponlist = function(data, callback) {
     return callback({ret: 1, couponlist: couponlist});                // RETURN: 优惠券列表
   });
 };
+
+// ###门店品牌接口
+//获取省，市，区县借口
+exports.regional = function(callback){
+  db_regional.find({},function(err, docs){
+    if (err) {
+      return callback({ret: 2});                                // RETURN: 查询错误
+    }
+    var regional = new Array();
+    for(var i in docs){
+      var doc = docs[i];
+      var reg = {};
+      reg.index  = doc.index;
+      reg.area   = doc.prov;
+      reg.municipality   = doc.city;
+      reg.province = doc.county;
+      regional.push(reg);
+    }
+    return callback({ret: 1, regional: regional});
+  });
+};
+
+// 根据省市区获取门店列表，可翻页
+exports.store = function (req, callback) {
+  var data = req.body;
+  var numPerPage = parseInt(data.numPerPage);
+  var pageNum = parseInt(data.pageNum);
+  var query = {};
+  query.province = data.province;
+  query.municipality = data.municipality;
+  query.area = data.area;
+  query.lan = req.params.lan;
+  console.log(numPerPage);
+  console.log(pageNum);
+  console.log(query);
+  db_store.find(query).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
+    if (err){
+      return callback({ret: 2});                                //RETURN: 查询出错
+    }
+    for (index in docs) {
+      docs[index]._id = docs[index]._id.toString();
+      delete docs[index].province;
+      delete docs[index].municipality;
+      delete docs[index].area;
+      delete docs[index].lan;
+    }
+    return callback({ret: 1, num:docs.length, list: docs});      // RETURN: 返回成功
+  });
+};
+
+//获取随机数
+exports.random = function(callback){
+  return callback({ret: 1, num:0.5});
+}

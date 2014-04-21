@@ -10,8 +10,8 @@ exports.register = function (app) {
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
   app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);             // 用户登录
                                                                                     
-  app.all('/appapi/newslist/:numPerPage/:pageNum', view.newslist);                  // 新闻列表
-  app.all('/appapi/newsfocuspic/:num', view.newsfocus);                             // 新闻焦点图片
+  app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);                  // 新闻列表
+  app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                             // 新闻焦点图片
   app.all('/appapi/newsdetails/:newsid', view.newsdetails);                         // 新闻详情
                                                                                     
   app.post('/appapi/games/uvcatcher', view.uvcatcher);                              // 游戏-紫外线收割机
@@ -24,4 +24,9 @@ exports.register = function (app) {
   app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
   app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
   app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
+
+  app.get('/appapi/regional', view.regional);  //获取省市县
+  app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
+
+  app.get('/appapi/random',view.random);
 };
