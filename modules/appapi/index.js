@@ -24,11 +24,12 @@ exports.register = function (app) {
   app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
   app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
   app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
+  app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
 
   app.get('/appapi/regional', view.regional);  //获取省市县
   app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
 
-  app.get('/appapi/random',view.random);                   // 优惠券列表
+  app.get('/appapi/random',view.random);       //获取随机数 
 
-  app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
+
 };

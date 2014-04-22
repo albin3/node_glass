@@ -218,11 +218,7 @@ exports.pagednews = function (req, callback) {
   var pageNum = parseInt(req.params.pageNum);
   console.log(numPerPage);
   console.log(pageNum);
-<<<<<<< HEAD
-  db_news.find({lan:req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
-=======
   db_news.find({lan: req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
->>>>>>> 7cef613f5ca3ea1bfd3e151356a286d49b92b520
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
     }
