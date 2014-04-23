@@ -4,7 +4,10 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  brand  : "宝岛"
+  numPerPage    : "20",
+  pageNum       : "1",
+  brand  : "宝岛",
+  'E-SPF'  : 15
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  

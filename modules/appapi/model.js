@@ -524,10 +524,21 @@ exports.brand = function (req, callback){
 
 //根据品牌获取产品列表
 exports.products = function(req,callback){
-  var query = {};
-  query.brand = req.body.brand;
+  var data = req.body;
+  var numPerPage = parseInt(data.numPerPage);
+  var pageNum = parseInt(data.pageNum);
+  var query = {
+  	brand : data.brand
+  };
+  if(data['E-SPF']==='10'){
+  	query['E-SPF'] = '10';
+  }else if(data['E-SPF']==='15'){
+  	query['E-SPF'] = '15';
+  }else if(data['E-SPF']==='25'){
+  	query['E-SPF'] = '25';
+  }
   query.lan = req.params.lan;
-  db_product.find(query,function(err, docs){
+  db_product.find(query).limit(numPerPage).skip(numPerPage*(pageNum-1),function(err, docs){
     if (err) {
       return callback({ret: 2});           // RETURN: 查询错误
     }
