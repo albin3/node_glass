@@ -29,6 +29,7 @@ exports.register = function (app) {
   app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
   app.get('/appapi/brand/:lan',view.brand);    //获取品牌列表
   app.post('/appapi/product/:lan',view.products);   //根据品牌获取产品列表
+  app.all('/appapi/productdetail/:id',view.productdetail);  //获取产品详情
   
 
   //其他

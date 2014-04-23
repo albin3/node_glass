@@ -249,6 +249,7 @@ exports.slide = function (req, callback) {
         _id   : docs[index]._id.toString(),
         title   : docs[index].title,
         summary : docs[index].summary,
+        url     : docs[index].url,
         picture   : "/img/slide/" + docs[index]._id.toString() + ".jpg"
       });
       listnum += 1;

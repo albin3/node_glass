@@ -43,6 +43,7 @@
                 <tr>
                   <th class="col-md-1">Title</th>
                   <th class="col-md-4">Summary</th>
+                  <th class="col-md-3">Url</th>
                   <th class="col-md-2">Picture</th>
                   <th class="col-md-2">Options</th>
                 </tr>
@@ -52,6 +53,7 @@
                 <tr data-id="{{ slide._id.toString() }}">
                   <td class="td-title">{{ slide.title }}</td>
                   <td class="td-summary normal">{{ slide.summary }}</td>
+                  <td class="td-url normal">{{ slide.url }}</td>
                   <td class="td-picture">
                     <ul class=list-inline>
                       <img src="/img/slide/{{ slide._id.toString() }}.jpg" width="50" height="31">

@@ -50,6 +50,14 @@
           <br>
 
           <dd>
+          <label for="slide-url" class="col-sm-2 control-label">Url</label>
+          <div class="col-sm-6">
+            <textarea class="form-control" rows="2" id="url" name="url" placeholder="url(Allow blank)">{{ slide.url }}</textarea>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
           <label for="slide-picture" class="col-sm-2 control-label">Picture</label>
           <div class="col-sm-6">
             <img src="/img/slide/{{ slide._id.toString() }}.jpg" width="300px" height="186px" id="slide-picture">
