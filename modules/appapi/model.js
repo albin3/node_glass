@@ -512,7 +512,8 @@ exports.brand = function (req, callback){
     for(var i=0; i<docs.length; ){      
       temp = [];
       for (var j=0; j<6&&i<docs.length; j++,i++) {
-      	temp.push({url: "/img/brand/"+docs[i]._id.toString()+".jpg"});
+      	temp.push({url: "/img/brand/"+docs[i]._id.toString()+".jpg",
+      			   brand: docs[i].name});
       }
       brand.push(temp);
     }
@@ -539,6 +540,36 @@ exports.products = function(req,callback){
     	docs[doc].url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
 	}
     return callback({ret: 1, products: docs});
+  });
+};
+
+//获取产品详情
+exports.productdetail = function(req,callback){
+  var query = {};
+  query._id = new ObjectID(req.params.id);
+  db_product.findOne(query,function(err, doc){
+    if (err) {
+      return callback({ret: 2});           // RETURN: 查询错误
+    }
+    var pic = new Array();
+    var con = new Array();
+    
+    var image = doc.image;
+    for(var i=0; i<image.length;i++){
+    	var ima = {};
+    	ima.des = image[i].des;
+    	ima.url = "/img/product/" + image[i].url + doc._id.toString() + ".jpg";
+    	pic.push(ima);
+    }
+    con = doc.contents;
+    delete doc.contents;
+    delete doc.image;
+    return callback({
+    				ret: 1, 
+    				products: doc,
+    				image : pic,
+    				contents: con
+    				});
   });
 };
 
