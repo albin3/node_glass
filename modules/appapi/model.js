@@ -537,6 +537,11 @@ exports.products = function(req,callback){
     	delete docs[doc].image;
     	delete docs[doc].url;
     	delete docs[doc].contents;
+    	if(docs[doc].sale==='yes'){
+    		docs[doc].sale = true;
+    	}else{
+    		docs[doc].sale = false;
+    	}
     	docs[doc].url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
 	}
     return callback({ret: 1, products: docs});
