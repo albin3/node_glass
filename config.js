@@ -24,7 +24,7 @@ var default_config = {
   PORT: 3000,
   DB_URI: null,
 
-  MODULES: [ 'account', 'appapi', 'coupon', 'news', 'products', 'userctrl', 'uvindex', 'bguser', 'appversion', 'workerid', 'findglass','tips','store' ],
+  MODULES: [ 'account', 'appapi', 'coupon', 'news', 'products', 'userctrl', 'uvindex', 'bguser', 'appversion', 'workerid', 'findglass','tips','store','brand' ],
   STATIC_ROUTER: '/',
   ROOT_DIR: root_dir,
   MODULE_DIR: path.join(root_dir, 'modules'),
@@ -112,7 +112,7 @@ exports.appPath = function() {
   return __dirname;
 };
 
-exports.pic_size = 524288; // 限制上传的图片的大小
+exports.pic_size = 52428800; // 限制上传的图片的大小
 
 exports.root_user = {
   username : "admin",

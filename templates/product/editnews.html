@@ -14,7 +14,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">依视路App后台</a>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
   </div>
 </div>
@@ -27,53 +27,53 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2>编辑新闻</h2>
+      <h2>Edit News</h2>
       <hr>
       <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/edit/{{ _id }}"> 
         <dl class="des-list dl-horizontal">
-          <h3>新闻概要</h3>
+          <h3>News </h3>
           <dd>
-          <label for="news-title" class="col-sm-2 control-label">标题</label>
+          <label for="news-title" class="col-sm-2 control-label">Title</label>
           <div class="col-sm-3">
-            <input type="text" class="form-control" id="news-title" name="news-title" value="{{ news.title }}" placeholder="标题">
+            <input type="text" class="form-control" id="news-title" name="news-title" value="{{ news.title }}" placeholder="title">
             <input hidden="hidden" id="_id" name="_id" value="{{_id}}">
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="news-summary" class="col-sm-2 control-label">导语</label>
+          <label for="news-summary" class="col-sm-2 control-label">Summary</label>
           <div class="col-sm-6">
-            <textarea class="form-control" rows="2" id="news-summary" name="news-summary" placeholder="导语">{{ news.summary }}</textarea>
+            <textarea class="form-control" rows="2" id="news-summary" name="news-summary" placeholder="summary">{{ news.summary }}</textarea>
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="news-fir-pic-des" class="col-sm-2 control-label">首图描述</label>
+          <label for="news-fir-pic-des" class="col-sm-2 control-label">Primary Description</label>
           <div class="col-sm-6">
-            <textarea class="form-control" rows="1" id="news-fir-pic-des" name="news-fir-pic-des" placeholder="首图描述">{{ news.firpicdes }}</textarea>
+            <textarea class="form-control" rows="1" id="news-fir-pic-des" name="news-fir-pic-des" placeholder="description of primary picture.">{{ news.firpicdes }}</textarea>
           </div>
           </dd>
           <br>
 
           <dd>
-          <label for="news-first-pic" class="col-sm-2 control-label">首图</label>
+          <label for="news-first-pic" class="col-sm-2 control-label">Primary Picture</label>
           <div class="col-sm-6">
             <img src="/img/news/{{ _id }}.jpg" width="300px" height="186px" id="news-first-pic">
             <br>
-            <label>更换请选择图片</label>
+            <label>Choose a new picture.</label>
             <input type="file" name="first-pic">
           </div>
           </dd>
           <br>
 
-          <h3>新闻内容</h3>
+          <h3>News Content</h3>
           <dd>
-          <label class="col-sm-2 control-label">添加内容</label>
+          <label class="col-sm-2 control-label">Add Content</label>
           <div class="col-sm-4">
-            <button id="add-detail-text" type="button" class="btn btn-primary">添加文本</button>
-            <button id="add-detail-pic" type="button" class="btn btn-primary">添加图片</button>
+            <button id="add-detail-text" type="button" class="btn btn-primary">add text</button>
+            <button id="add-detail-pic" type="button" class="btn btn-primary">add picture</button>
           </div>
           </dd>
           <br>
@@ -82,19 +82,19 @@
             {%for index, detail in news.details%}
             {%if detail.type === 1%}
             <dd>
-            <label class="col-sm-2 control-label">新闻文本</label>
+            <label class="col-sm-2 control-label">news text</label>
             <div class="col-sm-6">
-              <textarea class="form-control" rows="2" id="news-text-{{index}}" name="news-text-{{index}}" placeholder="新闻内容">{{detail.content}}</textarea>
+              <textarea class="form-control" rows="2" id="news-text-{{index}}" name="news-text-{{index}}" placeholder="news text">{{detail.content}}</textarea>
               </div>
             <button class="btn btn-danger" del="">x</button>
             </dd>
             {%else%}
             <dd>
-            <label class="col-sm-2 control-label">新闻图片</label>
+            <label class="col-sm-2 control-label">news pic</label>
             <div class="col-sm-6">
               <img src="{{detail.content}}" width="300px" height="185px">
               <input type="file" name="upload{{index}}" class="added-pic">
-              <textarea class="form-control" rows="1" id="news-pic-{{index}}" name="news-pic-{{index}}" placeholder="图片描述">{{detail.des}}</textarea>
+              <textarea class="form-control" rows="1" id="news-pic-{{index}}" name="news-pic-{{index}}" placeholder="description of pic.">{{detail.des}}</textarea>
               </div>
             <button class="btn btn-danger" del="">x</button>
             </dd>
@@ -103,10 +103,10 @@
           </dl>
 
           <dd>
-          <label for="news-options" class="col-sm-2 control-label">操作</label>
+          <label for="news-options" class="col-sm-2 control-label">Options</label>
           <div class="col-sm-6">
-            <button type="submit" class="btn btn-primary">保存修改</button>
-            <a href="/appbg/news/" class="btn btn-default">返回列表</a>
+            <button type="submit" class="btn btn-primary">save</button>
+            <a href="/appbg/news/{{language}}" class="btn btn-default">back</a>
           </div>
           </dd>
           <br>
@@ -124,9 +124,9 @@
     var add_row = "";
     add_row +=
           '<dd>' +
-          '<label class="col-sm-2 control-label">新闻文本</label>' +
+          '<label class="col-sm-2 control-label">News text</label>' +
           '<div class="col-sm-6">' +
-            '<textarea class="form-control" rows="2" id="news-text-' + elemnum + '" name="news-text-' + elemnum + '" placeholder="新闻内容"></textarea>' +
+            '<textarea class="form-control" rows="2" id="news-text-' + elemnum + '" name="news-text-' + elemnum + '" placeholder="news text"></textarea>' +
           '</div>' +
           '<button class="btn btn-danger" del="">x</button>' +
           '</dd>';
@@ -139,11 +139,11 @@
     var add_row = "";
     add_row +=
           '<dd>' +
-          '<label class="col-sm-2 control-label">新闻图片</label>' +
+          '<label class="col-sm-2 control-label">News pic</label>' +
           '<div class="col-sm-6">' +
-            '<label>选择图片</label>' +
+            '<label>Choose a new picture.</label>' +
             '<input type="file" name="upload' + elemnum + '" class="added-pic">' +
-            '<textarea class="form-control" rows="1" id="news-pic-' + elemnum + '" name="news-pic-' + elemnum + '" placeholder="图片描述"></textarea>' +
+            '<textarea class="form-control" rows="1" id="news-pic-' + elemnum + '" name="news-pic-' + elemnum + '" placeholder="description of pic."></textarea>' +
           '</div>' +
           '<button class="btn btn-danger" del="">x</button>' +
           '</dd>';

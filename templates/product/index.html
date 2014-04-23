@@ -1,0 +1,119 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Help</a></li>
+      </ul>
+      <form class="navbar-form navbar-right">
+        <input type="text" class="form-control" placeholder="Search...">
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="sub-header">Product List</h2>
+      <button class="btn btn-primary" id="addproduct">Add Product</button>
+      <button class="btn btn-danger">Delete All</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-1">Name</th>
+              <th class="col-sm-1">Brand</th>
+              <th class="col-sm-1">E-SPF</th>
+              <th class="col-sm-1">Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for product in products%}
+            <tr data-id="{{ product._id.toString() }}">
+              <td>{{product.name}}</td>
+              <td>{{product.brand}}</td>
+              <td>{{product.E-SPF}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="edit/{{ product._id.toString() }}/{{language}}" class="a-edit-product">edit</a></li>
+                  <li><a href="#" class="a-del-product">delete</a></li>
+                </ul>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 增加门店
+  $("#addproduct").click(function(){
+    window.location.href="new/{{language}}";
+  });
+  $('.main .btn-danger').click(function(event){
+    if (!confirm('Do you really want to delete all data？')) {       // 要求确认
+      return ;
+    }
+    $.post('/appbg/product/delall/{{language}}',{},function(data){
+      if (data.ret === 1) {
+        return $("tbody").empty();
+      }
+      alert("Delete error!");
+    },'json');
+  });
+  $('tbody').click(function(event){
+    if ($(event.target).context.className === "a-del-product") {
+      event.preventDefault();       // 页面的焦点不变
+      var tr = $(event.target).parent().parent().parent().parent();
+      var productid = tr.attr("data-id");
+      deleteProduct(productid, tr);
+    }
+  });
+  // 删除product
+  function deleteProduct(id, target){
+    if (!confirm('Do you really want to delete it？')) {       // 要求确认
+      return ;
+    }
+    $.post(
+    '/appbg/product/del/',
+    {
+      _id: id
+    }, function(data){
+    if (data.ret === 1){
+      return target.remove();
+    }
+    alert("Delete error!");
+    }, 'json');
+  }
+
+
+</script>
+{% endblock %}
+

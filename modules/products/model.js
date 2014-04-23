@@ -1,217 +1,108 @@
-// prods model
-var config = require("../../config"); // 为了获取到路径
-var qureystring = require("querystring");
-var fs = require("fs");
-var fileExists = require("path").exists;
-
-var async = require("async");
-
+// model.js product
+var config = require('../../config');
 var mongojs = require('mongojs');
+var fs = require("fs");
+
 var db = mongojs(config.dbinfo.dbname);
-var dbnews = db.collection('prods');
+var dbproduct = db.collection('product');
 var ObjectID = require('mongodb').ObjectID;
 
-// 获取到某条新闻的全部信息
-exports.findOneNews = function (id, callback) {
-  dbnews.findOne({_id: new ObjectID(id)}, function (err, doc) {
-    callback(err, doc);
-  });
-};
-
-// 获取到所有新闻信息
-exports.allobjs = function (callback) {
-  dbnews.find({}, function (err, docs) {
-    callback(err, docs);
-  });
-};
-
-// 添加新闻，返回添加成功的对象
-// copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
-exports.addnews =  function (news, callback) {
-  news.focus = false;     // 是否设置为焦点图
-  dbnews.insert(news, function (err, doc) {
-    if (doc) {
-      var defaultimg = config.appPath() + "/static/img/default.jpg";
-      var newsfirstimg = config.appPath() + "/static/img/news/" + doc._id.toString() + ".jpg";
-
-      // 复制default.jpg
-      fs.readFile(defaultimg, function (err, data) {
-        fs.writeFile(newsfirstimg, data, function(err) {});
-      });
-    }
-    callback(err, doc);
-  });
-};
-
-// 删除以id开头的所有图片
-function deletePicturesOfNews(newsid) {
-  var imgpath = config.appPath() + "/static/img/news/" + newsid;
-  for (var i = 0; i < 10; i++) {
-    try {
-      console.log(imgpath+i+".jpg");
-      fs.unlinkSync(imgpath+i+".jpg");
-    } catch (e){
+// 新建product
+exports.newproduct = function (req, callback) {
+  var files = req.files;
+  var product = req.body;
+  product.lan = req.params.lan;
+  product.image = new Array();
+  product.contents = new Array();
+  var id = product._id;
+  for(pro in product){
+    if(pro.toString().indexOf("pic")!==-1){ 
+      var temp = {};
+      temp.des = product[pro];  
+      temp.url = pro;
+      product.image.push(temp);
+      delete product[pro]; 
+    }else if(pro.toString().indexOf("text")!==-1){
+      product.contents.push(product[pro]);
+      delete product[pro];
     }
   }
-};
+  console.log("*******************");
+  console.log(product);
+  console.log("*******************");
+  
 
-// 删除新闻
-exports.delnews =  function (news, callback) {
-  dbnews.remove({ _id: new ObjectID(news.id) }, function (err) {
-    
-    // 删除新闻首图
-    var newsfirstimg = config.appPath() + "/static/img/news/" + news.id + ".jpg";
-    try {
-      fs.unlinkSync(newsfirstimg);
-      deletePicturesOfNews(news.id);
-    } catch (e) {
-    }
-
-    callback(err);
-  });
-};
-
-// 递归删除文件夹
-function deleteFolderRecursive(path) {
-  var files = [];
-  if( fs.existsSync(path) ) {
-    files = fs.readdirSync(path);
-    files.forEach(function(file,index){
-      var curPath = path + "/" + file;
-      if(fs.statSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
-      } else { // delete file
-        fs.unlinkSync(curPath);
+  if(id!==''){
+    product._id = new ObjectID(id);
+    dbproduct.update({_id : product._id}, product, function(err, doc){
+      if(err){
+        return callback({ret: 2});
       }
+      saveimage(files,doc);
+      return callback({ret: 1, val: doc}); 
     });
-    fs.rmdirSync(path);
+  }else{
+    delete product._id;
+    dbproduct.insert(product, function(err, doc){
+      if (err) {
+        return callback({ret: 2});                    // RETURN: 数据库插入出错
+      }
+      saveimage(files,doc);
+      doc._id = doc._id.toString();
+      return callback({ret: 1, val: doc});            // RETURN: 插入成功
+    });
   }
 };
-
-// 删除所有新闻
-exports.delall =  function (callback) {
-  dbnews.remove(function(err) {
-    if(err) {
-      return callback(err);
+function saveimage(files,doc){
+  for(var i=0;i<doc.image.length;i++){
+    var s = doc.image[i].url;
+    if (judge_size(files[s].size)) { 
+      var path = config.appPath() + "/static/img/product/" + s + doc._id + ".jpg";
+      fs.renameSync(files[s].path,path);
     }
-    deleteFolderRecursive(config.appPath() + "/static/img/news");  // 递归删除文件夹
-    fs.mkdir(config.appPath() + "/static/img/news", function(err){
-      return callback(err);
-    });
-  });
-};
-
+  }
+}
 // 限制上传的图片的大小，阈值可以在config中设置
 function judge_size(size) {
   return size > 0 && size < config.pic_size;
 }
 
-// 更新新闻内容时，需要用到面向过程的逻辑：
-// 更新新闻内容
-exports.updatenews = function (req, callback) {
-  var files = req.files;
-  var texts = req.body;
-  var newsid = texts["_id"];
-  delete texts["_id"];
-  var query = {_id: new ObjectID(newsid)};
-
-  dbnews.findOne(query, function (err, doc) {
-    doc.title = texts["news-title"];              // 更新标题
-    delete texts["news-title"];
-    doc.summary = texts["news-summary"];          // 更新导语
-    delete texts["news-summary"];
-    doc.firpicdes = texts["news-fir-pic-des"];    // 更新首图描述
-    delete texts["news-fir-pic-des"];
-    if (files["first-pic"].size > 0){             // 更新首图
-      if (judge_size(files["first-pic"].size)) { 
-        fs.readFile(files["first-pic"].path, function (err, data) {
-          var path = config.appPath() + "/static/img/news/" + newsid + ".jpg";
-          fs.writeFile(path, data, function(err){
-          });
-        });
-      }
+// 查询所有product
+exports.allproduct = function (req, callback) {
+  dbproduct.find({lan : req.params.lan}, function(err,docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
     }
-
-    var old_details = doc.details;                // 更新新闻中的元素
-    var new_details = new Array();
-    var path = config.appPath() + "/static/img/news/" + newsid;
-
-    // **为了完成新闻内容更新的功能，需要用到同步的方式进行
-    // ******所有的项目调用同一个函数，用到了async.apply，放在数组里，再调用async.series
-    console.log(texts);
-    var funcArr = [];
-    for (text in texts){
-      funcArr.push(async.apply(function(text, callback){
-        var item = {};
-        console.log("this is a judge.");
-        console.log(text);
-        if (text.toString().indexOf("pic") > 0){
-          console.log("this is a picture.");
-          item.type = 2;
-          item.content = "/img/news/" + newsid + new_details.length + ".jpg";
-          item.des = texts[text];
-          // TODO: 4.14号到这里
-          text = text.replace("news-pic-","");
-          if (files["upload"+text].size > 0) {                       // 有新上传的图片
-            fs.rename(files["upload"+text].path, path+new_details.length+".jpg",function(err){
-              new_details.push(item);
-              callback();
-            });
-          }else if (old_details[text] && old_details[text].type === 2){   // 原本是图片的形式时，需要把图片重命名
-            fs.rename(path+text+".jpg", path+new_details.length+".jpg", function(err){
-              new_details.push(item);
-              callback();
-            });
-          } else {
-            new_details.push(item);
-            callback();
-          }
-        } else {
-          console.log("this is a text.");
-          item.type = 1;
-          item.content = texts[text];
-          item.des = "";
-          new_details.push(item);
-          callback();
-        }
-      },text));
-    }
-    async.series(
-        funcArr
-        ,function(err){
-      doc.details = new_details;
-      dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
-        console.log("done");
-        callback(err);
-      });
-    });
+    callback({ret: 1, val: docs});                  // RETURN: 返回成功
   });
 };
 
-// 改变新闻的状态
-exports.changestate =  function (req, callback) {
-  var id = req.params.newsid;
-  var state = req.body.focus === "true" ? true : false;
-  dbnews.update({_id: new ObjectID(id)}, {
-    $set: { focus: state }
-  },function(err, doc) {
-    if(err) {
-      return callback(err);
+// 查询指定product
+exports.toedit = function (req, callback) {
+  dbproduct.findOne({_id : new ObjectID(req.params.id)}, function(err,docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
     }
-    if (state) {
-      return callback(err, {state: "焦点图"});
-    }
-    return callback(err, {state: "非焦点"});
+    callback({ret: 1, val: docs});                  // RETURN: 返回成功
   });
 };
 
-// 上传视频文件
-exports.uploadmovies =  function (req, callback) {
-  for (var i=1; i<=3; i++) {
-    if (req.files["upload"+i].size !== 0) {
-      var defaultpath = config.appPath() + "/static/movies/prod";
-      fs.rename(req.files["upload"+i].path, defaultpath + i +".mp4", function(err){});
+// 删除指定product
+exports.delproduct = function (product, callback) {
+  dbproduct.remove({_id: new ObjectID(product._id)}, function(err){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
     }
-  }
-  callback({ret: 1});
+    callback({ret: 1});                             // RETURN: 返回成功
+  });
+};
+
+// 删除所有
+exports.delall = function (req, callback) {
+  dbproduct.remove({lan : req.params.lan}, function(err){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    callback({ret: 1});                             // RETURN: 返回成功
+  });
 };

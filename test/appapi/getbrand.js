@@ -4,18 +4,14 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  numPerPage    : "20",
-  pageNum       : "1",
-  province      : "上海",
-  municipality  : "上海",
-  area          : "静安"
+  brand  : "宝岛"
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
   host: 'localhost',
   port: 3006,
-  path: '/appapi/store/simplified',
+  path: '/appapi/product/simplified',
   method: 'POST',
   headers:{
   'Content-Type':'application/x-www-form-urlencoded',

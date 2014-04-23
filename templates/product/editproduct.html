@@ -1,0 +1,187 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2>Edit Product</h2>
+      <hr>
+      <form id="form-edit-product" class="form-edit-product" role="form" enctype="multipart/form-data" method="post" action="/appbg/product/new/{{ language }}"> 
+        <dl class="des-list dl-horizontal">
+          <h3>Product </h3>
+          <dd>
+          <label for="name" class="col-sm-2 control-label">Name</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="name" name="name" value="{{ product.name }}" placeholder="name">
+            <input hidden="hidden" id="_id" name="_id" value="{{product._id.toString()}}">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Add Content</label>
+          <div class="col-sm-4">
+            <button id="add-picture" type="button" class="btn btn-primary">add picture</button>
+          </div>
+          </dd>
+          <br>
+          <dl id="pictures">
+            {%for index, picture in product.pictures%}
+            <dd>
+            <label class="col-sm-2 control-label">Picture</label>
+            <div class="col-sm-6">
+              <img src="{{product.content}}" width="300px" height="185px">
+              <input type="file" name="picture{{index}}" class="added-pic">
+              <textarea class="form-control" rows="1" id="picture{{index}}" name="picture-{{index}}" placeholder="description of picture.">{{picture.des}}</textarea>
+              </div>
+            <button class="btn btn-danger" del="">x</button>
+            </dd>
+            {%endfor%}
+          </dl>
+
+          <dd>
+          <label for="sale" class="col-sm-2 control-label">Sale</label>
+            <div class="col-sm-4">
+              <select class="form-control" type="text" id="sale" name="sale" placeholder="Sale">
+                <option>是</option>
+                <option>否</option>
+              </select>
+            </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="E-SPF" class="col-sm-2 control-label">E-SPF</label>
+            <div class="col-sm-4">
+              <select class="form-control" type="text" id="E-SPF" name="E-SPF" placeholder="Province">
+                <option>10</option>
+                <option>15</option>
+                <option>25</option>
+              </select>
+            </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="brand" class="col-sm-2 control-label">Brand</label>
+          <div class="col-sm-4">
+            <select class="form-control" type="text" id="brand" name="brand" placeholder="Brand">
+              <option>宝岛</option>
+              <option>依视路</option>
+            </select>
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store" class="col-sm-2 control-label">Store</label>
+            <div class="col-sm-4">
+              <select class="form-control" type="text" id="store" name="store" placeholder="Store">
+                <option>静安</option>
+              </select>
+            </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Add Content</label>
+          <div class="col-sm-4">
+            <button id="add-text" type="button" class="btn btn-primary">add text</button>
+          </div>
+          </dd>
+          <br>
+
+          <dl id="texts">
+            {%for index, text in product.texts%}
+            <dd>
+            <label class="col-sm-2 control-label">Text</label>
+            <div class="col-sm-6">
+              <textarea class="form-control" rows="2" id="text-{{index}}" name="text-{{index}}" placeholder="product text">{{text.content}}</textarea>
+              </div>
+            <button class="btn btn-danger" del="">x</button>
+            </dd>
+            {%endfor%}
+          </dl>
+
+          <dd>
+          <label for="product-options" class="col-sm-2 control-label">Options</label>
+          <div class="col-sm-6">
+            <button type="submit" class="btn btn-primary">save</button>
+            <a href="/appbg/product/{{language}}" class="btn btn-default">back</a>
+          </div>
+          </dd>
+          <br>
+        </dl>
+      </form>
+      <hr>
+    </div>
+  </div>
+</div>
+<script>
+  // 增加新闻内容
+  $("#add-text").click(function(event){
+    var elemnum = $("#texts").children("dd").length;
+    var add_row = "";
+    add_row +=
+          '<dd>' +
+          '<label class="col-sm-2 control-label">Text</label>' +
+          '<div class="col-sm-6">' +
+            '<textarea class="form-control" rows="2" id="text-' + elemnum + '" name="text-' + elemnum + '" placeholder="product text"></textarea>' +
+          '</div>' +
+          '<button class="btn btn-danger" del="">x</button>' +
+          '</dd>';
+    $("#texts").append(add_row);
+  });
+  
+  // 增加新闻图片
+  $("#add-picture").click(function(event){
+    var elemnum = $("#pictures").children("dd").length;
+    var add_row = "";
+    add_row +=
+          '<dd>' +
+          '<label class="col-sm-2 control-label">Picture</label>' +
+          '<div class="col-sm-6">' +
+            '<label>Choose a new picture.</label>' +
+            '<input type="file" name="picture' + elemnum + '" class="added-pic">' +
+            '<textarea class="form-control" rows="1" id="pic-' + elemnum + '" name="picture' + elemnum + '" placeholder="description of picture."></textarea>' +
+          '</div>' +
+          '<button class="btn btn-danger" del="">x</button>' +
+          '</dd>';
+    $("#pictures").append(add_row);
+  });
+
+  // 监控x按钮，删除点击的项
+  $("#texts").click(function(event){
+    if ($(event.target).attr("del") !== undefined){
+      $(event.target).parent().remove();
+    }
+  });
+  $("#pictures").click(function(event){
+    if ($(event.target).attr("del") !== undefined){
+      $(event.target).parent().remove();
+    }
+  });
+</script>
+{% endblock %}

@@ -25,11 +25,12 @@ exports.register = function (app) {
   app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
   app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
   app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
-
-  app.get('/appapi/regional', view.regional);  //获取省市县
+  //商店部分
   app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
+  app.get('/appapi/brand/:lan',view.brand);    //获取品牌列表
+  app.post('/appapi/product/:lan',view.products);   //根据品牌获取产品列表
+  
 
+  //其他
   app.get('/appapi/random',view.random);       //获取随机数 
-
-
 };

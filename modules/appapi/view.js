@@ -127,15 +127,22 @@ exports.sharelink = function(req, res) {
     res.end(JSON.stringify(ret));
   });
 };
-// 地区列表
-exports.regional = function(req, res) {
-  model.regional(function(ret){
-    res.end(JSON.stringify(ret));
-  });
-};
+
 // 门店列表
 exports.store = function(req, res){
   model.store(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+//获取品牌列表
+exports.brand = function(req, res){
+  model.brand(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+//获取品牌列表
+exports.products = function(req, res){
+  model.products(req,function(ret){
     res.end(JSON.stringify(ret));
   });
 }

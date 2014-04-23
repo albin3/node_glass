@@ -1,0 +1,125 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Essilor App Background</a>
+        </div>
+        <div class="navbar-collapse collapse">
+        </div>
+      </div>
+</div>
+
+<div class="container-fluid">
+      <div class="row">
+
+        {% include "../leftbars.html" %}
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">{{ Title }}</h1>
+          <h2 class="sub-header">Brand List</h2>
+
+          <div class="row">
+
+          <div class="inline-form">
+          <button class="btn btn-primary" id="addbrand">Add brand</button>
+          <button class="btn btn-danger">Delete all</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th class="col-md-1">Name</th>
+                  <th class="col-md-4">Summary</th>
+                  <th class="col-md-2">Picture</th>
+                  <th class="col-md-2">Options</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for brand in brandlist %}
+                <tr data-id="{{ brand._id.toString() }}">
+                  <td class="td-name">{{ brand.name }}</td>
+                  <td class="td-summary normal">{{ brand.summary }}</td>
+                  <td class="td-picture">
+                    <ul class=list-inline>
+                      <img src="/img/brand/{{ brand._id.toString() }}.jpg" width="50" height="31">
+                    </ul>
+                  </td>
+                  <td>
+                    <ul class=list-inline>
+                      <p></p>
+                      <li><a href="#" class="a-del-brand">delete</a></li>
+                    </ul>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="modal-edit-brand">
+      </div><!-- End modal -->
+</div>
+<script>
+      // 编辑幻灯片
+      $("#addbrand").click(function(){
+        $(".main .btn-primary").attr("disabled", true); // 灰掉按钮，免得点太快
+        window.location.href="addbrand/{{language}}";
+        $(".main .btn-primary").attr("disabled", false);
+      });
+     
+      // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+      $(".table-striped tbody").click(function(event){
+        if ($(event.target).context.className === "a-del-brand"){
+          event.preventDefault();   // 页面的焦点不变
+          delete_news(event);
+        }
+      });
+
+      // 删除新闻
+      function delete_news(event) { 
+        if (!confirm('确实要删除吗？')) {       // 要求确认
+          return;
+        }
+        var tr = $(event.target).parents("tr");
+        $.post("/appbg/brand/del",{
+          id: tr.attr("data-id")
+          }, function(data) {
+          data = JSON.parse(data);
+          if (!data.status) {
+            alert("删除失败");
+            return;
+          }
+          tr.remove();
+        });
+      }; 
+
+      // 删除所有数据
+      $(".btn-danger").click(function(){
+        if (!confirm('Delete All?')) {       // 要求确认
+          return;
+        }
+        $.post("/appbg/brand/delall/"+$("body").attr("lan"), function(data){
+          if(data.status) {
+            $(".table-striped tbody tr").remove();
+            alert("Delete Success..");
+            } else {
+            alert("Delete fail..");
+          }
+          },"json");
+      });
+</script>
+{% endblock %}
+

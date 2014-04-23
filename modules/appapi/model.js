@@ -15,6 +15,8 @@ var db_pra_coupon   = db.collection('couponpravided');
 var db_regional     = db.collection('regional');
 var db_store        = db.collection('store');
 var db_slide        = db.collection('slide');
+var db_brand        = db.collection('brand');
+var db_product      = db.collection('product');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -257,7 +259,7 @@ exports.slide = function (req, callback) {
 // 新闻详情
 exports.newsdetails = function (req, callback) {
   var newsid = req.params.newsid;
-  db_news.findOne({_id: new ObjectID(newsid), lan: req.params.lan}, function(err, doc){
+  db_news.findOne({_id: new ObjectID(newsid)}, function(err, doc){
     if (err){
       return callback({ret: 3});                                // RETURN: 查询出错
     }
@@ -451,7 +453,7 @@ exports.couponlist = function(req, callback) {
 };
 
 // ###门店品牌接口
-//获取省，市，区县借口
+//获取省，市，区县接口
 exports.regional = function(callback){
   db_regional.find({},function(err, docs){
     if (err) {
@@ -496,6 +498,46 @@ exports.store = function (req, callback) {
       delete docs[index].lan;
     }
     return callback({ret: 1, num:docs.length, list: docs});      // RETURN: 返回成功
+  });
+};
+//获取品牌列表
+exports.brand = function (req, callback){
+  db_brand.find({lan:req.params.lan},function(err,docs){
+    if (err) {
+      return callback({ret: 2});                                // RETURN: 查询错误
+    }
+    var brand = new Array();
+    var temp = new Array();
+    for(var i=0; i<docs.length; ){      
+      temp = [];
+      for (var j=0; j<6&&i<docs.length; j++,i++) {
+      	temp.push({url: "/img/brand/"+docs[i]._id.toString()+".jpg"});
+      }
+      brand.push(temp);
+    }
+    return callback({ret: 1, logolist: brand});
+  });
+
+}
+
+//根据品牌获取产品列表
+exports.products = function(req,callback){
+  var query = {};
+  query.brand = req.body.brand;
+  query.lan = req.params.lan;
+  db_product.find(query,function(err, docs){
+    if (err) {
+      return callback({ret: 2});                                // RETURN: 查询错误
+    }
+    var temp = new Array();
+    for(var i in docs){
+      var doc = docs[i];
+      var reg = {};
+      reg.name  = doc.name;
+      reg.sale   = doc.sale;
+      temp.push(reg);
+    }
+    return callback({ret: 1, products: temp});
   });
 };
 
