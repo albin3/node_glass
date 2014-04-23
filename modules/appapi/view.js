@@ -142,6 +142,7 @@ exports.brand = function(req, res){
 }
 //获取品牌列表
 exports.products = function(req, res){
+	console.log("**********");
   model.products(req,function(ret){
     res.end(JSON.stringify(ret));
   });

@@ -527,17 +527,17 @@ exports.products = function(req,callback){
   query.lan = req.params.lan;
   db_product.find(query,function(err, docs){
     if (err) {
-      return callback({ret: 2});                                // RETURN: 查询错误
+      return callback({ret: 2});           // RETURN: 查询错误
     }
-    var temp = new Array();
-    for(var i in docs){
-      var doc = docs[i];
-      var reg = {};
-      reg.name  = doc.name;
-      reg.sale   = doc.sale;
-      temp.push(reg);
-    }
-    return callback({ret: 1, products: temp});
+    for(doc in docs){
+    	delete docs[doc].store;
+    	delete docs[doc].lan;
+    	delete docs[doc].image;
+    	delete docs[doc].url;
+    	delete docs[doc].contents;
+    	docs[doc].url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
+	}
+    return callback({ret: 1, products: docs});
   });
 };
 
