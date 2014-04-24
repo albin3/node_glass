@@ -1,5 +1,6 @@
 var http_sync = require('./http-sync');
 var urlencode = require('urlencode'),
+    config    = require('../config'),
     MongoClient = require('mongodb'),
     mongojs = require('mongojs'),
     db = mongojs(config.dbinfo.dbname),
@@ -7,23 +8,6 @@ var urlencode = require('urlencode'),
     xlsx = require('node-xlsx'),
     password_hash = require('password-hash');
 
-// 建立后台用户的唯一索引
-MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
-      // 清空数据库
-        var dbaccount = db.collection('stores');
-        // 建索引
-        dbaccount.ensureIndex({ gps: "2d" },
-          {},
-          function (err) {
-            if (err) { 
-              console.log(err.message); 
-            } else { 
-              console.log("create 2d index success"); 
-            }
-            db.close();
-          }
-          );
-});
 
 var values = ["徐家汇", "人民广场", "中山公园", "宜山路", "漕河泾开发区", "张江高科", "佘山", "泗泾", "杨高中路", "国权路"];
 
