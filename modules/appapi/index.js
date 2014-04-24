@@ -26,6 +26,9 @@ exports.register = function (app) {
   app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
   app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
   //商店部分
+  app.get('/appapi/getprovince/:lan',view.getprovince); //获取省
+  app.post('/appapi/getcity/:lan',view.getcity); //获取市
+  app.post('/appapi/getarea/:lan',view.getarea); //获取县区
   app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
   app.get('/appapi/brand/:lan',view.brand);    //获取品牌列表
   app.post('/appapi/product/:lan',view.products);   //根据品牌获取产品列表

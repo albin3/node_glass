@@ -455,22 +455,51 @@ exports.couponlist = function(req, callback) {
 
 // ###门店品牌接口
 //获取省，市，区县接口
-exports.regional = function(callback){
+exports.getprovince = function(req,callback){
   db_regional.find({},function(err, docs){
     if (err) {
-      return callback({ret: 2});                                // RETURN: 查询错误
+      callback({ret: 2});                           // RETURN: 数据库出错
     }
-    var regional = new Array();
-    for(var i in docs){
-      var doc = docs[i];
-      var reg = {};
-      reg.index  = doc.index;
-      reg.area   = doc.prov;
-      reg.municipality   = doc.city;
-      reg.province = doc.county;
-      regional.push(reg);
+    var province = new Array();
+    for(var i=0;i<docs.length;i++){
+      if(province.indexOf(docs[i].city)===-1){
+        province.push(docs[i].city);
+      }     
+    }                // RETURN: 返回成功
+    callback({ret: 2,province: province}); 
+  });
+};
+exports.getcity = function(req,callback){
+  var body = req.body;
+  db_regional.find({city: body.province}, function(err, docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
     }
-    return callback({ret: 1, regional: regional});
+    var city = new Array();
+    for(var i=0;i<docs.length;i++){
+      if(city.indexOf(docs[i].county)===-1){
+        city.push(docs[i].county);
+      }
+    }
+    console.log(city);
+    callback({ret: 1, val: city});
+  });
+};
+exports.getarea = function(req,callback){
+  var body = req.body;
+  var query = {};
+  query.city = body.province;
+  query.county = body.city;
+  db_regional.find(query, function(err, docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    var area = new Array();
+    for(var i=0;i<docs.length;i++){
+      area.push(docs[i].prov);
+    }
+    console.log(area);
+    callback({ret: 1, val: area});
   });
 };
 

@@ -4,6 +4,7 @@ var mongojs = require('mongojs');
 
 var db = mongojs(config.dbinfo.dbname);
 var dbstore = db.collection('store');
+var dbregional = db.collection('regional');
 var ObjectID = require('mongodb').ObjectID;
 
 // 新建store
@@ -70,3 +71,42 @@ exports.delall = function (req, callback) {
     callback({ret: 1});                             // RETURN: 返回成功
   });
 };
+
+// 获取城市
+exports.getcity = function (body, callback) {
+  console.log(body);
+  dbregional.find({city: body.province}, function(err, docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    var city = new Array();
+    for(var i=0;i<docs.length;i++){
+      if(city.indexOf(docs[i].county)===-1){
+        city.push(docs[i].county);
+      }
+    }
+    console.log(city);
+    callback({ret: 1, val: city});
+  });
+};
+
+// 获取区县
+exports.getarea = function (body, callback) {
+  console.log(body);
+  var query = {};
+  query.city = body.province;
+  query.county = body.city;
+  console.log(query);
+  dbregional.find(query, function(err, docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    console.log(docs);
+    var area = new Array();
+    for(var i=0;i<docs.length;i++){
+      area.push(docs[i].prov);
+    }
+    console.log(area);
+    callback({ret: 1, val: area});
+  });
+}

@@ -8,4 +8,6 @@ exports.register = function (app) {
   app.get('/appbg/store/edit/:id/:lan', view.toedit);
   app.post('/appbg/store/del', view.delstore);
   app.post('/appbg/store/delall/:lan', view.delall);
+  app.post('/appbg/store/getcity', view.getcity);
+  app.post('/appbg/store/getarea', view.getarea);
 };
