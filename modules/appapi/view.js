@@ -128,6 +128,24 @@ exports.sharelink = function(req, res) {
   });
 };
 
+// 获取省
+exports.getprovince = function(req, res){
+  model.getprovince(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 获取市
+exports.getcity = function(req, res){
+  model.getcity(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 获取县区
+exports.getarea = function(req, res){
+  model.getarea(req,function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
 // 门店列表
 exports.store = function(req, res){
   model.store(req,function(ret){

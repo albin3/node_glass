@@ -41,3 +41,17 @@ exports.delall = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+//根据省获得城市
+exports.getcity = function (req, res) {
+  model.getcity (req.body, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}
+
+//根据省获得城市
+exports.getarea= function (req, res) {
+  model.getarea (req.body, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}

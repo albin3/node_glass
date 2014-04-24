@@ -49,7 +49,41 @@
           <label for="province" class="col-sm-2 control-label">Province</label>
             <div class="col-sm-4">
               <select class="form-control" type="text" id="province" name="province" placeholder="Province">
-                <option>上海</option>
+              <option>--</option>
+              <option>上海</option>
+              <option>北京</option>
+              <option>天津</option>
+              <option>河北省</option>
+              <option>山西省</option>
+              <option>内蒙古自治区</option>
+              <option>辽宁省</option>
+              <option>吉林省</option>
+              <option>黑龙江省</option>
+              <option>江苏省</option>
+              <option>浙江省</option>
+              <option>安徽省</option>
+              <option>福建省</option>
+              <option>江西省</option>
+              <option>山东省</option>
+              <option>河南省</option>
+              <option>湖北省</option>
+              <option>湖南省</option>
+              <option>广东省</option>
+              <option>广西壮族自治区</option>
+              <option>海南省</option>
+              <option>重庆</option>
+              <option>四川省</option>
+              <option>贵州省</option>
+              <option>云南省</option>
+              <option>西藏自治区</option>
+              <option>陕西省</option>
+              <option>甘肃省</option>
+              <option>青海省</option>
+              <option>宁夏回族自治区</option>
+              <option>新疆维吾尔自治区</option>
+              <option>台湾省</option>
+              <option>香港特别行政区</option>
+              <option>澳门特别行政区</option>
               </select>
             </div>
           </dd>
@@ -58,8 +92,7 @@
           <label for="municipality" class="col-sm-2 control-label">Municipality</label>
           <div class="col-sm-4">
             <select class="form-control" type="text" id="municipality" name="municipality" placeholder="Municipality">
-              <option>上海</option>
-              <option>北京</option>
+            <option>--</option>
             </select>
           </div>
           </dd>
@@ -68,7 +101,7 @@
           <label for="area" class="col-sm-2 control-label">Area</label>
             <div class="col-sm-4">
               <select class="form-control" type="text" id="area" name="area" placeholder="Area">
-                <option>静安</option>
+                <option>--</option>
               </select>
             </div>
           </dd>
@@ -101,4 +134,27 @@
     </div>
   </div>
 </div>
+<script>
+  $("#province").change(function(){
+    var text = $("#province").find("option:selected").text();
+    $.post('/appbg/store/getcity',{province: text},function(data){
+      $("#municipality").children("option").remove();
+      $("#municipality").append("<option>--</option>");
+      for(var i=0;i<data.val.length;i++){
+        $("#municipality").append("<option>" + data.val[i] + "</option>");
+      }
+    },'json');
+  });
+  $("#municipality").change(function(){
+    var text1 = $("#municipality").find("option:selected").text();
+    var text2 = $("#province").find("option:selected").text();
+    $.post('/appbg/store/getarea',{city: text1,province: text2},function(data){
+      $("#area").children("option").remove();
+      $("#area").append("<option>--</option>");
+      for(var i=0;i<data.val.length;i++){
+        $("#area").append("<option>" + data.val[i] + "</option>");
+      }
+    },'json');
+  });
+</script>
 {% endblock %}
