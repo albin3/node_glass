@@ -7,12 +7,13 @@ var post_data={
   numPerPage    : "20",
   pageNum       : "1",
   brand  : "宝岛",
-  'E-SPF'  : 15
+  'E-SPF'  : 10
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
-  host: 'localhost',
+  //host: 'localhost',
+  host: 'http://183.61.111.195/',
   port: 3006,
   path: '/appapi/product/simplified',
   method: 'POST',
