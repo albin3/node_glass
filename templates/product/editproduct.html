@@ -64,24 +64,24 @@
 
           <dd>
           <label for="sale" class="col-sm-2 control-label">Sale</label>
-            <div class="col-sm-4">
-              <select class="form-control" type="text" id="sale" name="sale" placeholder="Sale">
-                <option>yes</option>
-                <option>no</option>
-              </select>
-            </div>
+          <div class="col-sm-4">
+            <select class="form-control" type="text" id="sale" name="sale" placeholder="Sale">
+              <option>yes</option>
+              <option>no</option>
+            </select>
+          </div>
           </dd>
           <br>
 
           <dd>
           <label for="E-SPF" class="col-sm-2 control-label">E-SPF</label>
-            <div class="col-sm-4">
-              <select class="form-control" type="text" id="E-SPF" name="E-SPF" placeholder="Province">
-                <option>10</option>
-                <option>15</option>
-                <option>25</option>
-              </select>
-            </div>
+          <div class="col-sm-4">
+            <select class="form-control" type="text" id="E-SPF" name="E-SPF" placeholder="Province">
+              <option>10</option>
+              <option>15</option>
+              <option>25</option>
+            </select>
+          </div>
           </dd>
           <br>
 
@@ -95,20 +95,77 @@
           </div>
           </dd>
           <br>
-          <dd>
-          <label for="store" class="col-sm-2 control-label">Store</label>
-            <div class="col-sm-4">
-              <select class="form-control" type="text" id="store" name="store" placeholder="Store">
-                <option>静安</option>
-              </select>
-            </div>
-          </dd>
-          <br>
 
           <dd>
           <label class="col-sm-2 control-label">Add Content</label>
           <div class="col-sm-4">
             <button id="add-text" type="button" class="btn btn-primary">add text</button>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Nomal Coupon Content</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="nc-content" name="nc-content" value="{{ product.nc_content}}" placeholder="例: 200元代金券">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Nomal Coupon Detail</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="nc-detail" name="nc-detail" value="{{ product.nc_detail }}" placeholder="例: 只限宝岛门店使用">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Nomal Coupon Remained</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="nc-remain" name="nc-remain" value="{{ product.nc_remain }}" placeholder="例: 10000">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Nomal Coupon Time</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="nc-start" name="nc-start" value="{{ product.nc_start }}" placeholder="例: 2014-4-26">
+            <input type="text" class="form-control" id="nc-end" name="nc-end" value="{{ product.nc_end }}" placeholder="例: 2016-9-01">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Special Coupon Content</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="sc-content" name="sc-content" value="{{ product.sc_content }}" placeholder="例: 200元代金券">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Special Coupon Detail</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="sc-detail" name="sc-detail" value="{{ product.sc_detail }}" placeholder="例: 只限宝岛门店使用">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Special Coupon Remained</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="sc-remain" name="sc-remain" value="{{ product.sc_remain }}" placeholder="例: 10000">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Special Coupon Time</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="sc-start" name="sc-start" value="{{ product.sc_start }}" placeholder="例: 2014-4-26">
+            <input type="text" class="form-control" id="sc-end" name="sc-end" value="{{ product.sc_end }}" placeholder="例: 2016-9-01">
           </div>
           </dd>
           <br>
@@ -136,6 +193,23 @@
         </dl>
       </form>
       <hr>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">Brand</th>
+              <th class="col-sm-2">Province</th>
+              <th class="col-sm-2">Municipality</th>
+              <th class="col-sm-2">Area</th>
+              <th class="col-sm-3">Address</th>
+              <th class="col-sm-2">Telephone</th>
+              <th class="col-sm-2">Options</th>
+            </tr>
+          </thead>
+          <tbody id="store-list">
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
