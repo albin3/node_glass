@@ -4,7 +4,7 @@ var model = require('./model');
 // product管理主页
 exports.products = function (req, res) {
   model.allproduct(req, function(ret){
-    res.render('product/index', {Title: "Product Management", products: ret.val ,language: req.params.lan});
+    res.render('product/index', {Title: "Products Management", products: ret.val ,language: req.params.lan});
   });
 };
 
