@@ -104,6 +104,18 @@
           </dd>
           <br>
 
+          <dl id="texts">
+            {%for index, text in product.texts%}
+            <dd>
+            <label class="col-sm-2 control-label">Text</label>
+            <div class="col-sm-6">
+              <textarea class="form-control" rows="2" id="text-{{index}}" name="text-{{index}}" placeholder="product text">{{text.content}}</textarea>
+              </div>
+            <button class="btn btn-danger" del="">x</button>
+            </dd>
+            {%endfor%}
+          </dl>
+
           <dd>
           <label class="col-sm-2 control-label">Nomal Coupon Content</label>
           <div class="col-sm-4">
@@ -169,18 +181,6 @@
           </div>
           </dd>
           <br>
-
-          <dl id="texts">
-            {%for index, text in product.texts%}
-            <dd>
-            <label class="col-sm-2 control-label">Text</label>
-            <div class="col-sm-6">
-              <textarea class="form-control" rows="2" id="text-{{index}}" name="text-{{index}}" placeholder="product text">{{text.content}}</textarea>
-              </div>
-            <button class="btn btn-danger" del="">x</button>
-            </dd>
-            {%endfor%}
-          </dl>
 
           <dd>
           <label for="product-options" class="col-sm-2 control-label">Options</label>
