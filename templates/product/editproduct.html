@@ -207,6 +207,21 @@
             </tr>
           </thead>
           <tbody id="store-list">
+          {%for store in stores%}
+          <tr data-id="{{ store._id.toString() }}">
+          <td>{{store.name}}</td>
+          <td>{{store.province}}</td>
+          <td>{{store.municipality}}</td>
+          <td>{{store.area}}</td>
+          <td>{{store.address}}</td>
+          <td>{{store.telephone}}</td>
+          <td>
+            <ul class=list-inline>
+              <input class="check-sale" type="checkbox">
+              <input class="check-discount" type="checkbox">
+            </ul>
+          </tr>
+          {%endfor%}
           </tbody>
         </table>
       </div>
