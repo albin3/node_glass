@@ -74,7 +74,6 @@ exports.delall = function (req, callback) {
 
 // 获取城市
 exports.getcity = function (body, callback) {
-  console.log(body);
   dbregional.find({city: body.province}, function(err, docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
@@ -85,28 +84,23 @@ exports.getcity = function (body, callback) {
         city.push(docs[i].county);
       }
     }
-    console.log(city);
     callback({ret: 1, val: city});
   });
 };
 
 // 获取区县
 exports.getarea = function (body, callback) {
-  console.log(body);
   var query = {};
   query.city = body.province;
   query.county = body.city;
-  console.log(query);
   dbregional.find(query, function(err, docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
-    console.log(docs);
     var area = new Array();
     for(var i=0;i<docs.length;i++){
       area.push(docs[i].prov);
     }
-    console.log(area);
     callback({ret: 1, val: area});
   });
 }

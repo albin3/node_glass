@@ -48,7 +48,6 @@ exports.newuser = function (user, callback) {
       user.clicknum = 0;      // 链接点击的次数
       db_user.insert(user, function (err, doc) {
         if (err) {
-          console.log(err.message);
           return callback({ret: 2});             // RETURN: 注册字段重复
         }
         return callback({                        // RETURN: 注册成功
@@ -218,8 +217,6 @@ exports.updateuser = function (req, callback) {
 exports.pagednews = function (req, callback) {
   var numPerPage = parseInt(req.params.numPerPage);
   var pageNum = parseInt(req.params.pageNum);
-  console.log(numPerPage);
-  console.log(pageNum);
   db_news.find({lan: req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
@@ -465,8 +462,8 @@ exports.getprovince = function(req,callback){
       if(province.indexOf(docs[i].city)===-1){
         province.push(docs[i].city);
       }     
-    }                // RETURN: 返回成功
-    callback({ret: 2,province: province}); 
+    }                                   
+    callback({ret: 1, val: province});              // RETURN: 返回成功
   });
 };
 exports.getcity = function(req,callback){
@@ -481,7 +478,6 @@ exports.getcity = function(req,callback){
         city.push(docs[i].county);
       }
     }
-    console.log(city);
     callback({ret: 1, val: city});
   });
 };
@@ -498,7 +494,6 @@ exports.getarea = function(req,callback){
     for(var i=0;i<docs.length;i++){
       area.push(docs[i].prov);
     }
-    console.log(area);
     callback({ret: 1, val: area});
   });
 };
@@ -513,9 +508,6 @@ exports.store = function (req, callback) {
   query.municipality = data.municipality;
   query.area = data.area;
   query.lan = req.params.lan;
-  console.log(numPerPage);
-  console.log(pageNum);
-  console.log(query);
   db_store.find(query).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
