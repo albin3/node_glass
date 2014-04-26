@@ -241,7 +241,7 @@ exports.slide = function (req, callback) {
     }
     var listnum = 0;
     var imglist = new Array();
-    for (index in docs) {
+    for (var i; i<docs.length; i++) {
       imglist.push({
         _id   : docs[index]._id.toString(),
         title   : docs[index].title,
