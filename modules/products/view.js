@@ -8,21 +8,25 @@ exports.products = function (req, res) {
   });
 };
 
-// 去product页面
+// 编辑商品
 exports.toedit = function (req, res) {
   model.toedit(req,function(ret){
-    res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan});
+    model.getStores(req, function(stores){
+      if (stores.ret !== 1)
+        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: []});
+      else 
+        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: stores.val});
+    });
   }); 
 };
 
-// 去product页面
+// 新增商品
 exports.tonewproduct = function (req, res) {
-  res.render('product/editproduct', {Title: "Edit Product", language: req.params.lan});
+  res.render('product/editproduct', {Title: "Edit Product", language: req.params.lan, stores: []});
 };
 
 // 新增product
 exports.newproduct = function (req, res) {
-  console.log(req.body);
   model.newproduct(req, function(ret) {
     res.redirect('/appbg/product/'+req.params.lan);
   });
@@ -38,6 +42,20 @@ exports.delproduct = function (req, res) {
 // 删除所有
 exports.delall = function (req, res) {
   model.delall (req, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 改变商品的店铺列表
+exports.sale = function(req, res) {
+  model.sale(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 改变商品的店铺促销状态
+exports.discount = function(req, res) {
+  model.discount(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };

@@ -563,7 +563,7 @@ exports.products = function(req,callback){
     if (err) {
       return callback({ret: 2});           // RETURN: 查询错误
     }
-    for(doc in docs){
+    for(var doc=0; doc<docs.length; doc++){
     	delete docs[doc].store;
     	delete docs[doc].lan;
     	delete docs[doc].image;
@@ -610,6 +610,56 @@ exports.productdetail = function(req,callback){
   });
 };
 
+// 根据经纬度获得两点间的距离
+function getDistance(lngA, latA, lngB, latB) {
+  var lat1 = Math.PI/180*latA;
+  var lat2 = Math.PI/180*latB;
+  var lon1 = Math.PI/180*lngA;
+  var lon2 = Math.PI/180*lngB;
+  var Pi  = Math.PI;
+  var R   = 6371.004;//地球半径
+  var sin = Math.sin;
+  var cos = Math.cos;
+  var Distance =  Math.acos(Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1))*R;
+  return Distance;
+}
+
+// 根据商品id获取店铺（分页）
+exports.prodstores = function(req, callback) {
+  var query   = req.params;
+  query.skip  = parseInt(query.skip);
+  query.limit = parseInt(query.limit);
+  query.lng   = parseFloat(query.lng);
+  query.lat   = parseFloat(query.lat);
+  db_product.findOne({_id: new ObjectID(query.prodid)}, function(err, doc){
+    if (err) {
+      callback({ret: 2});
+    }
+    if (!doc.stores || doc.stores.length === 0) {
+      callback({ret: 1, docs: []});
+    }
+    var storeIds = [];
+    for (var i=0; i<doc.stores.length; i++) {
+      storeIds.push(new ObjectID(doc.stores[i]));
+    }
+    db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+      if (err) {
+        return callback({ret: 2});
+      }
+      var discountMap = {};
+      for (var i=0; i<doc.stores.length; i++) {
+        discountMap[doc.stores[i]] = doc.discount[i];
+      }
+      for (var i=0; i<docs.length; i++) {
+        docs[i].discount  = discountMap[docs[i]._id.toString()];
+        docs[i].distance  = getDistance(query.lng, query.lat, docs[i].gps[0], docs[i].gps[1]);
+      }
+      return callback({ret: 1, val: docs});
+    });
+  });
+};
+
+//#############产生随机数#############
 //获取随机数
 exports.random = function(callback){
   return callback({ret: 1, num:0.5});

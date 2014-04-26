@@ -192,6 +192,7 @@
           <br>
         </dl>
       </form>
+      <h4>Choose Stores (Show only when edit product)</h4>
       <hr>
       <div class="table-responsive">
         <table class="table table-striped">
@@ -203,7 +204,7 @@
               <th class="col-sm-2">Area</th>
               <th class="col-sm-3">Address</th>
               <th class="col-sm-2">Telephone</th>
-              <th class="col-sm-2">Options</th>
+              <th class="col-sm-3">sale & discount</th>
             </tr>
           </thead>
           <tbody id="store-list">
@@ -217,8 +218,10 @@
           <td>{{store.telephone}}</td>
           <td>
             <ul class=list-inline>
-              <input class="check-sale" type="checkbox">
-              <input class="check-discount" type="checkbox">
+              <label>&nbsp;&nbsp;&nbsp;</label>
+              <input class="check-sale" type="checkbox" {%if store.sale%}checked{%endif%}>
+              <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+              <input class="check-discount" type="checkbox" {%if store.discount%}checked{%endif%}>
             </ul>
           </tr>
           {%endfor%}
@@ -261,7 +264,7 @@
     $("#pictures").append(add_row);
   });
 
-  // 监控x按钮，删除点击的项
+  // 删除编辑响应
   $("#texts").click(function(event){
     if ($(event.target).attr("del") !== undefined){
       $(event.target).parent().remove();
@@ -271,6 +274,36 @@
     if ($(event.target).attr("del") !== undefined){
       $(event.target).parent().remove();
     }
+  });
+
+  // 选择店铺响应
+  $(".check-sale").change(function(event){
+    if ($(event.target).get(0).checked === false)
+      $(event.target).parent().children(".check-discount").get(0).checked = false;
+    $.post("/appbg/product/sale/"+$("body").attr("lan"),{
+      storeid : $(event.target).parent().parent().parent().attr("data-id"),
+      prodid  : $("#_id").val(),
+      checked : $(event.target).get(0).checked
+      }, function(data){
+        if (data.ret !== 1) {
+          alert("Fail done.");
+        }
+      }, "json");
+  });
+  $(".check-discount").change(function(event){
+    if (!$(event.target).parent().children(".check-sale").get(0).checked) {
+      $(event.target).get(0).checked = false;
+      return ;
+    }
+    $.post("/appbg/product/discount/"+$("body").attr("lan"),{
+      storeid : $(event.target).parent().parent().parent().attr("data-id"),
+      prodid  : $("#_id").val(),
+      checked : $(event.target).get(0).checked
+      }, function(data){
+        if (data.ret !== 1) {
+          alert("Fail done.");
+        }
+      }, "json");
   });
 </script>
 {% endblock %}

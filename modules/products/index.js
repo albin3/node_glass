@@ -8,4 +8,6 @@ exports.register = function (app) {
   app.get('/appbg/product/edit/:id/:lan', view.toedit);
   app.post('/appbg/product/del', view.delproduct);
   app.post('/appbg/product/delall/:lan', view.delall);
+  app.post('/appbg/product/sale/:lan', view.sale);
+  app.post('/appbg/product/discount/:lan', view.discount);
 };
