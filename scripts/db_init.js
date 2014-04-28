@@ -161,6 +161,22 @@ MongoClient.connect("mongodb://" + config.dbinfo.dbhost + ":" + config.dbinfo.db
           db.close();
       });
 });
+// 建立店铺的地理索引
+MongoClient.connect(config.dbinfo.dbpath, function (err, db) {
+    var dbaccount = db.collection('store');
+    // 建地理索引
+    dbaccount.ensureIndex({ gps: "2d" },
+      {},
+      function (err) {
+      if (err) { 
+      console.log(err.message); 
+      } else { 
+      console.log("create 2d index success"); 
+      }
+      db.close();
+      }
+      );
+});
 // 将中国地省市县数据导入到mongodb中
 var load_regional = function() {
   var objs = xlsx.parse(__dirname+"/regional.xlsx").worksheets[0].data;
@@ -172,7 +188,13 @@ var load_regional = function() {
     var data = {};
     data.index = obj[0].value;
     data.prov  = obj[1].value;
+    if (data.prov[data.prov.length-1] === "省") {
+      data.prov = data.prov.slice(0, data.prov.length-1);
+    }
     data.city  = obj[2].value;
+    if (data.city[data.city.length-1] === "市") {
+      data.city = data.city.slice(0, data.city.length-1);
+    }
     data.county= obj[3].value;
     dbregional.insert(data, function(err, doc) {
     });

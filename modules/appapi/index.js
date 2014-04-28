@@ -10,8 +10,8 @@ exports.register = function (app) {
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
   app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);             // 用户登录
                                                                                     
-  app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);                  // 新闻列表
-  app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                             // 新闻焦点图片
+  app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);             // 新闻列表
+  app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                            // 新闻焦点图片
   app.all('/appapi/newsdetails/:newsid', view.newsdetails);                         // 新闻详情
                                                                                     
   app.post('/appapi/games/uvcatcher/:lan', view.uvcatcher);                         // 游戏-紫外线收割机
@@ -23,18 +23,19 @@ exports.register = function (app) {
   app.post('/appapi/coupon/getcoupon', view.getcoupon);                             // 优惠券获得
   app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
   app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
-  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                     // 优惠券列表
+  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                    // 优惠券列表
   app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
   //商店部分
-  app.get('/appapi/getprovince/:lan',view.getprovince); //获取省
-  app.post('/appapi/getcity/:lan',view.getcity); //获取市
-  app.post('/appapi/getarea/:lan',view.getarea); //获取县区
-  app.post('/appapi/store/:lan',view.store);   //根据地区获取门店列表
-  app.get('/appapi/brand/:lan',view.brand);    //获取品牌列表
-  app.post('/appapi/product/:lan',view.products);   //根据品牌获取产品列表
-  app.all('/appapi/productdetail/:id',view.productdetail);  //获取产品详情
-  
+  app.get('/appapi/getprovince/:lan',view.getprovince);                             // 获取省
+  app.post('/appapi/getcity/:lan',view.getcity);                                    // 获取市
+  app.post('/appapi/getarea/:lan',view.getarea);                                    // 获取县区
+  app.post('/appapi/store/:lan',view.store);                                        // 根据地区获取门店列表
+  app.get('/appapi/brand/:lan',view.brand);                                         // 获取品牌列表
+  app.all('/appapi/product/:lan',view.products);                                    // 根据品牌获取产品列表
+  app.all('/appapi/productdetail/:id',view.productdetail);                          // 获取产品详情
+
+  app.all('/appapi/stores/:prodid/:limit/:skip/:lng/:lat',view.prodstores);         // 获取商品的店铺信息
 
   //其他
-  app.get('/appapi/random',view.random);       //获取随机数 
+  app.get('/appapi/random',view.random);                                            // 获取随机数 
 };

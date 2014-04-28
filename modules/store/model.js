@@ -16,9 +16,9 @@ exports.newstore = function (req, callback) {
     store._id = new ObjectID(id);
     dbstore.update({_id : store._id}, store, function(err, doc){
       if(err){
-        return callback({ret: 2});
+        return callback({ret: 2});                    // RETURN: 返回错误
       }
-      return callback({ret: 1, val: doc}); 
+      return callback({ret: 1, val: doc});            // RETURN: 修改成功
     });
   }else{
     delete store._id;
@@ -27,7 +27,7 @@ exports.newstore = function (req, callback) {
         return callback({ret: 2});                    // RETURN: 数据库插入出错
       }
       doc._id = doc._id.toString();
-      return callback({ret: 1, val: doc});            // RETURN: 插入成功
+      return callback({ret: 1, val: doc});            // RETURN: 新建成功
     });
   }
 };
@@ -38,7 +38,7 @@ exports.allstore = function (req, callback) {
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+    callback({ret: 1, val: docs});                  // RETURN: 查询成功
   });
 };
 
@@ -48,7 +48,7 @@ exports.toedit = function (req, callback) {
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+    callback({ret: 1, val: docs});                  // RETURN: 查询成功
   });
 };
 
@@ -74,7 +74,6 @@ exports.delall = function (req, callback) {
 
 // 获取城市
 exports.getcity = function (body, callback) {
-  console.log(body);
   dbregional.find({city: body.province}, function(err, docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
@@ -85,28 +84,33 @@ exports.getcity = function (body, callback) {
         city.push(docs[i].county);
       }
     }
-    console.log(city);
     callback({ret: 1, val: city});
   });
 };
 
 // 获取区县
 exports.getarea = function (body, callback) {
-  console.log(body);
   var query = {};
   query.city = body.province;
   query.county = body.city;
-  console.log(query);
   dbregional.find(query, function(err, docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
-    console.log(docs);
     var area = new Array();
     for(var i=0;i<docs.length;i++){
       area.push(docs[i].prov);
     }
-    console.log(area);
     callback({ret: 1, val: area});
+  });
+}
+
+// 分页获取店铺信息
+exports.getStores = function(query, callback) {
+  dbstore.find({lan: query.lan}).sort({province: 1}).skip(query.skip*query.limit).limit(query.limit, function(err, docs){
+    if (err) 
+      return callback({ret: 2});
+    else 
+      return callback({ret: 1, val: docs});
   });
 }

@@ -170,6 +170,13 @@ exports.productdetail = function(req, res){
     res.end(JSON.stringify(ret));
   });
 }
+// 根据商品获得店铺
+exports.prodstores = function(req, res) {
+  model.prodstores(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+// ##########紫外线随机数
 // 紫外线随机数
 exports.random = function(req, res){
   model.random(function(ret){
