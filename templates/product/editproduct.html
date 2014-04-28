@@ -223,10 +223,13 @@
               <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
               <input class="check-discount" type="checkbox" {%if store.discount%}checked{%endif%}>
             </ul>
+          </td>
           </tr>
           {%endfor%}
           </tbody>
         </table>
+          <ul class="pagination">
+          </ul>
       </div>
     </div>
   </div>
@@ -304,6 +307,19 @@
           alert("Fail done.");
         }
       }, "json");
+  });
+  // 处理分页的
+  function func1(page_id){
+    alert(page_id);
+  };
+  // 初始化分页列表
+  $().ready(function(){
+    var options = {
+      currentPage: 2,
+      totalPages: 10,
+      numberOfPages: 5
+    };
+    $(".pagination").get(0).paginator({current_page: 1, page_count: 15, button_number:5, pager_click: func1 });
   });
 </script>
 {% endblock %}

@@ -636,7 +636,7 @@ exports.prodstores = function(req, callback) {
       callback({ret: 2});
     }
     if (!doc.stores || doc.stores.length === 0) {
-      callback({ret: 1, docs: []});
+      callback({ret: 1, val: []});
     }
     var storeIds = [];
     for (var i=0; i<doc.stores.length; i++) {
