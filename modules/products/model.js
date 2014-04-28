@@ -5,7 +5,10 @@ var fs = require("fs");
 
 var db = mongojs(config.dbinfo.dbname);
 var dbproduct = db.collection('product');
+var dbstore   = db.collection('store');
 var ObjectID = require('mongodb').ObjectID;
+
+var store_model = require('../store/model');
 
 // 新建product
 exports.newproduct = function (req, callback) {
@@ -31,25 +34,24 @@ exports.newproduct = function (req, callback) {
   console.log(product);
   console.log("*******************");
   
-
   if(id!==''){
     product._id = new ObjectID(id);
     dbproduct.update({_id : product._id}, product, function(err, doc){
       if(err){
-        return callback({ret: 2});
+        return callback({ret: 2});                    // RETURN: 编辑商品出错
       }
       saveimage(files,doc);
-      return callback({ret: 1, val: doc}); 
+      return callback({ret: 1, val: doc});            // RETURN: 编辑商品成功
     });
   }else{
     delete product._id;
     dbproduct.insert(product, function(err, doc){
       if (err) {
-        return callback({ret: 2});                    // RETURN: 数据库插入出错
+        return callback({ret: 2});                    // RETURN: 新建商品出错
       }
       saveimage(files,doc);
       doc._id = doc._id.toString();
-      return callback({ret: 1, val: doc});            // RETURN: 插入成功
+      return callback({ret: 1, val: doc});            // RETURN: 新建商品成功
     });
   }
 };
@@ -104,5 +106,112 @@ exports.delall = function (req, callback) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
     callback({ret: 1});                             // RETURN: 返回成功
+  });
+};
+
+// ####################店铺关联产品操作##################
+// 引用store管理里面的函数
+exports.getStores = function(req, callback){
+  dbproduct.findOne({_id: new ObjectID(req.params.id)}, function(err, doc){
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 错误
+    }
+    if (!doc.stores) {
+      doc.stores   = [];
+      doc.discount = [];
+    }
+    var query   = {};
+    query.lan   = req.params.lan;
+    query.skip  = 0;
+    query.limit = 15;
+    store_model.getStores(query, function(data){
+      if (data.ret !== 1) {
+        return callback(data);                     // RETURN: 调用错误
+      }
+      var show_stores = data.val;
+      for (var i=0; i<show_stores.length; i++) {
+        var obj      = show_stores[i];
+        obj.sale     = false;
+        obj.discount = false;
+        for (var j=0; j<doc.stores.length; j++) {
+          if (obj._id.toString() === doc.stores[j]) {
+            obj.sale     = true;
+            obj.discount = doc.discount[j];
+          }
+        }
+      }
+      console.log(show_stores);
+      return callback({ret: 1, val: show_stores});    // RETURN: 调用成功
+    });
+  });
+}
+
+// 删除数组中元素
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+// 产品关联的店铺操作
+exports.sale = function(req, callback) {
+  var query = req.body;
+  dbproduct.findOne({_id: new ObjectID(query.prodid)}, function(err, doc){
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 错误
+    }
+    if (doc.stores === undefined) {
+      doc.stores   = [];//商店列表
+      doc.discount = [];//促销列表
+    }
+    if (query.checked === "true") {
+      doc.stores.push(query.storeid);
+      doc.discount.push(false);
+    } else if(query.checked === "false"){
+      var stores = doc.stores;
+      for (var i=0; i<stores.length; i++) {
+        if (stores[i] === query.storeid) {
+          doc.stores.remove(i);
+          doc.discount.remove(i);
+          break;
+        }
+      }
+    } else {
+      console.log(query.checked);
+    }
+    dbproduct.update({_id: new ObjectID(query.prodid)}, doc, function(err, docs){
+      if (err) {
+        return callback({ret: 2});
+      }
+      return callback({ret: 1});
+    });
+  });
+};
+// 店铺促销
+exports.discount = function(req, callback) {
+  var query = req.body;
+  dbproduct.findOne({_id: new ObjectID(query.prodid)}, function(err, doc){
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 错误
+    }
+    if (doc.stores === undefined) {
+      doc.stores   = [];//商店列表
+      doc.discount = [];//促销列表
+    }
+    var stores = doc.stores;
+    for (var i=0; i<stores.length; i++) {
+      if (stores[i] === query.storeid) {
+        if (query.checked === "true") {
+          doc.discount[i] = true;
+        } else if(query.checked === "false") {
+          doc.discount[i] = false;
+        }
+      }
+    }
+    dbproduct.update({_id: new ObjectID(query.prodid)}, doc, function(err, docs){
+      if (err) {
+        return callback({ret: 2});                // RETURN: 修改失败
+      }
+      return callback({ret: 1});                  // RETURN: 修改成功
+    });
   });
 };
