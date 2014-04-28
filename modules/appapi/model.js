@@ -241,13 +241,13 @@ exports.slide = function (req, callback) {
     }
     var listnum = 0;
     var imglist = new Array();
-    for (var i; i<docs.length; i++) {
+    for (var i=0; i<docs.length; i++) {
       imglist.push({
-        _id   : docs[index]._id.toString(),
-        title   : docs[index].title,
-        summary : docs[index].summary,
-        url     : docs[index].url,
-        picture   : "/img/slide/" + docs[index]._id.toString() + ".jpg"
+        _id   : docs[i]._id.toString(),
+        title   : docs[i].title,
+        summary : docs[i].summary,
+        url     : docs[i].url,
+        picture   : "/img/slide/" + docs[i]._id.toString() + ".jpg"
       });
       listnum += 1;
     }
