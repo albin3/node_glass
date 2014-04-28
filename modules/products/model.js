@@ -215,3 +215,13 @@ exports.discount = function(req, callback) {
     });
   });
 };
+
+// 上传视频文件
+exports.uploadmovies =  function (req, callback) {
+  console.log(req.files);
+  if (req.files["video"].size !== 0) {
+    var defaultpath = config.appPath() + "/static/movies/video";
+    fs.rename(req.files["video"].path, defaultpath + req.params.lan +".mp4", function(err){});
+  }
+  callback({ret: 1});                             // RETURN: 返回成功
+};
