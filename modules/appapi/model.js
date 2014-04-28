@@ -221,7 +221,7 @@ exports.pagednews = function (req, callback) {
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
     }
-    for (index in docs) {
+    for (var index=0; index<docs.length; index++) {
       docs[index]._id = docs[index]._id.toString();
       delete docs[index].details;
       delete docs[index].focus;
