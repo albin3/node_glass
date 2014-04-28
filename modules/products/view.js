@@ -13,16 +13,16 @@ exports.toedit = function (req, res) {
   model.toedit(req,function(ret){
     model.getStores(req, function(stores){
       if (stores.ret !== 1)
-        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: []});
+        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: [], totalPages: 0});
       else 
-        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: stores.val});
+        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: stores.val, totalPages: stores.totalPages});
     });
   }); 
 };
 
 // 新增商品
 exports.tonewproduct = function (req, res) {
-  res.render('product/editproduct', {Title: "Edit Product", language: req.params.lan, stores: []});
+  res.render('product/editproduct', {Title: "Edit Product", language: req.params.lan, stores: [], totalPages: 0});
 };
 
 // 新增product
@@ -60,9 +60,15 @@ exports.discount = function(req, res) {
   });
 };
 
+// 分页获取店铺信息
+exports.storesinpage = function(req, res) {
+  model.storesinpage(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+
 // 上传视频文件
 exports.uploadmovies = function (req, res) {
-  console.log("**************");
   model.uploadmovies(req, function (ret) {
     res.redirect("/appbg/product/"+req.params.lan);
     console.log("#############");

@@ -10,5 +10,6 @@ exports.register = function (app) {
   app.post('/appbg/product/delall/:lan', view.delall);
   app.post('/appbg/product/sale/:lan', view.sale);
   app.post('/appbg/product/discount/:lan', view.discount);
+  app.post('/appbg/product/stores/:page_num/:lan', view.storesinpage);
   app.post('/appbg/product/uploadmovies/:lan', view.uploadmovies);
 };

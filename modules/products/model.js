@@ -30,10 +30,6 @@ exports.newproduct = function (req, callback) {
       delete product[pro];
     }
   }
-  console.log("*******************");
-  console.log(product);
-  console.log("*******************");
-  
   if(id!==''){
     product._id = new ObjectID(id);
     dbproduct.update({_id : product._id}, product, function(err, doc){
@@ -114,7 +110,7 @@ exports.delall = function (req, callback) {
 exports.getStores = function(req, callback){
   dbproduct.findOne({_id: new ObjectID(req.params.id)}, function(err, doc){
     if (err) {
-      return callback({ret: 2});                    // RETURN: 错误
+      return callback({ret: 2});                                                // RETURN: 错误
     }
     if (!doc.stores) {
       doc.stores   = [];
@@ -126,7 +122,7 @@ exports.getStores = function(req, callback){
     query.limit = 15;
     store_model.getStores(query, function(data){
       if (data.ret !== 1) {
-        return callback(data);                     // RETURN: 调用错误
+        return callback(data);                                                  // RETURN: 调用错误
       }
       var show_stores = data.val;
       for (var i=0; i<show_stores.length; i++) {
@@ -140,12 +136,49 @@ exports.getStores = function(req, callback){
           }
         }
       }
-      console.log(show_stores);
-      return callback({ret: 1, val: show_stores});    // RETURN: 调用成功
+      dbstore.count({lan: req.params.lan}, function(err, count){
+        if (err) {
+          return callback({ret: 2});                                            // RETURN: 调用错误
+        }
+        var totalPages = Math.ceil(count/20);
+        return callback({ret: 1, val: show_stores, totalPages: totalPages});    // RETURN: 调用成功
+      });
     });
   });
 }
-
+// 分页获取店铺信息
+exports.storesinpage = function(req, callback){
+  var page   = parseInt(req.params.page_num);
+  var lan    = req.params.lan;
+  var prodid = req.body._id;
+  dbstore.find({lan: lan}).skip((page-1)*20).limit(20, function(err, docs){
+    if (err) {
+      return callback({ret: 2});                                                // RETURN: 调用错误
+    }
+    dbproduct.findOne({_id: new ObjectID(prodid)}, function(err, doc){
+      if (err || !doc) {
+        return callback({ret: 2});                                             // RETURN: 调用错误
+      }
+      if (!doc.stores) {
+        doc.stores   = [];
+        doc.discount = [];
+      }
+      var show_stores = docs;
+      for (var i=0; i<show_stores.length; i++) {
+        var obj      = show_stores[i];
+        obj.sale     = false;
+        obj.discount = false;
+        for (var j=0; j<doc.stores.length; j++) {
+          if (obj._id.toString() === doc.stores[j]) {
+            obj.sale     = true;
+            obj.discount = doc.discount[j];
+          }
+        }
+      }
+      return callback({ret: 1, val: show_stores});                              // RETURN: 调用成功
+    });
+  });
+};
 // 删除数组中元素
 Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
@@ -176,7 +209,6 @@ exports.sale = function(req, callback) {
         }
       }
     } else {
-      console.log(query.checked);
     }
     dbproduct.update({_id: new ObjectID(query.prodid)}, doc, function(err, docs){
       if (err) {
@@ -218,7 +250,6 @@ exports.discount = function(req, callback) {
 
 // 上传视频文件
 exports.uploadmovies =  function (req, callback) {
-  console.log(req.files);
   if (req.files["video"].size !== 0) {
     var defaultpath = config.appPath() + "/static/movies/video";
     fs.rename(req.files["video"].path, defaultpath + req.params.lan +".mp4", function(err){});

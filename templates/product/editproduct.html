@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 
 {% block css_files %}
+  <link rel="stylesheet" href="/css/utils/bootstrap-pagination.css"/>
   {% parent %}
 {% endblock %}
 
@@ -195,7 +196,7 @@
       <h4>Choose Stores (Show only when edit product)</h4>
       <hr>
       <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped" totalPages="{{totalPages}}">
           <thead>
             <tr>
               <th class="col-sm-2">Brand</th>
@@ -228,8 +229,9 @@
           {%endfor%}
           </tbody>
         </table>
-          <ul class="pagination">
-          </ul>
+        </div>
+        <div class="pagination">
+        </div>
       </div>
     </div>
   </div>
@@ -280,7 +282,7 @@
   });
 
   // 选择店铺响应
-  $(".check-sale").change(function(event){
+  var check_sale_clicked = function(event){
     if ($(event.target).get(0).checked === false)
       $(event.target).parent().children(".check-discount").get(0).checked = false;
     $.post("/appbg/product/sale/"+$("body").attr("lan"),{
@@ -292,8 +294,8 @@
           alert("Fail done.");
         }
       }, "json");
-  });
-  $(".check-discount").change(function(event){
+  };
+  var check_discount_clicked = function(event){
     if (!$(event.target).parent().children(".check-sale").get(0).checked) {
       $(event.target).get(0).checked = false;
       return ;
@@ -307,19 +309,57 @@
           alert("Fail done.");
         }
       }, "json");
-  });
-  // 处理分页的
-  function func1(page_id){
-    alert(page_id);
   };
+  // 店铺选择监控check-box
+  $("#store-list").click(function(event){
+    if(event.target.className === "check-sale")
+      check_sale_clicked(event);
+    else if (event.target.className === "check-discount")
+      check_discount_clicked(event);
+  });
   // 初始化分页列表
   $().ready(function(){
     var options = {
-      currentPage: 2,
-      totalPages: 10,
-      numberOfPages: 5
+      currentPage: 1,
+      totalPages: parseInt($("table").attr("totalPages")),
+      numberOfPages: 20,
+      onPageChanged: function(e,oldPage,newPage){
+        $.post("/appbg/product/stores/"+newPage+"/"+$("body").attr("lan"), {
+          _id: $("#_id").val()
+        }, function(data){
+          $("#store-list tr").remove();
+          for (var i=0; i<data.val.length; i++) {
+            var store = data.val[i];
+            var new_tr = '<tr data-id="'+ store._id.toString() + '">' +
+            '<td>' + store.name         + '</td>' +
+            '<td>' + store.province     + '</td>' +
+            '<td>' + store.municipality + '</td>' +
+            '<td>' + store.area         + '</td>' +
+            '<td>' + store.address      + '</td>' +
+            '<td>' + store.telephone    + '</td>' +
+            '<td>' +
+            '<ul class=list-inline>'  +
+            '<label>&nbsp;&nbsp;&nbsp;</label>' +
+            '<input class="check-sale" type="checkbox"';
+            if (store.sale)
+              new_tr += ' checked';
+            var tmp = '>' +
+            '<label>&nbsp;&nbsp;&nbsp;&nbsp;</label>' +
+            '<input class="check-discount" type="checkbox"';
+            new_tr += tmp;
+            if (store.discount)
+              new_tr+= ' checked';
+            tmp = '>' +
+            '</ul>' +
+            '</td>'   +
+            '</tr>';
+            new_tr += tmp;
+            $("#store-list").append(new_tr);
+          }
+        }, "json");
+      }
     };
-    $(".pagination").get(0).paginator({current_page: 1, page_count: 15, button_number:5, pager_click: func1 });
+    $(".pagination").bootstrapPaginator(options);
   });
 </script>
 {% endblock %}
