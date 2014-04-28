@@ -59,3 +59,13 @@ exports.discount = function(req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+// 上传视频文件
+exports.uploadmovies = function (req, res) {
+  console.log("**************");
+  model.uploadmovies(req, function (ret) {
+    res.redirect("/appbg/product/"+req.params.lan);
+    console.log("#############");
+  });
+};
+
