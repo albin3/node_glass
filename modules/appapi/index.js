@@ -38,4 +38,5 @@ exports.register = function (app) {
 
   //其他
   app.get('/appapi/random',view.random);                                            // 获取随机数 
+  app.post('/appapi/gettips/:lan',view.gettips);                                         // 获取tips
 };

@@ -30,6 +30,7 @@ exports.allnews = function (language, callback) {
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
 exports.addnews =  function (req, current_user, callback) {
   var news = req.body;
+  console.log(req.body);
   var language = req.params.lan;
   news.focus = false;     // 是否设置为焦点图
   news.lan = language;

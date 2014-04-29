@@ -183,3 +183,9 @@ exports.random = function(req, res){
     res.end(JSON.stringify(ret));
   });
 }
+//获取tips
+exports.gettips = function(req, res){
+  model.gettips(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}

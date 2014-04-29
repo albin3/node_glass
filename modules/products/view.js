@@ -71,7 +71,6 @@ exports.storesinpage = function(req, res) {
 exports.uploadmovies = function (req, res) {
   model.uploadmovies(req, function (ret) {
     res.redirect("/appbg/product/"+req.params.lan);
-    console.log("#############");
   });
 };
 

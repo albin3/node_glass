@@ -46,6 +46,7 @@
           <thead>
             <tr>
               <th class="col-sm-1">Weather</th>
+              <th class="col-sm-1">E-SPF</th>
               <th class="col-sm-4">Content</th>
               <th class="col-sm-1">Operation</th>
             </tr>
@@ -54,6 +55,7 @@
             {%for tip in tips%}
             <tr data-id="{{ tip._id.toString() }}">
               <td>{{tip.weather}}</td>
+              <td>{{tip.espf}}</td>
               <td class="normal">{{tip.detail}}</td>
               <td>
                 <ul class=list-inline>
@@ -101,11 +103,20 @@
               </select>
             </div>
           </div>
-
+          <div class="form-group">
+            <label for="E-SPF" class="col-sm-3 control-label">E-SPF</label>
+            <div class="col-sm-8">
+              <select class="form-control" type="text" id="espf" name="espf" placeholder="E-SPF">
+                <option>10</option>
+                <option>15</option>
+                <option>25</option>
+              </select>
+            </div>
+          </div>
           <div class="form-group">
             <label for="tips-detail" class="col-sm-3 control-label">Tips Content</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" id="tips-detail" name="tips-detail" placeholder="Tips Content">
+              <textarea class="form-control" rows="3" id="tips-detail" name="tips-detail" placeholder="Tips Content"></textarea>
             </div>
           </div>
         </form>
@@ -156,6 +167,7 @@
   $(".modal-footer .btn-primary").click(function(event){
     var weather = $("#weather").val();
     var detail = $("#tips-detail").val();
+    var espf = $("#espf").val();
     if (!detail.length){
       alert("Tips can not be empty");
       return ;
@@ -164,13 +176,15 @@
       '/appbg/tips/new/{{language}}',
       {
         weather: weather,
-        detail   : detail
+        detail : detail,
+        espf   : espf
       }, function(data){
       if (data.ret === 1) {
         tip = data.val;
         var new_raw =
             '<tr data-id="' + tip._id + '">' +
               '<td>' + tip.weather + '</td>' +
+              '<td>' + tip.espf + '</td>' +
               '<td class="normal">' + tip.detail + '</td>' +
               '<td>' +
                 '<ul class=list-inline>' +

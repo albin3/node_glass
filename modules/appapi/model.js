@@ -17,6 +17,7 @@ var db_store        = db.collection('store');
 var db_slide        = db.collection('slide');
 var db_brand        = db.collection('brand');
 var db_product      = db.collection('product');
+var db_tips          = db.collection('tips');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -664,6 +665,24 @@ exports.prodstores = function(req, callback) {
 exports.random = function(callback){
   return callback({ret: 1, num:0.5});
 }
+// 获取tips
+exports.gettips = function(req, callback){
+  var query = {
+    lan : req.params.lan,
+    espf: req.body.espf,
+    weather : req.body.weather
+  }
+  db_tips.find(query, function(err,docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    var tips = new Array();
+    for(var i=0;i<docs.length;i++){
+      tips.push(docs[i].detail);
+    }
+    callback({ret: 1, val: tips});                  // RETURN: 返回成功
+  });
+};
 // 统计分享次数
 exports.sharelink = function(req, callback) {
   var userid = req.params.userid;
