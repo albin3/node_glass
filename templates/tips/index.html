@@ -84,22 +84,11 @@
             <label for="weather" class="col-sm-3 control-label">Weather</label>
             <div class="col-sm-8">
               <select class="form-control" type="text" id="weather" name="weather" placeholder="Weather">
-                {% if language === "simplified" %}
-                <option>晴天</option>
-                <option>多云</option>
-                <option>雨天</option>
-                <option>下雪</option>
-                {% elseif language === "traditional" %}
-                <option>晴天</option>
-                <option>多雲</option>
-                <option>雨天</option>
-                <option>下雪</option>
-                {% elseif language === "english" %}
                 <option>sunny</option>
                 <option>cloudy</option>
+                <option>overcast</option>
                 <option>rain</option>
                 <option>snow</option>
-                {% endif %}
               </select>
             </div>
           </div>
