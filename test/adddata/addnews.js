@@ -5,8 +5,8 @@ var qs=require('querystring');
 
 for(var i=0;i<1000;i++){
 var post_data={
-  title: '新闻'+i,
-  summary:'这里是内容这里是内容'+i
+  title: '新闻标题'+i,
+  summary:'这里是简介这里是简介'+i
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
