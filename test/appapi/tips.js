@@ -4,18 +4,16 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  numPerPage    : "20",
-  pageNum       : "1",
-  brand  : "宝岛",
-  'E-SPF'  : 10
+  espf: 25,
+  lan : "simplified",
+  weather : "sunny"
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
-  //host: 'localhost',
-  host: 'http://183.61.111.195',
+  host: '183.61.111.195',
   port: 3006,
-  path: '/appapi/product/simplified',
+  path: '/appapi/gettips/simplified',
   method: 'POST',
   headers:{
   'Content-Type':'application/x-www-form-urlencoded',
