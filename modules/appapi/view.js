@@ -95,6 +95,12 @@ exports.fgrank = function (req, res) {
 };
 
 // ###优惠券
+// 用户存储优惠券
+exports.storecoupon = function(req, res) {
+  model.storecoupon(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
 // 获得优惠券
 exports.getcoupon = function(req, res) {
   model.getcoupon(req, function(ret){

@@ -17,7 +17,8 @@ var db_store        = db.collection('store');
 var db_slide        = db.collection('slide');
 var db_brand        = db.collection('brand');
 var db_product      = db.collection('product');
-var db_tips          = db.collection('tips');
+var db_tips         = db.collection('tips');
+var db_usercoupon   = db.collection('usercoupon');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -400,6 +401,44 @@ exports.fgrank = function(req, callback) {
   });
 };
 // ###优惠券
+// 用户收藏优惠券
+exports.storecoupon = function(req, callback) {
+  var prodid = req.body.prodid||"ffffffffffff";
+  var userid = req.body.userid||"ffffffffffff";
+  db_product.findOne({_id: new ObjectID(prodid)}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 4});                                  // RETURN: 产品不存在
+    }
+    if (!doc["sc-remain"] || doc["sc-remain"] <= 0) {
+      return callback({ret: 5});                                  // RETURN: 优惠券没了
+    }
+    db_usercoupon.findOne({prodid: prodid, userid: userid}, function(err, saved){
+      if (err) {
+        return callback({ret: 2});                                // RETURN: 返回数据查询错误
+      }
+      if (saved) {
+        return callback({ret: 3});                                // RETURN: 已经存在
+      }
+      db_usercoupon.insert({
+        prodid:  prodid, 
+        userid:  userid,
+        content: doc["sc-content"],
+        detail : doc["sc-detail"],
+        start  : doc["sc-start"],
+        end    : doc["sc-end"],
+        dt     : new Date().getTime()
+      }, function(err, saved){
+        if (err) {
+          return callback({ret: 2});                              // RETURN: 错误
+        }
+        db_product.update({_id: new ObjectID(prodid)}, {$inc: {"sc-remain": -1}}, function(err, doc) {
+        });
+        return callback({ret: 1});                                // RETURN: 存储成功
+      });
+    });
+  });
+};
+
 // 获得优惠券
 exports.getcoupon = function(req, callback) { 
   var data     = req.body;
@@ -497,22 +536,7 @@ exports.couponlist = function(req, callback) {
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
     }
-    var couponlist = new Array();
-    for (var i in docs) {
-      var doc    = docs[i];
-      var coupon = {};
-      coupon._id       = doc._id;
-      coupon.couponkey = doc.couponkey;
-      coupon.userid    = doc.userid;
-      coupon.detail    = doc.coupon.detail;
-      coupon.index     = doc.coupon.index;
-      coupon.off       = doc.coupon.off;
-      coupon.name      = doc.coupon.name;
-      coupon.range     = doc.coupon.range;
-      coupon.time      = new Date(doc.coupon.time).getTime();
-      couponlist.push(coupon);
-    }
-    return callback({ret: 1, couponlist: couponlist});                // RETURN: 优惠券列表
+    return callback({ret: 1, val: docs});                       // RETURN: 优惠券列表
   });
 };
 

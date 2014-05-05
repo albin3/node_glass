@@ -28,7 +28,7 @@ exports.tonewproduct = function (req, res) {
 // 新增product
 exports.newproduct = function (req, res) {
   model.newproduct(req, function(ret) {
-    res.redirect('/appbg/product/edit/'+req.params.lan);
+    res.redirect('/appbg/product/'+req.params.lan);
   });
 };
 
