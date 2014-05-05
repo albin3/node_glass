@@ -19,7 +19,7 @@ exports.newtips = function (req, callback) {
   });
 };
 
-// 查询所有优惠券
+// 查询所tips
 exports.alltips = function (req, callback) {
   dbtips.find({lan : req.params.lan}, function(err,docs){
     if (err) {

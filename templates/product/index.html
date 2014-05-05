@@ -59,7 +59,7 @@
             <tr data-id="{{ product._id.toString() }}">
               <td>{{product.name}}</td>
               <td>{{product.brand}}</td>
-              <td>{{product.E-SPF}}</td>
+              <td>{{product["E-SPF"]}}</td>
               <td>
                 <ul class=list-inline>
                   <li><a href="edit/{{ product._id.toString() }}/{{language}}" class="a-edit-product">edit</a></li>

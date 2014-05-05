@@ -17,6 +17,7 @@ var db_store        = db.collection('store');
 var db_slide        = db.collection('slide');
 var db_brand        = db.collection('brand');
 var db_product      = db.collection('product');
+var db_tips          = db.collection('tips');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -40,20 +41,35 @@ exports.newuser = function (user, callback) {
       } else {
         user.isworker = parseInt(doc.level);// 用户可能分等级
       }
-  // 插入数据库
+      // 插入数据库
       user.password = user.password || "111111";
       user.password = password_hash.generate(user.password);
       user.disable  = false;
       user.sharenum = 0;      // 分享链接的次数
       user.clicknum = 0;      // 链接点击的次数
+      user.name     = "unknown";
+      user.sex      = "unknown";
+      user.age      = "unknown";
+      user.job      = "unknown";
+      user.location = "unknown";
+      user.workerid = "unknown";
       db_user.insert(user, function (err, doc) {
         if (err) {
           return callback({ret: 2});             // RETURN: 注册字段重复
         }
         return callback({                        // RETURN: 注册成功
           ret      : 1, 
-               userid   : doc._id.toString(),
-               isworker : doc.isworker
+          val      : {
+          userid   : doc._id.toString(),
+          email    : doc.email,
+          tel      : doc.tel,
+          isworker : doc.isworker,
+          name     : doc.name,
+          sex      : doc.sex,
+          age      : doc.age,
+          job      : doc.job,
+          location : doc.location
+          }
         });
       });
     });
@@ -79,8 +95,17 @@ exports.usersignin = function (user, callback) {
       if (!err && doc) {                        // RETURN: 第三方账号已存在
         return callback({
            ret      : 1,
-           userid   : doc._id.toString(),
-           isworker : doc.isworker
+          val      : {
+          userid   : doc._id.toString(),
+          email    : doc.email,
+          tel      : doc.tel,
+          isworker : doc.isworker,
+          name     : doc.name,
+          sex      : doc.sex,
+          age      : doc.age,
+          job      : doc.job,
+          location : doc.location
+          }
         });
       }
       db_user.insert({
@@ -91,8 +116,17 @@ exports.usersignin = function (user, callback) {
       },function(err, u){
         return callback({
            ret      : 1,
-           userid   : u._id.toString(),
-           isworker : u.isworker
+           val      : {
+           userid   : doc._id.toString(),
+           email    : doc.email,
+           tel      : doc.tel,
+           isworker : doc.isworker,
+           name     : doc.name,
+           sex      : doc.sex,
+           age      : doc.age,
+           job      : doc.job,
+           location : doc.location
+          }
         });
       });
     } else {
@@ -107,10 +141,19 @@ exports.usersignin = function (user, callback) {
           !password_hash.verify(user.password, doc.password)){
         return callback({ret: 2});         // RETURN: 账号密码不正确
       }
-      return callback({                             // RETURN: 账号密码正确
+      return callback({                    // RETURN: 账号密码正确
         ret      : 1,
-             userid   : doc._id.toString(),
-             isworker : doc.isworker
+        val      : {
+        userid   : doc._id.toString(),
+        email    : doc.email,
+        tel      : doc.tel,
+        isworker : doc.isworker,
+        name     : doc.name,
+        sex      : doc.sex,
+        age      : doc.age,
+        job      : doc.job,
+        location : doc.location
+       } 
       });
     }
   });
@@ -140,8 +183,17 @@ exports.chpassword = function (user, callback) {
       }
       return callback({                           // RETURN: 账号密码正确
              ret      : 1,
+             val      : {
              userid   : doc._id.toString(),
-             isworker : doc.isworker
+             email    : doc.email,
+             tel      : doc.tel,
+             isworker : doc.isworker,
+             name     : doc.name,
+             sex      : doc.sex,
+             age      : doc.age,
+             job      : doc.job,
+             location : doc.location
+            } 
       });
     });
   });
@@ -198,14 +250,28 @@ exports.updateuser = function (req, callback) {
     mid.tel = user.tel || mid.tel;
     mid.email = user.email || mid.email;
     mid.sex = user.sex || mid.sex;
+    mid.isworker = user.isworker || user.isworker;
+    mid.name     = user.name     || user.name;
+    mid.age      = user.age      || user.age;
+    mid.job      = user.job      || user.job;
+    mid.location = user.location || user.location;
     db_user.update(query, mid, function(err, doc){
       if (err) {
         return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
       }
       return callback({                  // RETURN: 修改成功
              ret      : 1,
-             userid   : mid._id.toString(),
-             isworker : mid.isworker
+             val      : {
+             userid   : doc._id.toString(),
+             email    : doc.email,
+             tel      : doc.tel,
+             isworker : doc.isworker,
+             name     : doc.name,
+             sex      : doc.sex,
+             age      : doc.age,
+             job      : doc.job,
+             location : doc.location
+            } 
       });
     });
   });
@@ -563,20 +629,20 @@ exports.products = function(req,callback){
     if (err) {
       return callback({ret: 2});           // RETURN: 查询错误
     }
+    var prods = [];
     for(var doc=0; doc<docs.length; doc++){
-    	delete docs[doc].store;
-    	delete docs[doc].lan;
-    	delete docs[doc].image;
-    	delete docs[doc].url;
-    	delete docs[doc].contents;
+      var prod = {};
+      prod.name = docs[doc].name;
+      prod._id  = docs[doc]._id;
     	if(docs[doc].sale==='yes'){
-    		docs[doc].sale = true;
+    		prod.sale = true;
     	}else{
-    		docs[doc].sale = false;
+    		prod.sale = false;
     	}
-    	docs[doc].url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
-	}
-    return callback({ret: 1, products: docs});
+    	prod.url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
+      prods.push(prod);
+	  }
+    return callback({ret: 1, val: prods});
   });
 };
 
@@ -601,11 +667,13 @@ exports.productdetail = function(req,callback){
     con = doc.contents;
     delete doc.contents;
     delete doc.image;
+    delete doc.stores;
+    delete doc.discount;
     return callback({
     				ret: 1, 
-    				products: doc,
-    				image : pic,
-    				contents: con
+            products: doc,
+            image : pic,
+            contents: con
     				});
   });
 };
@@ -626,23 +694,61 @@ function getDistance(lngA, latA, lngB, latB) {
 
 // 根据商品id获取店铺（分页）
 exports.prodstores = function(req, callback) {
+  var near_store   = true;
   var query   = req.params;
   query.skip  = parseInt(query.skip);
   query.limit = parseInt(query.limit);
   query.lng   = parseFloat(query.lng);
   query.lat   = parseFloat(query.lat);
+  if (query.lng===0&&query.lat===0&&query.prov==="null"&&query.muni==="null"&&query.area==="null") {
+    query.prov = "北京";
+    query.muni = "北京";
+    near_store = false;
+  }
+  if (query.prov.indexOf("省")!==-1 || query.prov.indexOf("市")!==-1) {
+    query.prov = query.prov.slice(0, query.prov.length-1);
+  }
+  if (query.muni.indexOf("市")!==-1) {
+    query.muni = query.muni.slice(0, query.muni.length-1);
+  }
+  if (query.area.indexOf("区")!==-1 || query.area.indexOf("县")!==-1) {
+    query.area = query.area.slice(0, query.area.length-1);
+  }
+  if (query.prov !== "null") {
+    eval("query.prov = /"+query.prov+"/");
+  } else {
+    query.prov = /./;
+  }
+  if (query.muni !== "null") {
+    eval("query.muni = /"+query.muni+"/");
+  } else {
+    query.muni = /./;
+  }
+  if (query.area !== "null") {
+    eval("query.area = /"+query.area+"/");
+  } else {
+    query.area = /./;
+  }
+  if (query.cont !== "null") {
+    eval("query.cont = /"+query.cont+"/");
+  } else {
+    query.cont = /./;
+  }
   db_product.findOne({_id: new ObjectID(query.prodid)}, function(err, doc){
-    if (err) {
+    if (err || !doc) {
       callback({ret: 2});
     }
     if (!doc.stores || doc.stores.length === 0) {
-      callback({ret: 1, val: []});
+      callback({ret: 1, val: {stores: [], near: false}});
     }
     var storeIds = [];
+    if (!doc.stores) {
+      doc.stores = [];
+    }
     for (var i=0; i<doc.stores.length; i++) {
       storeIds.push(new ObjectID(doc.stores[i]));
     }
-    db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}, province: query.prov, municipality: query.muni, area: query.area, $or:[{address: query.cont}, {name: query.cont}]}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
       if (err) {
         return callback({ret: 2});
       }
@@ -654,7 +760,10 @@ exports.prodstores = function(req, callback) {
         docs[i].discount  = discountMap[docs[i]._id.toString()];
         docs[i].distance  = getDistance(query.lng, query.lat, docs[i].gps[0], docs[i].gps[1]);
       }
-      return callback({ret: 1, val: docs});
+      if (docs.length === 0) {
+        near_store = false;
+      }
+      return callback({ret: 1, val: {stores: docs, near: near_store}});
     });
   });
 };
@@ -664,6 +773,25 @@ exports.prodstores = function(req, callback) {
 exports.random = function(callback){
   return callback({ret: 1, num:0.5});
 }
+// 获取tips
+exports.gettips = function(req, callback){
+  var query = {
+    lan : req.params.lan,
+    espf: req.body.espf,
+    weather : req.body.weather
+  }
+  console.log(query);
+  db_tips.find(query, function(err,docs){
+    if (err) {
+      callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    var tips = new Array();
+    for(var i=0;i<docs.length;i++){
+      tips.push(docs[i].detail);
+    }
+    callback({ret: 1, val: tips});                  // RETURN: 返回成功
+  });
+};
 // 统计分享次数
 exports.sharelink = function(req, callback) {
   var userid = req.params.userid;

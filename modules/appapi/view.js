@@ -37,7 +37,7 @@ exports.resetpassword = function (req, res) {
 
 // 验证用户有效性
 exports.usersignin = function (req, res) {
-  model.usersignin(req.params, function(ret){
+  model.usersignin(req.body, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
@@ -180,6 +180,12 @@ exports.prodstores = function(req, res) {
 // 紫外线随机数
 exports.random = function(req, res){
   model.random(function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+//获取tips
+exports.gettips = function(req, res){
+  model.gettips(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 }

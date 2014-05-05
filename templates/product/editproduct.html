@@ -50,11 +50,11 @@
           </dd>
           <br>
           <dl id="pictures">
-            {%for index, picture in product.pictures%}
+            {%for index, picture in product.image%}
             <dd>
             <label class="col-sm-2 control-label">Picture</label>
             <div class="col-sm-6">
-              <img src="{{product.content}}" width="300px" height="185px">
+              <img src="{{picture.url}}" width="300px" height="185px">
               <input type="file" name="picture{{index}}" class="added-pic">
               <textarea class="form-control" rows="1" id="picture{{index}}" name="picture-{{index}}" placeholder="description of picture.">{{picture.des}}</textarea>
               </div>
@@ -106,11 +106,11 @@
           <br>
 
           <dl id="texts">
-            {%for index, text in product.texts%}
+            {%for i, index in product.contents%}
             <dd>
             <label class="col-sm-2 control-label">Text</label>
             <div class="col-sm-6">
-              <textarea class="form-control" rows="2" id="text-{{index}}" name="text-{{index}}" placeholder="product text">{{text.content}}</textarea>
+              <textarea class="form-control" rows="2" id="text-{{i}}" name="text-{{i}}" placeholder="product text">{{index}}</textarea>
               </div>
             <button class="btn btn-danger" del="">x</button>
             </dd>
