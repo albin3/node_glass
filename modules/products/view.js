@@ -13,7 +13,7 @@ exports.toedit = function (req, res) {
   model.toedit(req,function(ret){
     model.getStores(req, function(stores){
       if (stores.ret !== 1)
-        res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: [], totalPages: 0});
+        res.render('product/editproduct', {Title: "Edit Product", product: {}, language: req.params.lan, stores: [], totalPages: 0});
       else 
         res.render('product/editproduct', {Title: "Edit Product", product: ret.val, language: req.params.lan, stores: stores.val, totalPages: stores.totalPages});
     });

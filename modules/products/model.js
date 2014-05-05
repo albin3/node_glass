@@ -12,33 +12,60 @@ var store_model = require('../store/model');
 
 // 新建product
 exports.newproduct = function (req, callback) {
-  var files = req.files;
+  var files   = req.files;
   var product = req.body;
+  console.log(req.body);
   product.lan = req.params.lan;
   product.image = new Array();
   product.contents = new Array();
   var id = product._id;
-  for(pro in product){
-    if(pro.toString().indexOf("pic")!==-1){ 
-      var temp = {};
-      temp.des = product[pro];  
-      temp.url = pro;
-      product.image.push(temp);
-      delete product[pro]; 
-    }else if(pro.toString().indexOf("text")!==-1){
-      product.contents.push(product[pro]);
-      delete product[pro];
+  dbproduct.findOne({_id: ObjectID(id)}, function(err, old_prod){
+    if (err) {
+      return callback({ret: 2});                      // RETURN: 查询数据库错误
     }
-  }
+    var old_imgs = old_prod.image || [];
+    var old_cont = old_prod.contents || [];
+    var new_imgs = [];
+    var new_cont = [];
+    for (var i=0; i<20; i++) {
+      if (product["text-"+i]) {
+        var text = product["text-"+i];
+        delete product["text-"+i];
+        new_cont.push(text);
+      }
+      if (product["picture-"+i] !== undefined) {
+        var len = new_imgs.length;
+        var img = {};
+        img.des = product["picture-"+i];
+        if (files["picture"+i] && files["picture"+i].size>0) {
+          console.log(files["picture"+i].path);
+          fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+          console.log(config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+        } else if (old_imgs[i]) {
+          console.log(old_imgs[i]);
+          fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", "/static/img/product/" + len + id + ".jpg");
+        } else {
+          return callback({ret: 2});                // RETURN: 没有上传图片
+        }
+        img.url = ("picture"+len);
+        new_imgs.push(img);
+        delete product["picture-"+i];
+      }
+    }
+    product.image    = new_imgs;
+    product.contents = new_cont;
+    product._id = new ObjectID(product._id.toString());
+    console.log(product);
+    dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
+      if (err) {
+        return callback({ret: 2});                  // RETURN: 更新出错
+      }
+      return callback({ret: 1});                    // RETURN: 更新成功
+    });
+  });
   if(id!==''){
     product._id = new ObjectID(id);
-    dbproduct.update({_id : product._id}, product, function(err, doc){
-      if(err){
-        return callback({ret: 2});                    // RETURN: 编辑商品出错
-      }
-      saveimage(files,doc);
-      return callback({ret: 1, val: doc});            // RETURN: 编辑商品成功
-    });
+    return callback({ret: 2});
   }else{
     delete product._id;
     dbproduct.insert(product, function(err, doc){
@@ -51,12 +78,13 @@ exports.newproduct = function (req, callback) {
     });
   }
 };
-function saveimage(files,doc){
+function saveimage(files, doc){
+  if (!doc.image) {
+    doc.image = [];
+  }
   for(var i=0;i<doc.image.length;i++){
     var s = doc.image[i].url;
-    if (judge_size(files[s].size)) { 
-      var path = config.appPath() + "/static/img/product/" + s + doc._id + ".jpg";
-      fs.renameSync(files[s].path,path);
+    if (judge_size(files[s].size)) { var path = config.appPath() + "/static/img/product/" + s + doc._id + ".jpg"; fs.renameSync(files[s].path,path);
     }
   }
 }
@@ -77,11 +105,16 @@ exports.allproduct = function (req, callback) {
 
 // 查询指定product
 exports.toedit = function (req, callback) {
-  dbproduct.findOne({_id : new ObjectID(req.params.id)}, function(err,docs){
+  dbproduct.findOne({_id : new ObjectID(req.params.id)}, function(err,doc){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+    if (!doc.image) {
+      doc.image = [];
+    }
+    for (var i=0; i<doc.image.length; i++)
+      doc.image[i].url = "/img/product/" + doc.image[i].url + doc._id.toString() + ".jpg";
+    callback({ret: 1, val: doc});                   // RETURN: 返回成功
   });
 };
 

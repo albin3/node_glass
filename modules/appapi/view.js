@@ -37,7 +37,7 @@ exports.resetpassword = function (req, res) {
 
 // 验证用户有效性
 exports.usersignin = function (req, res) {
-  model.usersignin(req.params, function(ret){
+  model.usersignin(req.body, function(ret){
     res.end(JSON.stringify(ret));
   });
 };

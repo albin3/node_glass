@@ -8,7 +8,7 @@ exports.register = function (app) {
   app.post('/appapi/updateuser/:userid', view.updateuser);                          // 用户更新用户信息
   app.all('/appapi/chpassword/:userid/:oldpsd/:newpsd', view.chpassword);           // 用户修改用户密码
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
-  app.all('/appapi/usersignin/:type/:name/:password', view.usersignin);             // 用户登录
+  app.all('/appapi/usersignin', view.usersignin);                                   // 用户登录
                                                                                     
   app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);             // 新闻列表
   app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                            // 新闻焦点图片
@@ -34,9 +34,9 @@ exports.register = function (app) {
   app.all('/appapi/product/:lan',view.products);                                    // 根据品牌获取产品列表
   app.all('/appapi/productdetail/:id',view.productdetail);                          // 获取产品详情
 
-  app.all('/appapi/stores/:prodid/:limit/:skip/:lng/:lat',view.prodstores);         // 获取商品的店铺信息
+  app.all('/appapi/stores/:prodid/:limit/:skip/:lng/:lat/:prov/:muni/:area/:cont',view.prodstores);         // 获取商品的店铺信息
 
   //其他
   app.get('/appapi/random',view.random);                                            // 获取随机数 
-  app.post('/appapi/gettips/:lan',view.gettips);                                         // 获取tips
+  app.post('/appapi/gettips/:lan',view.gettips);                                    // 获取tips
 };
