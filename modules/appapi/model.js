@@ -283,7 +283,7 @@ exports.updateuser = function (req, callback) {
 exports.pagednews = function (req, callback) {
   var numPerPage = parseInt(req.params.numPerPage);
   var pageNum = parseInt(req.params.pageNum);
-  db_news.find({lan: req.params.lan}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
+  db_news.find({lan: req.params.lan}).sort({time: -1}).limit(numPerPage).skip(numPerPage*(pageNum-1), function(err, docs){
     if (err){
       return callback({ret: 2});                                //RETURN: 查询出错
     }
