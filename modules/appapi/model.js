@@ -95,17 +95,17 @@ exports.usersignin = function (user, callback) {
       if (!err && doc) {                        // RETURN: 第三方账号已存在
         return callback({
            ret      : 1,
-          val      : {
-          userid   : doc._id.toString(),
-          email    : doc.email,
-          tel      : doc.tel,
-          isworker : doc.isworker,
-          name     : doc.name,
-          sex      : doc.sex,
-          age      : doc.age,
-          job      : doc.job,
-          location : doc.location
-          }
+           val      : {
+           userid   : doc._id.toString(),
+           email    : doc.email,
+           tel      : doc.tel,
+           isworker : doc.isworker,
+           name     : doc.name,
+           sex      : doc.sex,
+           age      : doc.age,
+           job      : doc.job,
+           location : doc.location
+           }
         });
       }
       db_user.insert({
