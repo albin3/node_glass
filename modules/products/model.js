@@ -14,67 +14,103 @@ var store_model = require('../store/model');
 exports.newproduct = function (req, callback) {
   var files   = req.files;
   var product = req.body;
-  console.log(req.body);
   product.lan = req.params.lan;
   product.image = new Array();
   product.contents = new Array();
   var id = product._id;
-  dbproduct.findOne({_id: ObjectID(id)}, function(err, old_prod){
-    if (err) {
-      return callback({ret: 2});                      // RETURN: 查询数据库错误
-    }
-    var old_imgs = old_prod.image || [];
-    var old_cont = old_prod.contents || [];
-    var new_imgs = [];
-    var new_cont = [];
-    for (var i=0; i<20; i++) {
-      if (product["text-"+i]) {
-        var text = product["text-"+i];
-        delete product["text-"+i];
-        new_cont.push(text);
-      }
-      if (product["picture-"+i] !== undefined) {
-        var len = new_imgs.length;
-        var img = {};
-        img.des = product["picture-"+i];
-        if (files["picture"+i] && files["picture"+i].size>0) {
-          console.log(files["picture"+i].path);
-          fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
-          console.log(config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
-        } else if (old_imgs[i]) {
-          console.log(old_imgs[i]);
-          fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", "/static/img/product/" + len + id + ".jpg");
-        } else {
-          return callback({ret: 2});                // RETURN: 没有上传图片
-        }
-        img.url = ("picture"+len);
-        new_imgs.push(img);
-        delete product["picture-"+i];
-      }
-    }
-    product.image    = new_imgs;
-    product.contents = new_cont;
-    product._id = new ObjectID(product._id.toString());
-    console.log(product);
-    dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
-      if (err) {
-        return callback({ret: 2});                  // RETURN: 更新出错
-      }
-      return callback({ret: 1});                    // RETURN: 更新成功
-    });
-  });
   if(id!==''){
-    product._id = new ObjectID(id);
-    return callback({ret: 2});
+    dbproduct.findOne({_id: ObjectID(id)}, function(err, old_prod){
+      if (err) {
+        return callback({ret: 2});                      // RETURN: 查询数据库错误
+      }
+      var old_imgs = old_prod.image || [];
+      var old_cont = old_prod.contents || [];
+      var new_imgs = [];
+      var new_cont = [];
+      for (var i=0; i<90; i++) {
+        if (product["text-"+i]) {
+          var text = product["text-"+i];
+          delete product["text-"+i];
+          new_cont.push(text);
+        }
+      }
+      for (var i=0; i<20; i++) {
+        if (product["picture"+i] !== undefined) {
+          var len = new_imgs.length;
+          var img = {};
+          img.des = product["picture"+i];
+          if (files["picture"+i] && files["picture"+i].size>0) {
+            console.log(i+":添加");
+            fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+          } else if (old_imgs[i]) {
+            console.log(i+":替换");
+            fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+          } else {
+            return callback({ret: 2});                // RETURN: 没有上传图片
+          }
+          img.url = ("picture"+len);
+          new_imgs.push(img);
+          console.log(new_imgs);
+          delete product["picture-"+i];
+        }
+      }
+      product.image    = new_imgs;
+      product.contents = new_cont;
+      product._id = new ObjectID(product._id.toString());
+      dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
+        if (err) {
+          return callback({ret: 2});                  // RETURN: 更新出错
+        }
+        return callback({ret: 1, val: product});      // RETURN: 更新成功
+      });
+    });
   }else{
     delete product._id;
-    dbproduct.insert(product, function(err, doc){
+    dbproduct.insert(product, function(err, old_prod){
       if (err) {
         return callback({ret: 2});                    // RETURN: 新建商品出错
       }
-      saveimage(files,doc);
-      doc._id = doc._id.toString();
-      return callback({ret: 1, val: doc});            // RETURN: 新建商品成功
+      id = old_prod._id.toString();
+      var old_imgs = old_prod.image || [];
+      var old_cont = old_prod.contents || [];
+      var new_imgs = [];
+      var new_cont = [];
+      for (var i=0; i<90; i++) {
+        if (product["text-"+i]) {
+          var text = product["text-"+i];
+          delete product["text-"+i];
+          new_cont.push(text);
+        }
+      }
+      for (var i=0; i<20; i++) {
+        if (product["picture"+i] !== undefined) {
+          var len = new_imgs.length;
+          var img = {};
+          img.des = product["picture"+i];
+          if (files["picture"+i] && files["picture"+i].size>0) {
+            console.log(i+":添加");
+            fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+          } else if (old_imgs[i]) {
+            console.log(i+":替换");
+            fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
+          } else {
+            return callback({ret: 2});                // RETURN: 没有上传图片
+          }
+          img.url = ("picture"+len);
+          new_imgs.push(img);
+          console.log(new_imgs);
+          delete product["picture-"+i];
+        }
+      }
+      product.image    = new_imgs;
+      product.contents = new_cont;
+      product._id = new ObjectID(product._id.toString());
+      dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
+        if (err) {
+          return callback({ret: 2});                  // RETURN: 更新出错
+        }
+        return callback({ret: 1, val: product});      // RETURN: 更新成功
+      });
     });
   }
 };
