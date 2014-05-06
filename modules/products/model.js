@@ -15,6 +15,10 @@ exports.newproduct = function (req, callback) {
   var files   = req.files;
   var product = req.body;
   product.lan = req.params.lan;
+  product["sc-remain"] = parseInt(product["sc-remain"]);
+  if (isNaN(product["sc-remain"])) {
+    product["sc-remain"] = 10000;
+  }
   product.image = new Array();
   product.contents = new Array();
   var id = product._id;

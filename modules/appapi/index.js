@@ -19,12 +19,13 @@ exports.register = function (app) {
   app.post('/appapi/games/findglass/:lan', view.findglass);                         // 游戏-寻找黄眼镜
   app.all('/appapi/games/findglass/pulldata/:timestamp/:lan', view.findglasspulldata);   // 游戏-寻找黄眼镜拉图片数据
   app.all('/appapi/games/fgrank/:lan', view.fgrank);                                // 游戏-寻找黄眼镜排行榜
-                                                                                   
+                                                                                     
   app.post('/appapi/coupon/getcoupon', view.getcoupon);                             // 优惠券获得
   app.post('/appapi/coupon/checkcoupon', view.checkcoupon);                         // 优惠券有效性验证
   app.post('/appapi/coupon/usecoupon', view.usecoupon);                             // 优惠券使用
-  app.get('/appapi/coupon/couponlist/:userid', view.couponlist);                    // 优惠券列表
+  app.get('/appapi/coupon/couponlist/:userid/:page/:limit', view.couponlist);       // 优惠券列表
   app.get('/appapi/sharelink/:userid/:lan',view.sharelink);
+  app.post('/appapi/storecoupon', view.storecoupon);                                // 用户点击产品存储优惠券
   //商店部分
   app.get('/appapi/getprovince/:lan',view.getprovince);                             // 获取省
   app.post('/appapi/getcity/:lan',view.getcity);                                    // 获取市
