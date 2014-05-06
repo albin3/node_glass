@@ -4,7 +4,7 @@ var model = require('./model');
 // 优惠券管理主页
 exports.coupon = function (req, res) {
   model.allcoupon(req, function(ret){
-    res.render('coupon/index', {Title: "Coupon Management", language: req.params.lan, coupons: ret.val});
+    res.render('coupon/index', {Title: "Coupon Management", language: req.params.lan, nomalcoupons: ret.val.coupon1, specialcoupons: ret.val.coupon2});
   });
 };
 

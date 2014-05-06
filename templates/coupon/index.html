@@ -22,36 +22,74 @@
 </div>
 
 <div class="container-fluid">
-  <div class="row">
+  <div class="row" id="witch" witch="1">
 
     {% include "../leftbars.html" %}
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
 
-      <h2 class="sub-header">Coupon List</h2>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-add-coupon">Add coupon</button>
-      <button class="btn btn-danger">Delete all</button>
+      <h2 class="sub-header">User Coupon List</h2>
+      <button class="btn btn-primary witch1" data-toggle="modal" data-target="#modal-add-coupon">Add coupon</button>
+      <button class="btn btn-danger witch1">Delete all</button>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-1">Type</th>
-              <th class="col-sm-2">State</th>
-              <th class="col-sm-4">Details</th>
-              <th class="col-sm-3">Range</th>
-              <th class="col-sm-3">Expires</th>
-              <th class="col-sm-3">Options</th>
+              <th class="col-sm-2">Content</th>
+              <th class="col-sm-2">Detail</th>
+              <th class="col-sm-2">Remain</th>
+              <th class="col-sm-2">Expires Start</th>
+              <th class="col-sm-2">Expires End</th>
+              <th class="col-sm-2">Possibility</th>
+              <th class="col-sm-2">Options</th>
             </tr>
           </thead>
-          <tbody>
-            {%for coupon in coupons%}
+          <tbody id="tbody1">
+            {%for coupon in nomalcoupons%}
             <tr data-id="{{ coupon._id.toString() }}">
-              <td>{{coupon.index}}</td>
-              <td>{{coupon.name}}</td>
+              <td class="normal">{{coupon.content}}</td>
               <td class="normal">{{coupon.detail}}</td>
-              <td>{{coupon.range}}</td>
-              <td>{{coupon.time|date("Y-m-d")}}</td>
+              <td>{{coupon.remain}}</td>
+              <td>{{coupon.expiress | date("Y-m-d")}}</td>
+              <td>{{coupon.expirese | date("Y-m-d")}}</td>
+              <td>{{coupon.possibility}}</td>
+              <td>
+                <ul class=list-inline>
+                  <li><a href="#" class="a-del-coupon">delete</a></li>
+                </ul>
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="sub-header">Worker Coupon List</h2>
+      <button class="btn btn-primary witch2" data-toggle="modal" data-target="#modal-add-coupon">Add coupon</button>
+      <button class="btn btn-danger witch2">Delete all</button>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-2">Content</th>
+              <th class="col-sm-2">Detail</th>
+              <th class="col-sm-2">Remain</th>
+              <th class="col-sm-2">Expires Start</th>
+              <th class="col-sm-2">Expires End</th>
+              <th class="col-sm-2">Possibility</th>
+              <th class="col-sm-2">Options</th>
+            </tr>
+          </thead>
+          <tbody id="tbody2">
+            {%for coupon in specialcoupons%}
+            <tr data-id="{{ coupon._id.toString() }}">
+              <td class="normal">{{coupon.content}}</td>
+              <td class="normal">{{coupon.detail}}</td>
+              <td>{{coupon.remain}}</td>
+              <td>{{coupon.expiress | date("Y-m-d")}}</td>
+              <td>{{coupon.expirese | date("Y-m-d")}}</td>
+              <td>{{coupon.possibility}}</td>
               <td>
                 <ul class=list-inline>
                   <li><a href="#" class="a-del-coupon">delete</a></li>
@@ -76,72 +114,44 @@
       <div class="modal-body">
         <form class="form-horizontal" role="form">
           <div class="form-group">
-            <label for="coupon-name" class="col-sm-3 control-label">Coupon Name</label>
-            <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-name" name="coupon-name" placeholder="Name">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="coupon-detail" class="col-sm-3 control-label">优惠券内容</label>
+            <label for="coupon-content" class="col-sm-3 control-label">Coupon content</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" id="coupon-detail" name="coupon-detail" placeholder="优惠券内容">
+              <textarea rows="2" class="form-control" id="coupon-content" name="coupon-content" placeholder="Contents"></textarea>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="coupon-retailer" class="col-sm-3 control-label">优惠券渠道</label>
-            <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-retailer" name="coupon-retailer" placeholder="请填一个字母">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label"></label>
+            <label for="coupon-detail" class="col-sm-3 control-label">Coupon detail</label>
             <div class="col-sm-8">
-              <label>优惠券使用的渠道,请填一个字母，如：天猫用'T'表示</label>
+              <textarea rows="2" class="form-control" id="coupon-detail" name="coupon-detail" placeholder="Detail"></textarea>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="coupon-off" class="col-sm-3 control-label">生成概率</label>
-            <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-off" name="coupon-off" placeholder="请填4位数字不够补零">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label"></label>
+            <label for="coupon-possibility" class="col-sm-3 control-label">Coupon probability</label>
             <div class="col-sm-8">
-              <label>一万次中生成几张这种优惠券，如：0099</label>
+              <input type="text" class="form-control" id="coupon-possibility" name="coupon-possibility" placeholder="Probability: 0.01">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="coupon-range" class="col-sm-3 control-label">使用的地点</label>
-            <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-range" name="coupon-range" placeholder="请输入使用地点的描述">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label"></label>
+            <label for="coupon-remain" class="col-sm-3 control-label">Coupon remain</label>
             <div class="col-sm-8">
-              <label>描述优惠券使用的地点范围</label>
+              <input type="text" class="form-control" id="coupon-remain" name="coupon-remain" placeholder="Remain Number: 100000">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="coupon-time" class="col-sm-3 control-label">有效期</label>
-            <div class="col-sm-4">
-              <input type="text" class="form-control" id="coupon-time" name="coupon-time" placeholder="请输入优惠券的有效期">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-3 control-label"></label>
+            <label for="coupon-expires-start" class="col-sm-3 control-label">Coupon Expires Start</label>
             <div class="col-sm-8">
-              <label>优惠券的有效期至，格式为：2014-3-17</label>
+              <input type="text" class="form-control" id="coupon-expires-start" name="coupon-expires-start" placeholder="Expires Start: 2014-5-6">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="coupon-expires-end" class="col-sm-3 control-label">Coupon Expires End</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="coupon-expires-end" name="coupon-expires-end" placeholder="Expires End: 2016-5-6">
             </div>
           </div>
         </form>
@@ -154,17 +164,25 @@
   </div>
 </div><!-- End modal -->
 <script>
+  // 改变选择的群组
+  $(".witch1").click(function(event){
+    $("#witch").attr("witch", "1");
+  });
+  $(".witch2").click(function(event){
+    $("#witch").attr("witch", "2");
+  });
   $('.main .btn-danger').click(function(event){
     if (!confirm('Delete All?')) {       // 要求确认
       return ;
     }
     $.post('/appbg/coupon/delall/'+$("body").attr("lan"),
     {
+      type : $("#witch").attr("witch")
     },function(data){
     if (data.ret === 1) {
-      return $("tbody").remove();
+      return $("#tbody"+data.val+" tr").remove();
     }
-    alert("Fail to delete.");
+    return alert("Fail to delete.");
     },'json');
   });
   $('tbody').click(function(event){
@@ -192,66 +210,79 @@
     }, 'json');
   }
   $(".modal-footer .btn-primary").click(function(event){
-    var name = $("#coupon-name").val();
-    var detail = $("#coupon-detail").val();
-    var retailer = $("#coupon-retailer").val();
-    var off = $("#coupon-off").val();
-    var range = $("#coupon-range").val();
-    var time = $("#coupon-time").val();
-    if (!name.length){
-      alert("no empty name.");
+    var content     = $("#coupon-content").val();
+    var detail      = $("#coupon-detail").val();
+    var remain      = $("#coupon-remain").val();
+    var possibility = $("#coupon-possibility").val();
+    var expiress    = $("#coupon-expires-start").val();
+    var expirese    = $("#coupon-expires-end").val();
+    if (!content.length){
+      alert("content can not be null.");
       return ;
     }
-    if (retailer.length !== 1){
-      alert("输入 1 个字母作为渠道");
+    if (!detail.length){
+      alert("detail can not be null.");
       return ;
     }
-    if (off.length !== 4 || isNaN(off)){
-      alert("输入4个数字作为生成概率");
+    if (isNaN(parseInt(remain))){
+      alert("remain is not available.");
       return ;
     }
-    if (range.length === 0){
-      alert("券的使用地点不能为空");
+    if (isNaN(parseFloat(possibility)) || parseFloat(possibility) >= 1){
+      alert("possiblity is not available.");
       return ;
     }
-    if (parseDate(time) === null){
-      alert("请输入正确的日期格式");
+    if (parseDate(expiress) === null){
+      alert("expires start is not available.");
+      return ;
+    }
+    if (parseDate(expirese) === null){
+      alert("expires end is not available.");
       return ;
     }
     $.post(
       '/appbg/coupon/new/'+$("body").attr("lan"),
       {
-        name: name,
-        detail   : detail,
-        retailer : retailer,
-        off      : off,
-        range    : range,
-        time     : parseDate(time)
+        content     : content,
+        detail      : detail,
+        remain      : remain,
+        possibility : possibility,
+        expiress    : parseDate(expiress),
+        expirese    : parseDate(expirese),
+        type        : $("#witch").attr("witch")
       }, function(data){
       if (data.ret === 1) {
         coupon = data.val;
-        var time = new Date(coupon.time);
-        var Y = time.getFullYear();
-        var M = time.getMonth() - -1; M = M.toString().length<2 ? "0" + M : M;
-        var D = time.getDate(); D = D.toString().length<2 ? "0" + D : D;
-        var strTime = Y + "-" + M + "-" + D;
+        var expiress = new Date(coupon.expiress);
+        var Y = expiress.getFullYear();
+        var M = expiress.getMonth() - -1; M = M.toString().length<2 ? "0" + M : M;
+        var D = expiress.getDate(); D = D.toString().length<2 ? "0" + D : D;
+        var strStart = Y + "-" + M + "-" + D;
+        var expirese = new Date(coupon.expirese);
+        var Y = expirese.getFullYear();
+        var M = expirese.getMonth() - -1; M = M.toString().length<2 ? "0" + M : M;
+        var D = expirese.getDate(); D = D.toString().length<2 ? "0" + D : D;
+        var strEnd = Y + "-" + M + "-" + D;
         var new_raw =
             '<tr data-id="' + coupon._id + '">' +
-              '<td>' + coupon.index + '</td>' +
-              '<td>' + coupon.name + '</td>' +
+              '<td class="normal">' + coupon.content + '</td>' +
               '<td class="normal">' + coupon.detail + '</td>' +
-              '<td>' + coupon.range + '</td>' +
-              '<td>' + strTime +'</td>' +
+              '<td>' + coupon.remain + '</td>' +
+              '<td>' + strStart +'</td>' +
+              '<td>' + strEnd +'</td>' +
+              '<td>' + coupon.possibility + '</td>' +
               '<td>' +
                 '<ul class=list-inline>' +
-                  '<li><a href="#" class="a-del-coupon">删除</a></li>' + 
+                  '<li><a href="#" class="a-del-coupon">delete</a></li>' + 
                 '</ul>' +
               '</td>' +
             '</tr>';
-        $('tbody').append(new_raw);
+          console.log(new_raw);
+          console.log('tbody'+coupon.type);
+        $('#tbody'+coupon.type).append(new_raw);
         return $('#modal-add-coupon').modal('hide');
       }
-      return alert("同渠道同概率的优惠券已经存在");
+      return alert("fail to add coupon.");
     }, 'json');
   });
   // 解析日期

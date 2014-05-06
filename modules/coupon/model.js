@@ -10,12 +10,12 @@ var ObjectID = require('mongodb').ObjectID;
 exports.newcoupon = function (req, callback) {
   var coupon = req.body;
   coupon.lan = req.params.lan;
-  var strP = (coupon.off).toString();
-  for (var i=strP.length; i<4; i++) {
-    strP = "0" + strP;
-  }
-  coupon.index = coupon.retailer + strP;
-  coupon.pravided = 0;
+  coupon.remain      = parseInt(coupon.remain);
+  coupon.possibility = parseFloat(coupon.possibility);
+  coupon.expiress    = new Date(new Date(coupon.expiress).getTime() + 8*3600*1000);
+  coupon.expirese    = new Date(new Date(coupon.expirese).getTime() + 8*3600*1000);
+  coupon.type        = parseInt(coupon.type);
+  coupon.dt          = new Date().getTime();
   dbcoupon.insert(coupon, function(err, doc){
     if (err) {
       return callback({ret: 2});                    // RETURN: 数据库插入出错
@@ -27,11 +27,16 @@ exports.newcoupon = function (req, callback) {
 
 // 查询所有优惠券
 exports.allcoupon = function (req, callback) {
-  dbcoupon.find({lan: req.params.lan}, function(err,docs){
+  dbcoupon.find({lan: req.params.lan, type: 1}, function(err,coupon1){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                                                           // RETURN: 数据库出错
     }
-    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+    dbcoupon.find({lan: req.params.lan, type: 2}, function(err,coupon2){
+      if (err) { 
+        return callback({ret: 2});                                                         // RETURN: 数据库出错
+      }
+      return callback({ret: 1, val: {coupon1: coupon1, coupon2: coupon2}});                // RETURN: 返回成功
+    });
   });
 };
 
@@ -39,19 +44,19 @@ exports.allcoupon = function (req, callback) {
 exports.delcoupon = function (coupon, callback) {
   dbcoupon.remove({_id: new ObjectID(coupon._id)}, function(err){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                                   // RETURN: 数据库出错
     }
-    callback({ret: 1});                             // RETURN: 返回成功
+    return callback({ret: 1});                                     // RETURN: 返回成功
   });
 };
 
 // 删除所有
 exports.delall = function (req, callback) {
-  dbcoupon.remove({lan: req.params.lan}, function(err){
+  dbcoupon.remove({lan: req.params.lan, type: parseInt(req.body.type)}, function(err){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                                    // RETURN: 数据库出错
     }
-    callback({ret: 1});                             // RETURN: 返回成功
+    return callback({ret: 1, val: parseInt(req.body.type)});        // RETURN: 返回成功
   });
 };
 

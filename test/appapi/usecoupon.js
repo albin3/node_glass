@@ -4,13 +4,13 @@ var http=require('http');
 var qs=require('querystring');
  
 var post_data={
-  couponkey: "S5000000000022957"
+  key: "CP99368207437"
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
   host: '127.0.0.1',
-  port: 3000,
+  port: 3006,
   path: '/appapi/coupon/usecoupon',
   method: 'POST',
   headers:{
