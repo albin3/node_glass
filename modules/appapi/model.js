@@ -22,6 +22,29 @@ var db_random       = db.collection('random');
 var db_usercoupon   = db.collection('usercoupon');
 var ObjectID        = require('mongodb').ObjectID;
 
+// Date的format方法
+Date.prototype.format = function(format) {
+  var date = {
+    "M+": this.getMonth() + 1,
+    "d+": this.getDate(),
+    "h+": this.getHours(),
+    "m+": this.getMinutes(),
+    "s+": this.getSeconds(),
+    "q+": Math.floor((this.getMonth() + 3) / 3),
+    "S+": this.getMilliseconds()
+  };
+  if (/(y+)/i.test(format)) {
+    format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+  }
+  for (var k in date) {
+    if (new RegExp("(" + k + ")").test(format)) {
+      format = format.replace(RegExp.$1, RegExp.$1.length == 1
+        ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+    }
+  }
+  return format;
+}
+
 /**
  * 新用户注册
  */
@@ -443,11 +466,11 @@ exports.storecoupon = function(req, callback) {
         userid :  userid,
         content:  doc["sc-content"],
         detail :  doc["sc-detail"],
-        start  :  doc["sc-start"],
-        end    :  doc["sc-end"],
+        start  :  new Date(new Date(doc["sc-start"]).getTime()+8*3600*1000),
+        end    :  new Date(new Date(doc["sc-end"]).getTime()+8*3600*1000),
         dt     :  new Date().getTime()
       };
-      elem.key = "CP" + parseInt(elem.dt%100000000000/1000);// 取CP+时间戳的秒级后八位组成唯一码
+      elem.key = "CP" + parseInt(elem.dt%100000000000);// 取CP+时间戳的毫秒级后11位组成唯一码
       db_usercoupon.insert(elem, function(err, saved){
         if (err) {
           return callback({ret: 2});                              // RETURN: 错误
@@ -466,54 +489,60 @@ exports.getcoupon = function(req, callback) {
   var userid   = data._id;
   var isworker = data.isworker;
   if (isNaN(isworker)) {
-    isworker = 1;
+    isworker = 0;
   }
-  if (isworker > 1) {
-    isworker = 10;
-  } else {
-    isworker = 1;
-  }
+  var type = 1;       // 普通优惠券
+  if (isworker > 0)
+    type = 2;         // 员工优惠券
   var gotcoupon = false;
-  db_coupon.find({lan: req.params.lan}, function(err, docs) { 
-    for (var i=0; i<docs.length; i++) {
-      var doc = docs[i];
-      if (Math.random() >= parseFloat('0.' + doc.off)*isworker) {    // RETURN: 概率产生优惠券
+  db_coupon.find({lan: req.params.lan, type: type}, function(err, docs) { 
+    if (err) {
+      return callback({ret: 2});                                // RETURN: 没有产生优惠券
+    }
+    var random = Math.random();
+    var sumpos = 0;
+    var index  = 0;
+    for (; index<docs.length; index++) {
+      var doc = docs[index];
+      if (new Date(doc.end).getTime() < new Date().getTime())
         continue;
+      if (random<=sumpos+doc.possibility) {
+        gotcoupon = true;
+        break;
       }
-      doc.pravided = doc.pravided + 1;
-      db_coupon.update({_id: doc._id}, doc, function(err, msg){
-        if (err) {
-          return callback({ret: 3});                                 // RETURN: 数据库错误
-        }
-        var couponkey = doc.index + (Array(8).join(0) + doc.pravided).slice(-8);
-        // 生成四位随机数
-        for (var i=0; i<4; i++) {
-          couponkey += parseInt(Math.random()*10);
-        }
-        db_pra_coupon.insert({
-          couponkey : couponkey,
-          userid    : userid,
-          coupon    : doc
-        }, function(err, rtn_doc) {
-          if (err) {
-            return callback({ret: 3});                          // RETURN: 数据库错误
-          }
-          return callback({ret: 1, couponkey: couponkey});      // RETURN: 产生优惠券
-        });
-      });
-      gotcoupon = true;   // 异步执行，所以需要标志位
-      break;
+      sumpos += doc.possibility;
     }
     if (gotcoupon === false)
       return callback({ret: 2});                                // RETURN: 没有产生优惠券
+    if (index>=docs.length) {
+      index = docs.length-1;
+    }
+    var elem = {
+      prodid :  "null", 
+      userid :  userid,
+      content:  docs[index].content,
+      detail :  docs[index].detail,
+      start  :  docs[index].expiress,
+      end    :  docs[index].expirese,
+      dt     :  new Date().getTime()
+    };
+    elem.key = "CP" + parseInt(elem.dt%100000000000);    // 取CP+时间戳的毫秒级后11位组成唯一码
+    db_usercoupon.insert(elem, function(err, doc){
+      if (err) {
+        return callback({ret: 2});                               // RETURN: 没有产生优惠券
+      }
+      doc.start = new Date(doc.start).format('yyyy-MM-dd');
+      doc.end   = new Date(doc.end).format('yyyy-MM-dd');
+      return callback({ret: 1, val: doc});                       // RETURN: 返回获取到的优惠券
+    });
   });
 };
 
 // 验证优惠券
 exports.checkcoupon = function(req, callback) { 
   var data      = req.body;
-  var couponkey = data.couponkey || "null";
-  db_pra_coupon.findOne({couponkey: couponkey, isdeleted: null, lan: req.params.lan}, function(err, doc) { 
+  var key = data.key || "null";
+  db_usercoupon.findOne({key: key, isdeleted: null}, function(err, doc) { 
     if (err || !doc) {
       return callback({ret: 2});                                // RETURN: 优惠券不存在
     }
@@ -524,27 +553,20 @@ exports.checkcoupon = function(req, callback) {
 // 使用优惠券
 exports.usecoupon = function(req, callback) { 
   var data      = req.body;
-  var couponkey = data.couponkey || "not a couponkey";
-  var couponid  = couponkey.slice(0,5);
-  db_coupon.findOne({index: couponid, lan: req.params.lan},function(err, doc){
+  var key = data.key || "not a couponkey";
+  db_usercoupon.findOne({key: key}, function(err, doc) { 
     if (err || !doc) {
-      return callback({ret: 6});                                // RETURN: 这类优惠券不存在
-    } else if (doc.time < new Date()) {
-      return callback({ret: 5});                                // RETURN: 这类优惠券已过期
+      return callback({ret: 4});                              // RETURN: 这张优惠券不存在
+  } else if (new Date(doc.end).getTime() < new Date().getTime()) {
+    return callback({ret: 5});                                // RETURN: 这类优惠券已过期
+  } else if (doc.isdeleted) {
+      return callback({ret: 3});                              // RETURN: 这张优惠券已使用
     }
-    db_pra_coupon.findOne({couponkey: couponkey, lan: req.params.lan}, function(err, doc) { 
-      if (err || !doc) {
-        return callback({ret: 4});                              // RETURN: 这张优惠券不存在
+    db_usercoupon.update({key: key}, {$set: {isdeleted: true}}, function(err, data){
+      if (err) {
+        return callback({ret: 2});                            // RETURN: 优惠券使用失败
       }
-      if (doc.isdeleted) {
-        return callback({ret: 3});                              // RETURN: 这张优惠券已使用
-      }
-      db_pra_coupon.update({couponkey: couponkey, lan: req.params.lan}, {$set: {isdeleted: true}}, function(err, data){
-        if (err) {
-          return callback({ret: 2});                            // RETURN: 优惠券使用失败
-        }
-        return callback({ret: 1});                              // RETURN: 这张优惠券使用成功
-      });
+      return callback({ret: 1});                              // RETURN: 这张优惠券使用成功
     });
   });
 };
@@ -565,6 +587,10 @@ exports.couponlist = function(req, callback) {
   db_usercoupon.find({userid: userid, isdeleted: {$not: {$in: [false]}}}).sort({dt: -1}).skip((page-1)*limit).limit(limit, function(err, docs) { 
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
+    }
+    for (var i=0; i< docs.length; i++) {
+      docs[i].start = new Date(docs[i].start).format('yyyy-MM-dd');
+      docs[i].end   = new Date(docs[i].end).format('yyyy-MM-dd');
     }
     return callback({ret: 1, val: docs});                       // RETURN: 优惠券列表
   });

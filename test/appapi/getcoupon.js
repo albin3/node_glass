@@ -5,14 +5,14 @@ var qs=require('querystring');
  
 var post_data={
   _id      : "532ffdb4eecbfeb103000001",
-  isworker : 1
+  isworker : 0
 };//这是需要提交的数据
 var content=qs.stringify(post_data);
  
 var options = {
   host: '10.0.1.8',
-  port: 3000,
-  path: '/appapi/coupon/getcoupon',
+  port: 3006,
+  path: '/appapi/coupon/getcoupon/simplified',
   method: 'POST',
   headers:{
   'Content-Type':'application/x-www-form-urlencoded',
