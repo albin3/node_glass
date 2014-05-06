@@ -6,7 +6,7 @@ exports.register = function (app) {
                                                                                     
   app.post('/appapi/newuser/', view.newuser);                                       // 用户注册新户信息
   app.post('/appapi/updateuser/:userid', view.updateuser);                          // 用户更新用户信息
-  app.all('/appapi/chpassword/:userid/:oldpsd/:newpsd', view.chpassword);           // 用户修改用户密码
+  app.all('/appapi/chpassword/:userid/:newpsd', view.chpassword);                   // 用户修改用户密码
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
   app.all('/appapi/usersignin', view.usersignin);                                   // 用户登录
                                                                                     

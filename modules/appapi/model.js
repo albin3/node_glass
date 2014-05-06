@@ -212,7 +212,7 @@ exports.chpassword = function (user, callback) {
     if (doc.disable) {
       return callback({ret: 3});         // RETURN: 账号被停封
     }
-    if (!password_hash.verify(user.oldpsd, doc.password)){
+    if (false) { // (!password_hash.verify(user.oldpsd, doc.password)){
       return callback({ret: 2});         // RETURN: 账号密码不正确
     }
 
