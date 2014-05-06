@@ -112,7 +112,7 @@ exports.appPath = function() {
   return __dirname;
 };
 
-exports.pic_size = 52428800; // 限制上传的图片的大小
+exports.pic_size = 1000240; // 限制上传的图片的大小
 
 exports.root_user = {
   username : "admin",

@@ -17,7 +17,8 @@ var db_store        = db.collection('store');
 var db_slide        = db.collection('slide');
 var db_brand        = db.collection('brand');
 var db_product      = db.collection('product');
-var db_tips          = db.collection('tips');
+var db_tips         = db.collection('tips');
+var db_random       = db.collection('random');
 var ObjectID        = require('mongodb').ObjectID;
 
 /**
@@ -68,7 +69,8 @@ exports.newuser = function (user, callback) {
           sex      : doc.sex,
           age      : doc.age,
           job      : doc.job,
-          location : doc.location
+          location : doc.location,
+          workerid : doc.workerid
           }
         });
       });
@@ -104,6 +106,7 @@ exports.usersignin = function (user, callback) {
            sex      : doc.sex,
            age      : doc.age,
            job      : doc.job,
+           workerid : doc.workerid,
            location : doc.location
            }
         });
@@ -125,6 +128,7 @@ exports.usersignin = function (user, callback) {
            sex      : doc.sex,
            age      : doc.age,
            job      : doc.job,
+           workerid : doc.workerid,
            location : doc.location
           }
         });
@@ -152,6 +156,7 @@ exports.usersignin = function (user, callback) {
         sex      : doc.sex,
         age      : doc.age,
         job      : doc.job,
+        workerid : doc.workerid,
         location : doc.location
        } 
       });
@@ -192,6 +197,7 @@ exports.chpassword = function (user, callback) {
              sex      : doc.sex,
              age      : doc.age,
              job      : doc.job,
+             workerid : doc.workerid,
              location : doc.location
             } 
       });
@@ -247,9 +253,9 @@ exports.updateuser = function (req, callback) {
       return callback({ret: 3});         // RETURN: 账号被封停
     }
     
-    mid.tel = user.tel || mid.tel;
-    mid.email = user.email || mid.email;
-    mid.sex = user.sex || mid.sex;
+    mid.tel      = user.tel      || mid.tel;
+    mid.email    = user.email    || mid.email;
+    mid.sex      = user.sex      || mid.sex;
     mid.isworker = user.isworker || user.isworker;
     mid.name     = user.name     || user.name;
     mid.age      = user.age      || user.age;
@@ -270,6 +276,7 @@ exports.updateuser = function (req, callback) {
              sex      : doc.sex,
              age      : doc.age,
              job      : doc.job,
+             workerid : doc.workerid,
              location : doc.location
             } 
       });
@@ -771,7 +778,12 @@ exports.prodstores = function(req, callback) {
 //#############产生随机数#############
 //获取随机数
 exports.random = function(callback){
-  return callback({ret: 1, num:0.5});
+  db_random.findOne({}, function(err, doc) {
+    if (err) {
+      return callback({ret: 2});                 // 错误
+    }
+    return callback({ret: 1, num: doc.random});
+  });
 }
 // 获取tips
 exports.gettips = function(req, callback){
