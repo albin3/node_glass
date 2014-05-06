@@ -49,12 +49,12 @@ exports.newuser = function (user, callback) {
       user.disable  = false;
       user.sharenum = 0;      // 分享链接的次数
       user.clicknum = 0;      // 链接点击的次数
-      user.name     = "unknown";
-      user.sex      = "unknown";
-      user.age      = "unknown";
-      user.job      = "unknown";
-      user.location = "unknown";
-      user.workerid = "unknown";
+      user.name     = "";
+      user.sex      = "";
+      user.age      = "";
+      user.job      = "";
+      user.location = "";
+      user.workerid = "";
       db_user.insert(user, function (err, doc) {
         if (err) {
           return callback({ret: 2});             // RETURN: 注册字段重复
@@ -115,9 +115,20 @@ exports.usersignin = function (user, callback) {
       db_user.insert({
         nickname : user.name,
         thirdpath: user.name,
+        email    : "",
+        tel      : "",
+        name     : "",
+        sex      : "",
+        age      : "",
+        job      : "",
+        workerid : "",
+        location : "",
         isworker : 0,
         disable  : false
-      },function(err, u){
+      },function(err, doc){
+        if (err || !doc) {
+          return callback({ret: 2});          // RETURN: 查询出错
+        }
         return callback({
            ret      : 1,
            val      : {
@@ -270,16 +281,16 @@ exports.updateuser = function (req, callback) {
       return callback({                  // RETURN: 修改成功
              ret      : 1,
              val      : {
-             userid   : doc._id.toString(),
-             email    : doc.email,
-             tel      : doc.tel,
-             isworker : doc.isworker,
-             name     : doc.name,
-             sex      : doc.sex,
-             age      : doc.age,
-             job      : doc.job,
-             workerid : doc.workerid,
-             location : doc.location
+             userid   : req.params.userid,
+             email    : mid.email,
+             tel      : mid.tel,
+             isworker : mid.isworker,
+             name     : mid.name,
+             sex      : mid.sex,
+             age      : mid.age,
+             job      : mid.job,
+             workerid : mid.workerid,
+             location : mid.location
             } 
       });
     });
@@ -668,7 +679,7 @@ exports.products = function(req,callback){
   	query['E-SPF'] = '25';
   }
   query.lan = req.params.lan;
-  db_product.find(query).limit(numPerPage).skip(numPerPage*(pageNum-1),function(err, docs){
+  db_product.find(query).sort({_id: -1}).skip(numPerPage*(pageNum-1)).limit(numPerPage, function(err, docs){
     if (err) {
       return callback({ret: 2});           // RETURN: 查询错误
     }
@@ -828,7 +839,6 @@ exports.gettips = function(req, callback){
     espf: req.body.espf,
     weather : req.body.weather
   }
-  console.log(query);
   db_tips.find(query, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错

@@ -60,7 +60,8 @@ exports.newproduct = function (req, callback) {
       }
       product.image    = new_imgs;
       product.contents = new_cont;
-      product._id = new ObjectID(product._id.toString());
+      product._id      = new ObjectID(product._id.toString());
+      product.dt       = new Date().getTime();
       dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
         if (err) {
           return callback({ret: 2});                  // RETURN: 更新出错
@@ -70,6 +71,7 @@ exports.newproduct = function (req, callback) {
     });
   }else{
     delete product._id;
+    product.dt       = new Date().getTime();
     dbproduct.insert(product, function(err, old_prod){
       if (err) {
         return callback({ret: 2});                    // RETURN: 新建商品出错
@@ -102,13 +104,13 @@ exports.newproduct = function (req, callback) {
           }
           img.url = ("picture"+len);
           new_imgs.push(img);
-          console.log(new_imgs);
           delete product["picture-"+i];
         }
       }
       product.image    = new_imgs;
       product.contents = new_cont;
-      product._id = new ObjectID(product._id.toString());
+      product._id      = new ObjectID(product._id.toString());
+      product.dt       = new Date().getTime();
       dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
         if (err) {
           return callback({ret: 2});                  // RETURN: 更新出错
@@ -135,7 +137,7 @@ function judge_size(size) {
 
 // 查询所有product
 exports.allproduct = function (req, callback) {
-  dbproduct.find({lan : req.params.lan}, function(err,docs){
+  dbproduct.find({lan : req.params.lan}).sort({_id: -1}, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
