@@ -49,9 +49,8 @@ Date.prototype.format = function(format) {
  * 新用户注册
  */
 exports.newuser = function (user, callback) {
-
   if (user.tel === undefined && user.email === undefined && user.thirdpath === undefined) {
-    return callback({ret: 2});
+    return callback({ret: 4});                  // RETURN: 没有关键字段
   }
   if (!user.workerid) {     // 初始化
     user.workerid = "";
@@ -82,20 +81,29 @@ exports.newuser = function (user, callback) {
         if (err) {
           return callback({ret: 2});             // RETURN: 注册字段重复
         }
-        return callback({                        // RETURN: 注册成功
-          ret      : 1, 
-          val      : {
+        var val = {
           userid   : doc._id.toString(),
-          email    : doc.email,
-          tel      : doc.tel,
           isworker : doc.isworker,
           name     : doc.name,
           sex      : doc.sex,
           age      : doc.age,
           job      : doc.job,
-          location : doc.location,
-          workerid : doc.workerid
-          }
+          nickname : doc.nickname,
+          workerid : doc.workerid,
+          location : doc.location
+        };
+        if (doc.tel) {
+          val.tel = doc.tel;
+        }
+        if (doc.email) {
+          val.email = doc.email;
+        }
+        if (doc.thirdpath) {
+          val.thirdpath = doc.thirdpath;
+        }
+        return callback({                        // RETURN: 注册成功
+          ret      : 1, 
+          val      : val
         });
       });
     });
@@ -119,27 +127,34 @@ exports.usersignin = function (user, callback) {
   db_user.findOne(query, function(err, doc){
     if (parseInt(user.type) === 3){
       if (!err && doc) {                        // RETURN: 第三方账号已存在
+        var val = {
+          userid   : doc._id.toString(),
+          isworker : doc.isworker,
+          name     : doc.name,
+          sex      : doc.sex,
+          age      : doc.age,
+          job      : doc.job,
+          nickname : doc.nickname,
+          workerid : doc.workerid,
+          location : doc.location
+        };
+        if (doc.tel) {
+          val.tel = doc.tel;
+        }
+        if (doc.email) {
+          val.email = doc.email;
+        }
+        if (doc.thirdpath) {
+          val.thirdpath = doc.thirdpath;
+        }
         return callback({
            ret      : 1,
-           val      : {
-           userid   : doc._id.toString(),
-           email    : doc.email,
-           tel      : doc.tel,
-           isworker : doc.isworker,
-           name     : doc.name,
-           sex      : doc.sex,
-           age      : doc.age,
-           job      : doc.job,
-           workerid : doc.workerid,
-           location : doc.location
-           }
+           val      : val
         });
       }
       db_user.insert({
-        nickname : user.name,
+        nickname : user.password,
         thirdpath: user.name,
-        email    : "",
-        tel      : "",
         name     : "",
         sex      : "",
         age      : "",
@@ -150,22 +165,31 @@ exports.usersignin = function (user, callback) {
         disable  : false
       },function(err, doc){
         if (err || !doc) {
-          return callback({ret: 2});          // RETURN: 查询出错
+          return callback({ret: 5});          // RETURN: 查询出错
+        }
+        var val = {
+          userid   : doc._id.toString(),
+          isworker : doc.isworker,
+          name     : doc.name,
+          sex      : doc.sex,
+          age      : doc.age,
+          job      : doc.job,
+          nickname : doc.nickname,
+          workerid : doc.workerid,
+          location : doc.location
+        };
+        if (doc.tel) {
+          val.tel = doc.tel;
+        }
+        if (doc.email) {
+          val.email = doc.email;
+        }
+        if (doc.thirdpath) {
+          val.thirdpath = doc.thirdpath;
         }
         return callback({
            ret      : 1,
-           val      : {
-           userid   : doc._id.toString(),
-           email    : doc.email,
-           tel      : doc.tel,
-           isworker : doc.isworker,
-           name     : doc.name,
-           sex      : doc.sex,
-           age      : doc.age,
-           job      : doc.job,
-           workerid : doc.workerid,
-           location : doc.location
-          }
+           val      : val
         });
       });
     } else {
@@ -180,20 +204,29 @@ exports.usersignin = function (user, callback) {
           !password_hash.verify(user.password, doc.password)){
         return callback({ret: 2});         // RETURN: 账号密码不正确
       }
-      return callback({                    // RETURN: 账号密码正确
-        ret      : 1,
-        val      : {
+      var val = {
         userid   : doc._id.toString(),
-        email    : doc.email,
-        tel      : doc.tel,
         isworker : doc.isworker,
         name     : doc.name,
         sex      : doc.sex,
         age      : doc.age,
         job      : doc.job,
+        nickname : doc.nickname,
         workerid : doc.workerid,
         location : doc.location
-       } 
+      };
+      if (doc.tel) {
+        val.tel = doc.tel;
+      }
+      if (doc.email) {
+        val.email = doc.email;
+      }
+      if (doc.thirdpath) {
+        val.thirdpath = doc.thirdpath;
+      }
+      return callback({                    // RETURN: 账号密码正确
+        ret      : 1,
+        val      : val
       });
     }
   });
@@ -221,20 +254,29 @@ exports.chpassword = function (user, callback) {
       if(err) {
         return callback({ret: 5});       // RETURN: 数据库错误
       }
+      var val = {
+        userid   : doc._id.toString(),
+        isworker : doc.isworker,
+        name     : doc.name,
+        sex      : doc.sex,
+        age      : doc.age,
+        nickname : doc.nickname,
+        job      : doc.job,
+        workerid : doc.workerid,
+        location : doc.location
+      };
+      if (doc.tel) {
+        val.tel = doc.tel;
+      }
+      if (doc.email) {
+        val.email = doc.email;
+      }
+      if (doc.thirdpath) {
+        val.thirdpath = doc.thirdpath;
+      }
       return callback({                           // RETURN: 账号密码正确
              ret      : 1,
-             val      : {
-             userid   : doc._id.toString(),
-             email    : doc.email,
-             tel      : doc.tel,
-             isworker : doc.isworker,
-             name     : doc.name,
-             sex      : doc.sex,
-             age      : doc.age,
-             job      : doc.job,
-             workerid : doc.workerid,
-             location : doc.location
-            } 
+             val      : val
       });
     });
   });
@@ -288,33 +330,52 @@ exports.updateuser = function (req, callback) {
       return callback({ret: 3});         // RETURN: 账号被封停
     }
     
-    mid.tel = user.tel || mid.tel;
-    mid.email = user.email || mid.email;
-    mid.sex = user.sex || mid.sex;
-    mid.isworker = user.isworker || mid.isworker;
-    mid.name     = user.name     || mid.name;
-    mid.age      = user.age      || mid.age;
-    mid.job      = user.job      || mid.job;
-    mid.location = user.location || mid.location;
     mid.workerid = user.workerid || mid.workerid;
-    db_user.update(query, mid, function(err, doc){
+    mid.isworker = user.isworker || mid.isworker;
+    db_workerid.find({index: mid.workerid}, function(err, doc){
       if (err) {
-        return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
+        return callback({ret: 4});      // RETURN: 账号不存在
       }
-      return callback({                  // RETURN: 修改成功
-             ret      : 1,
-             val      : {
-             userid   : req.params.userid,
-             email    : mid.email,
-             tel      : mid.tel,
-             isworker : mid.isworker,
-             name     : mid.name,
-             sex      : mid.sex,
-             age      : mid.age,
-             job      : mid.job,
-             workerid : mid.workerid,
-             location : mid.location
-            } 
+      if (doc && mid.workerid !== "") {
+        mid.isworker = 1;
+      } else {
+        mid.isworker = 0;
+      }
+      mid.tel = user.tel || mid.tel;
+      mid.email = user.email || mid.email;
+      mid.sex = user.sex || mid.sex;
+      mid.name     = user.name     || mid.name;
+      mid.age      = user.age      || mid.age;
+      mid.job      = user.job      || mid.job;
+      mid.location = user.location || mid.location;
+      db_user.update(query, mid, function(err, doc){
+        if (err) {
+          return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
+        }
+        var val = {
+          userid   : req.params.userid,
+          isworker : mid.isworker,
+          name     : mid.name,
+          sex      : mid.sex,
+          age      : mid.age,
+          job      : mid.job,
+          nickname : mid.nickname,
+          workerid : mid.workerid,
+          location : mid.location
+        };
+        if (doc.tel) {
+          val.tel = mid.tel;
+        }
+        if (doc.email) {
+          val.email = mid.email;
+        }
+        if (doc.thirdpath) {
+          val.thirdpath = mid.thirdpath;
+        }
+        return callback({                  // RETURN: 修改成功
+               ret      : 1,
+               val      : val
+        });
       });
     });
   });

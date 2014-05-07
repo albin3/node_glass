@@ -52,10 +52,10 @@ exports.newpic = function(req, callback) {
         picObj.Width    = docs[i].picwidth;
         picObj.Height   = docs[i].picheight;
         picObj.Rect     = {
-          x     :   docs[i].glassx,
-          y     :   docs[i].glassy,
-          w     :   docs[i].glasswidth,
-          h     :   docs[i].glassheight
+          X     :   docs[i].glassx,
+          Y     :   docs[i].glassy,
+          W     :   docs[i].glasswidth,
+          H     :   docs[i].glassheight
         };
         Images.push(picObj);
       }
@@ -92,10 +92,10 @@ exports.delpic = function(req, callback) {
         picObj.Width    = docs[i].picwidth;
         picObj.Height   = docs[i].picheight;
         picObj.Rect     = {
-          x     :   docs[i].glassx,
-          y     :   docs[i].glassy,
-          w     :   docs[i].glasswidth,
-          h     :   docs[i].glassheight
+          X     :   docs[i].glassx,
+          Y     :   docs[i].glassy,
+          W     :   docs[i].glasswidth,
+          H     :   docs[i].glassheight
         };
         Images.push(picObj);
       }

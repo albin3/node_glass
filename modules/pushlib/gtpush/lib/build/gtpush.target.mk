@@ -29,9 +29,9 @@ CFLAGS_CC_Debug := \
 	-fno-exceptions
 
 INCS_Debug := \
-	-I/root/.node-gyp/0.10.24/src \
-	-I/root/.node-gyp/0.10.24/deps/uv/include \
-	-I/root/.node-gyp/0.10.24/deps/v8/include
+	-I/root/.node-gyp/0.10.26/src \
+	-I/root/.node-gyp/0.10.26/deps/uv/include \
+	-I/root/.node-gyp/0.10.26/deps/v8/include
 
 DEFS_Release := \
 	'-D_LARGEFILE_SOURCE' \
@@ -61,9 +61,9 @@ CFLAGS_CC_Release := \
 	-fno-exceptions
 
 INCS_Release := \
-	-I/root/.node-gyp/0.10.24/src \
-	-I/root/.node-gyp/0.10.24/deps/uv/include \
-	-I/root/.node-gyp/0.10.24/deps/v8/include
+	-I/root/.node-gyp/0.10.26/src \
+	-I/root/.node-gyp/0.10.26/deps/uv/include \
+	-I/root/.node-gyp/0.10.26/deps/v8/include
 
 OBJS := \
 	$(obj).target/$(TARGET)/src/igtpush.o
