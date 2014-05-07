@@ -28,7 +28,7 @@
       <h1 class="page-header">{{ Title }}</h1>
 
       <h2 class="page-header">Games Management</h2>
-      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass/{{language}}"> 
+      <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass/new/{{language}}"> 
         <dl class="des-list dl-horizontal">
           <dd>
           <label for="pic-size" class="col-sm-2 control-label">Picture Size</label>
@@ -162,7 +162,9 @@
     }
     var tr = $(event.target).parents("tr");
     $.post("/appbg/findglass/del",{
-      id: tr.attr("data-id")
+      id   : tr.attr("data-id"),
+      lan  : $("body").attr("lan"),
+      size : $("#pic-size").val()
       }, function(data) {
       data = JSON.parse(data);
       if (data.ret !== 1) {

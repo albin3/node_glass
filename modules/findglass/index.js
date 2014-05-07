@@ -3,7 +3,7 @@ var view = require('./view');
 
 exports.register = function(app){
   app.get("/appbg/findglass/:lan/:size", view.index);
-  app.post("/appbg/findglass/:lan", view.newpic);
-  app.post("/appbg/findglass/del/", view.delpic);
+  app.post("/appbg/findglass/new/:lan", view.newpic);
+  app.post("/appbg/findglass/del", view.delpic);
 };
 

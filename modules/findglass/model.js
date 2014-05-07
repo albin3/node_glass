@@ -2,6 +2,7 @@
 var config  = require('../../config');
 var mongojs = require('mongojs');
 var fs      = require('fs');
+var plist   = require('plist');
 
 var db = mongojs(config.dbinfo.dbname);
 var dbfindglass = db.collection('findglasspic');
@@ -40,7 +41,34 @@ exports.newpic = function(req, callback) {
     lan        : req.params.lan
   }, function(err, doc){
     fs.renameSync(req.files["upload"].path, config.appPath()+"/static/img/findglass/"+doc._id.toString()+".jpg");
-    return callback({ret: 1, size: doc.size});
+    dbfindglass.find({ lan: req.params.lan, size: doc.size }, function(err, docs){
+      var pList = {};
+      pList["Resources Ready"] = false;
+      var Images = [];
+      for (var i=0; i<docs.length; i++) {
+        var picObj = {};
+        picObj.Filename = docs[i]._id.toString()+".jpg";
+        picObj.Url      = "http://183.61.111.193:3006/img/findglass/"
+        picObj.Width    = docs[i].picwidth;
+        picObj.Height   = docs[i].picheight;
+        picObj.Rect     = {
+          x     :   docs[i].glassx,
+          y     :   docs[i].glassy,
+          w     :   docs[i].glasswidth,
+          h     :   docs[i].glassheight
+        };
+        Images.push(picObj);
+      }
+      pList.Images = Images;
+      var str_plist = plist.build(pList).toString();
+      fs.writeFile(config.appPath()+"/static/img/findglass/pics"+doc.size+".plist", str_plist, function(err){
+        if (err) {
+          console.log("产生plist文件出错!");
+        }
+        console.log("产生plist文件成功!");
+      });
+    });
+    return callback({ret: 1, size: doc.size});  // RETURN: 返回跳转
   });
 };
 
@@ -53,6 +81,33 @@ exports.delpic = function(req, callback) {
       fs.unlink(config.appPath()+"/static/img/findglass/"+doc._id.toString()+".jpg", function(err){});
     } catch (e){
     }
+    dbfindglass.find({ lan: req.lan, size: parseInt(req.size) }, function(err, docs){
+      var pList = {};
+      pList["Resources Ready"] = false;
+      var Images = [];
+      for (var i=0; i<docs.length; i++) {
+        var picObj = {};
+        picObj.Filename = docs[i]._id.toString()+".jpg";
+        picObj.Url      = "http://183.61.111.193:3006/img/findglass/"
+        picObj.Width    = docs[i].picwidth;
+        picObj.Height   = docs[i].picheight;
+        picObj.Rect     = {
+          x     :   docs[i].glassx,
+          y     :   docs[i].glassy,
+          w     :   docs[i].glasswidth,
+          h     :   docs[i].glassheight
+        };
+        Images.push(picObj);
+      }
+      pList.Images = Images;
+      var str_plist = plist.build(pList).toString();
+      fs.writeFile(config.appPath()+"/static/img/findglass/pics"+req.size+".plist", str_plist, function(err){
+        if (err) {
+          console.log("产生plist文件出错!");
+        }
+        console.log("产生plist文件成功!");
+      });
+    });
     return callback({ret: 1});                   // RETURN: 删除成功
   });
 };
