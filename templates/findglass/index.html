@@ -31,6 +31,21 @@
       <form id="form-edit-news" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/findglass/{{language}}"> 
         <dl class="des-list dl-horizontal">
           <dd>
+          <label for="pic-size" class="col-sm-2 control-label">Picture Size</label>
+          <div class="col-sm-2">
+            <select class="form-control" type="text" id="pic-size" name="pic-size">
+              <option value="1" {%if size === 1%}selected{%endif%}>320X480</option>
+              <option value="2" {%if size === 2%}selected{%endif%}>480X800</option>
+              <option value="3" {%if size === 3%}selected{%endif%}>640X960</option>
+              <option value="4" {%if size === 4%}selected{%endif%}>640X1136</option>
+              <option value="5" {%if size === 5%}selected{%endif%}>1280X720</option>
+              <option value="6" {%if size === 6%}selected{%endif%}>1920X1080</option>
+            </select>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
           <label for="upload" class="col-sm-2 control-label">Upload Picture</label>
           <div class="col-sm-2">
             <input type="file" id="upload" name="upload">
@@ -101,10 +116,10 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th class="col-sm-2">宽高(像素)</th>
-              <th class="col-sm-3">眼镜位置 / 宽高</th>
-              <th class="col-sm-3">图片</th>
-              <th class="col-sm-3">操作</th>
+              <th class="col-sm-2">Width,Height(pixel)</th>
+              <th class="col-sm-3">Glass (x,y) / (w,h)</th>
+              <th class="col-sm-3">Picture</th>
+              <th class="col-sm-3">Options</th>
             </tr>
           </thead>
           <tbody id="user-list">
@@ -115,7 +130,7 @@
               <td><img src="/img/findglass/{{obj._id.toString()}}.jpg" width="100" height="62"></td>
               <td>
                 <ul class=list-inline>
-                  <li><a href="#" class="a-del-pic">删除</a></li>
+                  <li><a href="#" class="a-del-pic">delete</a></li>
                 </ul>
               </td>
             </tr>
@@ -129,6 +144,9 @@
 <script>
   $().ready(function(){
     $("#btn-upload").hide();    // 隐藏上传按钮
+  });
+  $("#pic-size").change(function(event){
+    window.location.href="/appbg/findglass/"+$("body").attr("lan")+"/"+$("#pic-size").val();
   });
   // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
   $(".table-striped tbody").click(function(event){
@@ -160,13 +178,14 @@
       alert("No picture selected.");
       return ;
     }
+    var type        = parseInt($("#pic-size").val());
     var picwidth    = parseInt($("#pic-width").val());
     var picheight   = parseInt($("#pic-height").val());
     var glassx      = parseInt($("#glass-x").val());
     var glassy      = parseInt($("#glass-y").val());
     var glasswidth  = parseInt($("#glass-width").val());
     var glassheight = parseInt($("#glass-height").val());
-    if (isNaN(picwidth) || isNaN(picheight) || isNaN(glasswidth) || isNaN(glassheight) || isNaN(glassx) || isNaN(glassy)) {
+    if (isNaN(type) || isNaN(picwidth) || isNaN(picheight) || isNaN(glasswidth) || isNaN(glassheight) || isNaN(glassx) || isNaN(glassy)) {
       alert("Be sure all numbers.");
       return ;
     }

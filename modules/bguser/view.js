@@ -67,12 +67,12 @@ exports.delall = function (req, res) {
  */
 exports.changestate = function (req, res) {
   model.changestate(req.params.userid, req.body, function(err, doc) {
-    var state = "(封停)";
+    var state = false;
     if (err) {
       return res.end(JSON.stringify({ status: false, state: state }));
     }
     if (!req.body.disable) {
-      state = "(正常)";
+      state   = true;
     }
     return res.end(JSON.stringify({ status: true, state: state }));
   });

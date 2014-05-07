@@ -55,13 +55,15 @@ exports.userdel = function (req, res) {
  * 改变用户的状态
  */
 exports.changestate = function (req, res) {
+  console.log(req.params);
+  console.log(req.body);
   model.changestate(req.params.userid, req.body, function(err, doc) {
-    var state = "(封停)";
+    var state = false;
     if (err) {
       return res.end(JSON.stringify({ status: false, state: state }));
     }
     if (!req.body.disable) {
-      state = "(正常)";
+      state = true;
     }
     return res.end(JSON.stringify({ status: true, state: state }));
   });

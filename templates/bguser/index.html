@@ -45,7 +45,7 @@
             {% for user in users %}
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.username}}</td>
-              <td><a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">({%if user.disable%}封停{%else%}正常{%endif%})</span></a></td>
+              <td><a href="#"><span state="" class="label {%if user.disable%}label-danger{%else%}label-primary{%endif%}">{%if user.disable%}Disable{%else%}Enable{%endif%}</span></a></td>
               <td>{%if user.tel === undefined %}none{%else%}{{user.tel}}{%endif%}</td>
               <td>{%if user.email === undefined %}none{%else%}{{user.email}}{%endif%}</td>
               <td>
@@ -124,7 +124,7 @@
     }
     if ($(event.target).attr("state") !== undefined){         // 点击改变用户状态
       var _id = $(event.target).parent().parent().parent().attr("data-id");
-      if($(event.target).text() === "(正常)"){
+      if($(event.target).text() === "Enable"){
         changestate({disable: true}, _id, event.target);
         } else {
         changestate({disable: false}, _id, event.target);
@@ -136,10 +136,11 @@
     $.post("/appbg/bguser/changestate/"+id,
       state,function(data){
         if (data.status){
-          $(target).text(data.state);
           if (state.disable){
+            $(target).text("Disable");
             $(target).removeClass("label-primary").addClass("label-danger");
             } else {
+            $(target).text("Enable");
             $(target).removeClass("label-danger").addClass("label-primary");
           }
         }
@@ -210,7 +211,7 @@
       var new_row = 
       '<tr data-id="' + user._id.toString() + '">' +
         '<td>' + user.username + '</td>' + 
-        '<td><a href="#"><span state="" class="label ' + (user.disable ? 'label-danger' : 'label-primary') + '">(' + (user.disable ? '封停' : '正常') + ')</span></a></td>' +
+        '<td><a href="#"><span state="" class="label ' + (user.disable ? 'label-danger' : 'label-primary') + '">' + (user.disable ? 'Disable' : 'Enable') + ')</span></a></td>' +
         '<td>' + ((user.tel === undefined || user.tel === "") ? 'none' : user.tel) + '</td>' +
         '<td>' + ((user.email === undefined || user.email === "") ? 'none' : user.email) + '</td>' +
         '<td>' +
