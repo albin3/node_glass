@@ -5,6 +5,7 @@ var password_hash = require('password-hash');
 var db = mongojs(config.dbinfo.dbname);
 
 var db_user         = db.collection('appuser');
+var db_appversion   = db.collection('appversion');
 var db_news         = db.collection('news');
 var db_workerid     = db.collection('workerid');
 var db_uvcatcher    = db.collection('uvcatcher');     // Games
@@ -943,5 +944,15 @@ exports.sharelink = function(req, callback) {
   var lan    = req.params.lan;
   db_user.update({_id: new ObjectID(userid)}, {$inc: {sharenum: 1}}, function(err){
     return callback({ret: 1});                                       // 操作完成
+  });
+};
+// 获取版本信息
+exports.appversion = function(req, callback) {
+  var lan    = req.params.lan;
+  db_appversion.findOne({lan: lan}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 2});                   // RETURN: 版本信息获取失败
+    }
+    return callback({ret: 1, val: doc});           // RETURN: 版本信息获取成功
   });
 };
