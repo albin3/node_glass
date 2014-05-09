@@ -23,10 +23,12 @@ exports.newproduct = function (req, callback) {
   if (product["nc-content"]) {
     product.nc_enable = true;
   }
+  delete product["nc-content"];
   product.sc_enable = false;
   if (product["sc-content"]) {
     product.sc_enable = true;
   }
+  delete product["sc-content"];
   product.image     = new Array();
   product.contents  = new Array();
   var id = product._id;

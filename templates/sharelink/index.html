@@ -3,10 +3,11 @@
 <head>
 <script src="/js/utils/jquery-1.10.2.min.js"></script>
 <meta charset="UTF-8">
-<title>这是一个HTML5的网页</title>
+<title>Essilor分享网页</title>
 </head>
 <body>
-<p>Hello HTML5</p>
+<p id="page">{{page}}</p>
+<p id="param">{{param}}</p>
 <script>
 var IS_IPAD = navigator.userAgent.match(/iPad/i) != null,
     IS_IPHONE = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
@@ -15,23 +16,28 @@ var IS_IPAD = navigator.userAgent.match(/iPad/i) != null,
     IS_MOBILE = IS_IOS || IS_ANDROID;
 $().ready(function(){
 // If it's not an universal app, use IS_IPAD or IS_IPHONE
+    $("p").hide();
+    var page  = $("#page").val();
+    var param = $("#param").val();
     if (IS_IOS) {
-        window.location = "essilor://page/param1";
-    
+        window.location = "essilorapp://"+page+"/"+param;
+
         setTimeout(function() {
     
             // If the user is still here, open the App Store
             if (!document.webkitHidden) {
     
                 // Replace the Apple ID following '/id'
-                window.location = 'http://itunes.apple.com/app/id1234567';
+                // window.location = "http://baidu.com";
+                // document.location.href = "http://www.baidu.com"
+                window.location = 'http://itunes.apple.com/app/id554554991';
             }
         }, 25);
     
     } else if (IS_ANDROID) {
-    
+
         // Instead of using the actual URL scheme, use 'intent://' for better UX
-        window.location = "essilorapp://essilor";
+        window.location = "essilorapp://"+page+"/"+param;;
         // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
     }
 });
