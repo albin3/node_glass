@@ -15,12 +15,20 @@ exports.newproduct = function (req, callback) {
   var files   = req.files;
   var product = req.body;
   product.lan = req.params.lan;
-  product["sc-remain"] = parseInt(product["sc-remain"]);
-  if (isNaN(product["sc-remain"])) {
-    product["sc-remain"] = 10000;
+  // product["sc-remain"] = parseInt(product["sc-remain"]);
+  // if (isNaN(product["sc-remain"])) {
+  //   product["sc-remain"] = 10000;
+  // }
+  product.nc_enable = false;
+  if (product["nc-content"]) {
+    product.nc_enable = true;
   }
-  product.image = new Array();
-  product.contents = new Array();
+  product.sc_enable = false;
+  if (product["sc-content"]) {
+    product.sc_enable = true;
+  }
+  product.image     = new Array();
+  product.contents  = new Array();
   var id = product._id;
   if(id!==''){
     dbproduct.findOne({_id: ObjectID(id)}, function(err, old_prod){
@@ -44,17 +52,14 @@ exports.newproduct = function (req, callback) {
           var img = {};
           img.des = product["picture"+i];
           if (files["picture"+i] && files["picture"+i].size>0) {
-            console.log(i+":添加");
             fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
           } else if (old_imgs[i]) {
-            console.log(i+":替换");
             fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
           } else {
             return callback({ret: 2});                // RETURN: 没有上传图片
           }
           img.url = ("picture"+len);
           new_imgs.push(img);
-          console.log(new_imgs);
           delete product["picture-"+i];
         }
       }
@@ -94,10 +99,8 @@ exports.newproduct = function (req, callback) {
           var img = {};
           img.des = product["picture"+i];
           if (files["picture"+i] && files["picture"+i].size>0) {
-            console.log(i+":添加");
             fs.renameSync(files["picture"+i].path, config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
           } else if (old_imgs[i]) {
-            console.log(i+":替换");
             fs.renameSync(config.appPath() + "/static/img/product/picture" + i + id + ".jpg", config.appPath() + "/static/img/product/picture" + len + id + ".jpg");
           } else {
             return callback({ret: 2});                // RETURN: 没有上传图片
@@ -139,9 +142,9 @@ function judge_size(size) {
 exports.allproduct = function (req, callback) {
   dbproduct.find({lan : req.params.lan}).sort({_id: -1}, function(err,docs){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1, val: docs});                  // RETURN: 返回成功
+    return callback({ret: 1, val: docs});                  // RETURN: 返回成功
   });
 };
 
@@ -149,14 +152,14 @@ exports.allproduct = function (req, callback) {
 exports.toedit = function (req, callback) {
   dbproduct.findOne({_id : new ObjectID(req.params.id)}, function(err,doc){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
     if (!doc.image) {
       doc.image = [];
     }
     for (var i=0; i<doc.image.length; i++)
       doc.image[i].url = "/img/product/" + doc.image[i].url + doc._id.toString() + ".jpg";
-    callback({ret: 1, val: doc});                   // RETURN: 返回成功
+    return callback({ret: 1, val: doc});                   // RETURN: 返回成功
   });
 };
 
@@ -164,9 +167,9 @@ exports.toedit = function (req, callback) {
 exports.delproduct = function (product, callback) {
   dbproduct.remove({_id: new ObjectID(product._id)}, function(err){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1});                             // RETURN: 返回成功
+    return callback({ret: 1});                             // RETURN: 返回成功
   });
 };
 
@@ -174,9 +177,9 @@ exports.delproduct = function (product, callback) {
 exports.delall = function (req, callback) {
   dbproduct.remove({lan : req.params.lan}, function(err){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
-    callback({ret: 1});                             // RETURN: 返回成功
+    return callback({ret: 1});                             // RETURN: 返回成功
   });
 };
 

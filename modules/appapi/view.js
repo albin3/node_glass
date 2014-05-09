@@ -195,3 +195,9 @@ exports.gettips = function(req, res){
     res.end(JSON.stringify(ret));
   });
 }
+// 获取版本信息
+exports.appversion = function(req, res){
+  model.appversion(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}

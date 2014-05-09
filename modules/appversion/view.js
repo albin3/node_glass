@@ -22,10 +22,3 @@ exports.versionupdate = function (req, res) {
     }
   });
 };
-
-// 分享链接统计
-exports.sharelink = function(req, res) {
-  model.sharelink(req, function(ret, url){
-    res.redirect(url);
-  });
-};

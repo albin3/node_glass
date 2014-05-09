@@ -34,7 +34,7 @@ exports.versionupdate = function(req, callback) {
       return callback({ret: 3});                 // 未上传文件
     }
     fs.renameSync(req.files["apkfile"].path, config.appPath() + "/static/apk/Essilor_"+req.params.lan+".apk");
-    dbversion.update({_id: version._id, lan: req.params.lan}, version, function(err) {
+    dbversion.update({lan: req.params.lan}, version, {upsert: true}, function(err) {
       if (err) {
         return callback({ret: 2});               // 数据库更新错误
       }
@@ -42,19 +42,4 @@ exports.versionupdate = function(req, callback) {
     });
   });
 };
-
-// 分享链接
-exports.sharelink = function(req, callback){
-  var userid = req.params.userid;
-  var language = req.params.lan;
-  dbversion.findOne({lan: language}, function(err, doc){
-    if (err || !doc) {
-      return callback({ret: 1}, "/apk/Essilor_simplified.apk");
-    }
-    db_user.update({_id: new ObjectID(userid)}, {$inc: {clicknum: 1}}, function(err){
-      return callback({ret: 1}, doc.url);
-    });
-  });
-};
-
 

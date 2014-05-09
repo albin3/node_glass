@@ -245,7 +245,10 @@ exports.updatenews = function (req, current_user, callback) {
       doc.details = new_details;
       console.log(new_details);
       doc.time = new Date().getTime();      // 更新时间
-      doc.author = current_user;            // 更新作者
+      if (typeof current_user !== "string")   // 更新作者
+        doc.author = "anonymous";
+      else
+        doc.author = current_user;
       dbnews.update({_id: new ObjectID(newsid)}, doc, function(err, data){
         console.log("done");
         callback(err);
