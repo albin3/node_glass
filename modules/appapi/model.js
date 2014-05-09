@@ -322,7 +322,7 @@ exports.resetpassword = function (user, callback) {
 exports.updateuser = function (req, callback) {
   var query = {_id: new ObjectID(req.params.userid)};
   var user = req.body;
-
+  console.log(user);
   db_user.findOne(query, function(err, mid){
     if (err || !mid) {
       return callback({ret: 4});         // RETURN: 账号不存在
@@ -335,20 +335,32 @@ exports.updateuser = function (req, callback) {
     mid.isworker = user.isworker || mid.isworker;
     db_workerid.find({index: mid.workerid}, function(err, doc){
       if (err) {
-        return callback({ret: 4});      // RETURN: 账号不存在
+        return callback({ret: 4});       // RETURN: 账号不存在
       }
       if (doc && mid.workerid !== "") {
         mid.isworker = 1;
       } else {
         mid.isworker = 0;
       }
-      mid.tel = user.tel || mid.tel;
-      mid.email = user.email || mid.email;
-      mid.sex = user.sex || mid.sex;
+      mid.tel      = user.tel      || mid.tel;
+      mid.email    = user.email    || mid.email;
+      mid.thirdpath= user.thirdpath|| mid.thirdpath;
+      if (!mid.tel) {
+        delete mid.tel;
+      }
+      if (!mid.email) {
+        delete mid.email;
+      }
+      if (!mid.thirdpath) {
+        delete mid.thirdpath;
+      }
+      mid.sex      = user.sex      || mid.sex;
       mid.name     = user.name     || mid.name;
       mid.age      = user.age      || mid.age;
       mid.job      = user.job      || mid.job;
       mid.location = user.location || mid.location;
+      console.log(query);
+      console.log(mid);
       db_user.update(query, mid, function(err, doc){
         if (err) {
           return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
@@ -438,6 +450,7 @@ exports.newsdetails = function (req, callback) {
 
     doc._id = doc._id.toString();
     delete doc.url;
+    doc.url = doc.firpicdes;
     delete doc.firpicdes;
     return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
   });
@@ -806,6 +819,34 @@ exports.productdetail = function(req,callback){
     	ima.url = "/img/product/" + image[i].url + doc._id.toString() + ".jpg";
     	pic.push(ima);
     }
+    if (doc.nc_enable) {
+      doc.nomalcoupon = {
+        content : doc["nc-content"],
+        detail  : doc["nc-detail"],
+        start   : doc["nc-start"],
+        end     : doc["nc-end"],
+        remain  : doc["nc-remain"]
+      };
+    }
+    if (doc.sc_enable) {
+      doc.specialoupon = {
+        content : doc["sc-content"],
+        detail  : doc["sc-detail"],
+        start   : doc["sc-start"],
+        end     : doc["sc-end"],
+        remain  : doc["sc-remain"]
+      };
+    }
+    delete doc["nc-content"];
+    delete doc["nc-detail"];
+    delete doc["nc-start"];
+    delete doc["nc-end"];
+    delete doc["nc-remain"];
+    delete doc["sc-content"];
+    delete doc["sc-detail"];
+    delete doc["sc-start"];
+    delete doc["sc-end"];
+    delete doc["sc-remain"];
     con = doc.contents;
     delete doc.contents;
     delete doc.image;

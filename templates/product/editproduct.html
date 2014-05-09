@@ -118,9 +118,17 @@
           </dl>
 
           <dd>
+          <label class="col-sm-2 control-label">Nomal Coupon Enable</label>
+          <div class="col-sm-1">
+            <input type="checkbox" id="nc-enable" name="nc-enable" {%if product.nc_enable%}checked{%endif%}>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
           <label class="col-sm-2 control-label">Nomal Coupon Content</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="nc-content" name="nc-content" value="{{ product.nc_content}}" placeholder="例: 200元代金券">
+            <input type="text" class="form-control nomalcoupon" id="nc-content" name="nc-content" value="{{ product['nc-content'] || '' }}" placeholder="例: 200元代金券">
           </div>
           </dd>
           <br>
@@ -128,7 +136,7 @@
           <dd>
           <label class="col-sm-2 control-label">Nomal Coupon Detail</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="nc-detail" name="nc-detail" value="{{ product.nc_detail }}" placeholder="例: 只限宝岛门店使用">
+            <input type="text" class="form-control nomalcoupon" id="nc-detail" name="nc-detail" value="{{ product['nc-detail'] || '' }}" placeholder="例: 只限宝岛门店使用">
           </div>
           </dd>
           <br>
@@ -136,7 +144,7 @@
           <dd>
           <label class="col-sm-2 control-label">Nomal Coupon Remained</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="nc-remain" name="nc-remain" value="{{ product.nc_remain }}" placeholder="例: 10000">
+            <input type="text" class="form-control nomalcoupon" id="nc-remain" name="nc-remain" value="{{ product['nc-remain'] || '' }}" placeholder="例: 10000">
           </div>
           </dd>
           <br>
@@ -144,8 +152,16 @@
           <dd>
           <label class="col-sm-2 control-label">Nomal Coupon Time</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="nc-start" name="nc-start" value="{{ product.nc_start }}" placeholder="例: 2014-4-26">
-            <input type="text" class="form-control" id="nc-end" name="nc-end" value="{{ product.nc_end }}" placeholder="例: 2016-9-01">
+            <input type="text" class="form-control nomalcoupon" id="nc-start" name="nc-start" value="{{ product['nc-start'] || '' }}" placeholder="例: 2014-4-26">
+            <input type="text" class="form-control nomalcoupon" id="nc-end" name="nc-end" value="{{ product['nc-end'] || '' }}" placeholder="例: 2016-9-01">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Special Coupon Enable</label>
+          <div class="col-sm-1">
+            <input type="checkbox" id="sc-enable" name="sc-enable" {%if product.sc_enable%}checked{%endif%}>
           </div>
           </dd>
           <br>
@@ -153,7 +169,7 @@
           <dd>
           <label class="col-sm-2 control-label">Special Coupon Content</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="sc-content" name="sc-content" value="{{ product.sc_content }}" placeholder="例: 200元代金券">
+            <input type="text" class="form-control specialcoupon" id="sc-content" name="sc-content" value="{{ product['sc-content'] || '' }}" placeholder="例: 200元代金券">
           </div>
           </dd>
           <br>
@@ -161,7 +177,7 @@
           <dd>
           <label class="col-sm-2 control-label">Special Coupon Detail</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="sc-detail" name="sc-detail" value="{{ product.sc_detail }}" placeholder="例: 只限宝岛门店使用">
+            <input type="text" class="form-control specialcoupon" id="sc-detail" name="sc-detail" value="{{ product['sc-detail'] || '' }}" placeholder="例: 只限宝岛门店使用">
           </div>
           </dd>
           <br>
@@ -169,7 +185,7 @@
           <dd>
           <label class="col-sm-2 control-label">Special Coupon Remained</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="sc-remain" name="sc-remain" value="{{ product.sc_remain }}" placeholder="例: 10000">
+            <input type="text" class="form-control specialcoupon" id="sc-remain" name="sc-remain" value="{{ product['sc-remain'] || '' }}" placeholder="例: 10000">
           </div>
           </dd>
           <br>
@@ -177,12 +193,12 @@
           <dd>
           <label class="col-sm-2 control-label">Special Coupon Time</label>
           <div class="col-sm-4">
-            <input type="text" class="form-control" id="sc-start" name="sc-start" value="{{ product.sc_start }}" placeholder="例: 2014-4-26">
-            <input type="text" class="form-control" id="sc-end" name="sc-end" value="{{ product.sc_end }}" placeholder="例: 2016-9-01">
+            <input type="text" class="form-control specialcoupon" id="sc-start" name="sc-start" value="{{ product['sc-start'] || '' }}" placeholder="例: 2014-4-26">
+            <input type="text" class="form-control specialcoupon" id="sc-end" name="sc-end" value="{{ product['sc-end'] || '' }}" placeholder="例: 2016-9-01">
           </div>
           </dd>
           <br>
-
+          
           <dd>
           <label for="product-options" class="col-sm-2 control-label">Options</label>
           <div class="col-sm-6">
@@ -367,7 +383,34 @@
         }, "json");
       }
     };
-    $(".pagination").bootstrapPaginator(options);
+    if ($("#_id").val() !== "")
+      $(".pagination").bootstrapPaginator(options);
+
+    // 优惠券的状态
+    if ($("#nc-enable").prop("checked")) {
+      $(".nomalcoupon").removeAttr("disabled");
+    } else {
+      $(".nomalcoupon").attr("disabled", "disabled");
+    }
+    if ($("#sc-enable").prop("checked")) {
+      $(".specialcoupon").removeAttr("disabled");
+    } else {
+      $(".specialcoupon").attr("disabled", "disabled");
+    }
+  });
+  $("#nc-enable").change(function(event){
+    if ($("#nc-enable").prop("checked")) {
+      $(".nomalcoupon").removeAttr("disabled");
+    } else {
+      $(".nomalcoupon").attr("disabled", "disabled");
+    }
+  });
+  $("#sc-enable").change(function(event){
+    if ($("#sc-enable").prop("checked")) {
+      $(".specialcoupon").removeAttr("disabled");
+    } else {
+      $(".specialcoupon").attr("disabled", "disabled");
+    }
   });
 </script>
 {% endblock %}

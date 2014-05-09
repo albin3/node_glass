@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/js/utils/jquery-1.10.2.min.js"></script>
+<meta charset="UTF-8">
+<title>这是一个HTML5的网页</title>
+</head>
+<body>
+<p>Hello HTML5</p>
+<script>
+var IS_IPAD = navigator.userAgent.match(/iPad/i) != null,
+    IS_IPHONE = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
+    IS_IOS = IS_IPAD || IS_IPHONE,
+    IS_ANDROID = !IS_IOS && navigator.userAgent.match(/android/i) != null,
+    IS_MOBILE = IS_IOS || IS_ANDROID;
+$().ready(function(){
+// If it's not an universal app, use IS_IPAD or IS_IPHONE
+    if (IS_IOS) {
+        window.location = "essilor://page/param1";
+    
+        setTimeout(function() {
+    
+            // If the user is still here, open the App Store
+            if (!document.webkitHidden) {
+    
+                // Replace the Apple ID following '/id'
+                window.location = 'http://itunes.apple.com/app/id1234567';
+            }
+        }, 25);
+    
+    } else if (IS_ANDROID) {
+    
+        // Instead of using the actual URL scheme, use 'intent://' for better UX
+        window.location = "essilorapp://essilor";
+        // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
+    }
+});
+</script>
+</body>
+</html>
