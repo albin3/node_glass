@@ -122,4 +122,6 @@ exports.root_user = {
   level    : 0            // root level
 };
 
-exports.languages = ["simplified", "traditional", "english"];
+exports.languages = ["simplified", "traditional_hk", "traditional_tw", "english"];
+exports.ServerIP   = "http://183.61.111.195";
+exports.ServerPORT = "3006";
