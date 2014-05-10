@@ -2,8 +2,8 @@
 var view = require('./view');
 
 exports.register = function (app) {
-  app.get('/sharelink/:userid/:page/:param/:lan', view.sharepage);
+  app.get('/sharelink/news/:userid/:objid/:lan', view.sharenews);
+  app.get('/sharelink/prod/:userid/:objid/:lan', view.shareprod);
   app.post('/sharelink/:userid/:lan', view.sharelink);
 };
-
 

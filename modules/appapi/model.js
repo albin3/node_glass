@@ -452,6 +452,7 @@ exports.newsdetails = function (req, callback) {
     delete doc.url;
     doc.url = doc.firpicdes;
     delete doc.firpicdes;
+    doc.listpic = "/img/news/"+doc._id+".jpg";
     return callback({ret: 1, obj: doc});                        // RETURN: 返回成功
   });
 };
@@ -539,10 +540,10 @@ exports.storecoupon = function(req, callback) {
       var elem = {
         prodid :  prodid, 
         userid :  userid,
-        content:  doc["sc-content"],
-        detail :  doc["sc-detail"],
-        start  :  new Date(new Date(doc["sc-start"]).getTime()+8*3600*1000),
-        end    :  new Date(new Date(doc["sc-end"]).getTime()+8*3600*1000),
+        content:  doc["sc-content"] || doc["nc-content"],
+        detail :  doc["sc-detail"] || doc["nc-detail"],
+        start  :  new Date(new Date(doc["sc-start"] || doc["nc-start"]).getTime()+8*3600*1000),
+        end    :  new Date(new Date(doc["sc-end"] || doc["nc-end"]).getTime()+8*3600*1000),
         dt     :  new Date().getTime()
       };
       elem.key = "CP" + parseInt(elem.dt%100000000000);// 取CP+时间戳的毫秒级后11位组成唯一码
@@ -994,6 +995,8 @@ exports.appversion = function(req, callback) {
     if (err || !doc) {
       return callback({ret: 2});                   // RETURN: 版本信息获取失败
     }
+    doc.time   = new Date(doc.time).getTime();
+    doc.number = parseInt(doc.number);
     return callback({ret: 1, val: doc});           // RETURN: 版本信息获取成功
   });
 };

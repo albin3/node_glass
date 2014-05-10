@@ -1,0 +1,64 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+<link rel="stylesheet" href="/css/sharelink/news.css"/>
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<p id="page">news</p>
+<p id="objid">{{objid}}</p>
+{%if news !== null%}
+<h2>{{news.title}}</h2>
+<h4>{{news.summary}}</h4>
+<p><a href="{{news.firpicdes}}">{{news.firpicdes}}</a></p>
+{%for index, detail in news.details%}
+{%if detail.type === 1%}
+<p>{{detail.content}}</p>
+{%else%}
+<img src="{{detail.content}}"></img>
+<p>{{detail.des}}</p>
+{%endif%}
+{%endfor%}
+{%endif%}
+<script>
+var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
+    IS_IPHONE  = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
+    IS_IOS     = IS_IPAD || IS_IPHONE,
+    IS_ANDROID = !IS_IOS && navigator.userAgent.match(/android/i) != null,
+    IS_MOBILE  = IS_IOS || IS_ANDROID;
+$().ready(function(){
+    $("title").text("Essilor Sharelink");
+    // If it's not an universal app, use IS_IPAD or IS_IPHONE
+    $("#page").hide();
+    $("#objid").hide();
+    var page  = $("#page").val();
+    var objid = $("#objid").val();
+    if (IS_IOS) {
+        // document.location.href = "essilorapp://view?id=123";
+        // window.location = "essilorapp://view?id=123";
+        // $("#tip").val("如果没有跳转，请点击右上角用Safari打开!");
+        window.location = "essilorapp://"+page+"/"+objid;
+
+        setTimeout(function() {
+    
+            // If the user is still here, open the App Store
+            if (!document.webkitHidden) {
+                // Replace the Apple ID following '/id'
+                // window.location = "http://baidu.com";
+                // document.location.href = "http://www.baidu.com"
+                window.location = 'http://itunes.apple.com/app/id554554991';
+            }
+        }, 25);
+    
+    } else if (IS_ANDROID) {
+
+        // Instead of using the actual URL scheme, use 'intent://' for better UX
+        window.location = "essilorapp://"+page+"/"+objid;
+        // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
+    }
+});
+</script>
+{% endblock %}
+
+
