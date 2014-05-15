@@ -220,6 +220,7 @@ exports.getStores = function(req, callback){
           if (obj._id.toString() === doc.stores[j]) {
             obj.sale     = true;
             obj.discount = doc.discount[j];
+            break;
           }
         }
       }

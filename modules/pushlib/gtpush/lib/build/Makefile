@@ -316,8 +316,8 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /opt/node-v0.10.26/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/opt/www/essilor-server/modules/pushlib/gtpush/lib/build/config.gypi -I/opt/node-v0.10.26/lib/node_modules/node-gyp/addon.gypi -I/root/.node-gyp/0.10.26/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/root/.node-gyp/0.10.26" "-Dmodule_root_dir=/opt/www/essilor-server/modules/pushlib/gtpush/lib" binding.gyp
-Makefile: $(srcdir)/../../../../../../node-v0.10.26/lib/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../../../../../root/.node-gyp/0.10.26/common.gypi
+cmd_regen_makefile = cd $(srcdir); /opt/node-v0.10.28-linux-x64/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/opt/www/essilor-server/modules/pushlib/gtpush/lib/build/config.gypi -I/opt/node-v0.10.28-linux-x64/lib/node_modules/node-gyp/addon.gypi -I/root/.node-gyp/0.10.28/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/root/.node-gyp/0.10.28" "-Dmodule_root_dir=/opt/www/essilor-server/modules/pushlib/gtpush/lib" binding.gyp
+Makefile: $(srcdir)/../../../../../../../root/.node-gyp/0.10.28/common.gypi $(srcdir)/../../../../../../node-v0.10.28-linux-x64/lib/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included
