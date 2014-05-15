@@ -3,11 +3,18 @@ var model = require('./model');
 
 // 获取页面首页 
 exports.index = function (req, res) {
-  model.allnews(req.params.lan, function (err, docs) {
-    if (!err) {
-      res.render('news/index', {Title: "News And Push", language: req.params.lan, newslist: docs});
+  var query = {
+    limit : 8,
+    page  : 1,
+    lan   : req.params.lan
+  };
+  model.getNews(query, function (ret) {
+    if (ret.ret !== 1) {
+      return res.render('news/index', {Title: "News And Push", language: req.params.lan, newslist: [], totalPages: 1});
     } else {
-      res.render('news/index', {Title: "News And Push", language: req.params.lan});
+      model.getPages({perPage: 8, lan: req.params.lan}, function(totalPages) {
+        return res.render('news/index', {Title: "News And Push", language: req.params.lan, newslist: ret.val, totalPages: totalPages});
+      });
     } 
   });
 };
@@ -22,6 +29,7 @@ exports.editnews = function (req, res) {
     }
   });
 };
+
 // 获取编辑界面
 exports.getslide = function (req,res) {
   model.allslide(req, function(ret){
@@ -120,6 +128,29 @@ exports.changestate = function (req, res) {
       res.end(JSON.stringify({status: false}));
     }
     res.end(JSON.stringify({status: true, state: data.state}));
+  });
+};
+
+// 推送新闻
+exports.pushnews = function (req, res) {
+  model.pushnews(req.body, function (ret) {
+    if (ret.ret === 1) {
+      res.end(JSON.stringify({status: true}));
+    } else {
+      res.end(JSON.stringify({status: false}));
+    } 
+  });
+};
+
+// 分页获取新闻
+exports.getNews = function(req, res) {
+  var query = {
+    lan   : req.params.lan,
+    skip  : parseInt(req.body.page)    || 1,
+    limit : parseInt(req.body.perPage) || 8
+  };
+  model.getNews(query, function(ret) {
+    return res.end(JSON.stringify(ret));
   });
 };
 

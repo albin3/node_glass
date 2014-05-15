@@ -29,3 +29,10 @@ exports.delall = function (req, res) {
     res.end(JSON.stringify(ret));
   });
 };
+
+// 编辑tips
+exports.edittips = function (req, res) {
+  model.edittips(req, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+};

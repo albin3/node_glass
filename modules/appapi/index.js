@@ -6,9 +6,10 @@ exports.register = function (app) {
                                                                                     
   app.post('/appapi/newuser/', view.newuser);                                       // 用户注册新户信息
   app.post('/appapi/updateuser/:userid', view.updateuser);                          // 用户更新用户信息
-  app.all('/appapi/chpassword/:userid/:newpsd', view.chpassword);                   // 用户修改用户密码
+  app.all('/appapi/chpassword', view.chpassword);                                   // 用户修改用户密码
   app.all('/appapi/resetpassword/:userid', view.resetpassword);                     // 用户重置用户密码
   app.all('/appapi/usersignin', view.usersignin);                                   // 用户登录
+  app.post('/appapi/invitefriend', view.invitefriend);                              // 邀请好友
                                                                                     
   app.all('/appapi/newslist/:numPerPage/:pageNum/:lan', view.newslist);             // 新闻列表
   app.all('/appapi/newsfocuspic/:num/:lan', view.slide);                            // 新闻焦点图片
@@ -42,4 +43,8 @@ exports.register = function (app) {
   app.post('/appapi/gettips/:lan',view.gettips);                                    // 获取tips
 
   app.get('/appapi/appversion/:lan',view.appversion);                               // 获取版本信息
+  app.get('/appapi/appleversion/:lan',view.appleversion);                           // 获取苹果版本信息
+  app.get('/appapi/androidscore/:lan',view.androidscore);                           // 获取苹果版本信息
+
+  app.post('/appapi/deviceid/:lan', view.reg_deviceid);                             // 注册DEVICEID
 };

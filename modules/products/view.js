@@ -3,8 +3,18 @@ var model = require('./model');
 
 // product管理主页
 exports.products = function (req, res) {
-  model.allproduct(req, function(ret){
-    res.render('product/index', {Title: "Products Management", products: ret.val ,language: req.params.lan});
+  var query = {
+    lan   : req.params.lan,
+    skip  : 1,
+    limit : 20
+  };
+  model.getProducts(query, function(ret){
+    if (ret.ret !== 1) {
+      return res.render('product/index', {Title: "Products Management", products: [], language: req.params.lan, totalPages: 1});
+    }
+    model.getPages({perPage: 20, lan: req.params.lan}, function(totalPages) {
+      return res.render('product/index', {Title: "Products Management", products: ret.val, language: req.params.lan, totalPages: totalPages});
+    });
   });
 };
 
@@ -12,17 +22,21 @@ exports.products = function (req, res) {
 exports.toedit = function (req, res) {
   model.toedit(req,function(ret){
     model.getStores(req, function(stores){
-      if (stores.ret !== 1)
-        res.render('product/editproduct', {Title: "Products Management", product: {}, language: req.params.lan, stores: [], totalPages: 0});
-      else 
-        res.render('product/editproduct', {Title: "Products Management", product: ret.val, language: req.params.lan, stores: stores.val, totalPages: stores.totalPages});
+      model.getbrands(req, function(brands){
+        if (stores.ret !== 1)
+          res.render('product/editproduct', {Title: "Products Management", product: {}, language: req.params.lan, stores: [], totalPages: 0, brands: brands});
+        else 
+          res.render('product/editproduct', {Title: "Products Management", product: ret.val, language: req.params.lan, stores: stores.val, totalPages: stores.totalPages, brands: brands});
+      });
     });
   }); 
 };
 
 // 新增商品
 exports.tonewproduct = function (req, res) {
-  res.render('product/editproduct', {Title: "Products Management", language: req.params.lan, stores: [], totalPages: 0});
+  model.getbrands(req, function(brands){
+    res.render('product/editproduct', {Title: "Products Management", language: req.params.lan, stores: [], totalPages: 0, brands: brands});
+  });
 };
 
 // 新增product
@@ -74,3 +88,21 @@ exports.uploadmovies = function (req, res) {
   });
 };
 
+// 推送product
+exports.pushproduct = function (req, res) {
+  model.pushproduct(req.body, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 产品分页显示
+exports.getProducts = function(req, res) {
+  var query = {
+    lan   : req.params.lan,
+    skip  : parseInt(req.body.page)    || 1,
+    limit : parseInt(req.body.perPage) || 20
+  };
+  model.getProducts(query, function(ret) {
+    return res.end(JSON.stringify(ret));
+  });
+};

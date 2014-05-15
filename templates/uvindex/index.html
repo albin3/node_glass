@@ -52,11 +52,11 @@
 </div>
 <script>
   $(".options .btn-primary").click(function(event){
-    var pushtext = $("#pushtext").val();
+    var pushtext = $("#push-text").val();
 
-    $.post("/appbg/uvindex/push/", // 发送推送请求
+    $.post("/appbg/uvindex/push/"+$("body").attr("lan"), // 发送推送请求
       {
-        pushtext: pushtext
+        pushtext: pushtext 
       }, function(data){
       if (data.ret === 1) {
         alert("推送请求发送成功, 服务器正在推送");

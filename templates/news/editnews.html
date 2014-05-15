@@ -58,7 +58,7 @@
           <br>
 
           <dd>
-          <label for="news-first-pic" class="col-sm-2 control-label">Primary Picture</label>
+          <label for="news-first-pic" class="col-sm-2 control-label">Primary Picture (Width:Height=4:3, Less than 50kb)</label>
           <div class="col-sm-6">
             <img src="/img/news/{{ _id }}.jpg" width="300px" height="186px" id="news-first-pic">
             <br>
@@ -81,7 +81,7 @@
           <dl id="news-details">
             {%for index, detail in news.details%}
             {%if detail.type === 1%}
-            <dd>
+            <dd number="{{index}}">
             <label class="col-sm-2 control-label">news text</label>
             <div class="col-sm-6">
               <textarea class="form-control" rows="2" id="news-text-{{index}}" name="news-text-{{index}}" placeholder="news text">{{detail.content}}</textarea>
@@ -89,7 +89,7 @@
             <button class="btn btn-danger" del="">x</button>
             </dd>
             {%else%}
-            <dd>
+            <dd number="{{index}}">
             <label class="col-sm-2 control-label">news pic</label>
             <div class="col-sm-6">
               <img src="{{detail.content}}" width="300px" height="185px">
@@ -121,12 +121,16 @@
   // 增加新闻内容
   $("#add-detail-text").click(function(event){
     var elemnum = $("#news-details").children("dd").length;
+    var num = 0;
+    if (!isNaN(elemnum) && elemnum > 0) {
+      num = parseInt($($("#news-details").children("dd")[elemnum-1]).attr("number"))+1;
+    }
     var add_row = "";
     add_row +=
-          '<dd>' +
+          '<dd number="' + num + '">' +
           '<label class="col-sm-2 control-label">News text</label>' +
           '<div class="col-sm-6">' +
-            '<textarea class="form-control" rows="2" id="news-text-' + elemnum + '" name="news-text-' + elemnum + '" placeholder="news text"></textarea>' +
+            '<textarea class="form-control" rows="2" id="news-text-' + num + '" name="news-text-' + num + '" placeholder="news text"></textarea>' +
           '</div>' +
           '<button class="btn btn-danger" del="">x</button>' +
           '</dd>';
@@ -136,14 +140,18 @@
   // 增加新闻图片
   $("#add-detail-pic").click(function(event){
     var elemnum = $("#news-details").children("dd").length;
+    var num = 0;
+    if (!isNaN(elemnum) && elemnum > 0) {
+      num = parseInt($($("#news-details").children("dd")[elemnum-1]).attr("number"))+1;
+    }
     var add_row = "";
     add_row +=
-          '<dd>' +
+          '<dd number="' + num + '">' +
           '<label class="col-sm-2 control-label">News pic</label>' +
           '<div class="col-sm-6">' +
             '<label>Choose a new picture.</label>' +
-            '<input type="file" name="upload' + elemnum + '" class="added-pic">' +
-            '<textarea class="form-control" rows="1" id="news-pic-' + elemnum + '" name="news-pic-' + elemnum + '" placeholder="description of pic."></textarea>' +
+            '<input type="file" name="upload' + num + '" class="added-pic">' +
+            '<textarea class="form-control" rows="1" id="news-pic-' + num + '" name="news-pic-' + num + '" placeholder="description of pic."></textarea>' +
           '</div>' +
           '<button class="btn btn-danger" del="">x</button>' +
           '</dd>';

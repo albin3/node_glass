@@ -83,7 +83,7 @@ Handle<Value> soPushAll(const Arguments& args) {
     
     TransmissionTemplate templ = {0};
     templ.transmissionContent = (char*)strContent.c_str();         // 传入的消息内容
-    templ.transmissionType = 1;
+    templ.transmissionType = 2;
     templ.t.appId = (char*)strAppId.c_str();                // 全局变量
     templ.t.appKey = (char*)strAppKey.c_str();              // 全局变量
     templ.t.pushInfo.actionLocKey = "actionLocKey";

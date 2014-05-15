@@ -101,7 +101,7 @@ exports.exportexcel = function (callback) {
     var data = new Array();
     th = ["编号", "昵称", "电话", "邮箱", "第三方登录", "性别", "是否封停", "是否为员工(0表示非员工)"];
     data.push(th);
-    for (index in docs){
+    for (var index=0; index<docs.length; index++){
       var td = new Array();
       td.push({value: docs[index]._id.toString(), formatCode: "General"});
       td.push({value: docs[index].nickname      , formatCode: "General"});
@@ -119,5 +119,25 @@ exports.exportexcel = function (callback) {
     var appUserPath = config.appPath() + "/static/appuser/appuser.xlsx";
     fs.writeFileSync(appUserPath, buffer);
     return callback({ret: 1, appUserPath: appUserPath});                            // RETURN: 处理成功
+  });
+};
+
+// 获取用户页数
+exports.totalPages = function(numPerPage, callback) {
+  dbappuser.count(function(err, numTotal) {
+    if (err) {
+      return callback(1);
+    }
+    return callback(Math.ceil(numTotal/numPerPage));
+  });
+};
+
+// 获取用户（分页）
+exports.getUsers = function(query, callback) {
+  dbappuser.find({ }).sort({nickname : 1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    if (err) 
+      return callback({ret: 2, val: []});
+    else 
+      return callback({ret: 1, val: docs});
   });
 };

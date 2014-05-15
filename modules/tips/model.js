@@ -19,9 +19,22 @@ exports.newtips = function (req, callback) {
   });
 };
 
+// 编辑tips
+exports.edittips = function (req, callback) {
+  var tips = req.body;
+  tips.lan = req.params.lan;
+  tips._id = new ObjectID(tips._id);
+  dbtips.update({_id: tips._id}, tips, function(err, updated){
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 数据库插入出错
+    }
+    return callback({ret: 1, val: tips});            // RETURN: 插入成功
+  });
+};
+
 // 查询所tips
 exports.alltips = function (req, callback) {
-  dbtips.find({lan : req.params.lan}, function(err,docs){
+  dbtips.find({lan : req.params.lan}).sort({_id: -1}, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }

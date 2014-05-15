@@ -9,8 +9,8 @@
 <p id="page">news</p>
 <p id="objid">{{objid}}</p>
 {%if news !== null%}
-<h2>{{news.title}}</h2>
-<h4>{{news.summary}}</h4>
+<h1>{{news.title}}</h1>
+<h2>{{news.summary}}</h2>
 <p><a href="{{news.firpicdes}}">{{news.firpicdes}}</a></p>
 {%for index, detail in news.details%}
 {%if detail.type === 1%}
@@ -32,8 +32,8 @@ $().ready(function(){
     // If it's not an universal app, use IS_IPAD or IS_IPHONE
     $("#page").hide();
     $("#objid").hide();
-    var page  = $("#page").val();
-    var objid = $("#objid").val();
+    var page  = $("#page").text();
+    var objid = $("#objid").text();
     if (IS_IOS) {
         // document.location.href = "essilorapp://view?id=123";
         // window.location = "essilorapp://view?id=123";

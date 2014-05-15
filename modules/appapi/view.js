@@ -23,7 +23,7 @@ exports.updateuser = function (req, res) {
 
 // 修改用户密码
 exports.chpassword = function (req, res) {
-  model.chpassword(req.params, function (ret) {
+  model.chpassword(req.body, function (ret) {
     res.end(JSON.stringify(ret));
   });
 };
@@ -38,6 +38,13 @@ exports.resetpassword = function (req, res) {
 // 验证用户有效性
 exports.usersignin = function (req, res) {
   model.usersignin(req.body, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 邀请好友
+exports.invitefriend = function (req, res) {
+  model.invitefriend(req.body, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
@@ -66,7 +73,7 @@ exports.newsdetails = function (req, res) {
 // 紫外线收割机
 exports.uvcatcher = function (req, res) {
   model.uvcatcher(req, function(ret){
-    res.end(JSON.stringify(ret));
+    res.end(ret);
   });
 };
 // 紫外线收割机排行榜
@@ -78,7 +85,7 @@ exports.uvrank = function (req, res) {
 // 寻找黄眼镜
 exports.findglass = function (req, res) {
   model.findglass(req, function(ret){
-    res.end(JSON.stringify(ret));
+    res.end(ret);
   });
 };
 // 寻找黄眼镜获取图片数据
@@ -198,6 +205,24 @@ exports.gettips = function(req, res){
 // 获取版本信息
 exports.appversion = function(req, res){
   model.appversion(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 获取苹果版本信息
+exports.appleversion = function(req, res){
+  model.appleversion(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 获取Android去评分
+exports.androidscore = function(req, res){
+  model.androidscore(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
+// 注册DEVICEID
+exports.reg_deviceid = function(req, res){
+  model.reg_deviceid(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 }

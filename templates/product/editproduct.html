@@ -43,18 +43,35 @@
           <br>
 
           <dd>
-          <label class="col-sm-2 control-label">Add Content</label>
+          <label for="listpic" class="col-sm-2 control-label">ListPic(Width:Height=4:3, Size less than 50kb)</label>
+          <div class="col-sm-4">
+            <img src="/img/product/{{product._id.toString()}}.jpg" width="280px" height="210px"></img>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="listpic" class="col-sm-2 control-label">Upload ListPic</label>
+          <div class="col-sm-4">
+            <input type="file" id="listpic" name="listpic">
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label class="col-sm-2 control-label">Add Picture (Width:Height=4:3, Size less than 100kb)</label>
           <div class="col-sm-4">
             <button id="add-picture" type="button" class="btn btn-primary">add picture</button>
           </div>
           </dd>
           <br>
+
           <dl id="pictures">
             {%for index, picture in product.image%}
             <dd number="{{index}}">
             <label class="col-sm-2 control-label">Picture</label>
             <div class="col-sm-6">
-              <img src="{{picture.url}}" width="300px" height="185px">
+              <img src="{{picture.url}}" width="280px" height="210px">
               <input type="file" name="picture{{index}}" class="added-pic">
               <textarea class="form-control" rows="1" id="picture{{index}}" name="picture{{index}}" placeholder="description of picture.">{{picture.des}}</textarea>
               </div>
@@ -67,8 +84,8 @@
           <label for="sale" class="col-sm-2 control-label">Sale</label>
           <div class="col-sm-4">
             <select class="form-control" type="text" id="sale" name="sale" placeholder="Sale">
-              <option>yes</option>
-              <option>no</option>
+              <option{%if product["sale"]==="yes" %} selected{%endif%}>yes</option>
+              <option{%if product["sale"]==="no" %} selected{%endif%}>no</option>
             </select>
           </div>
           </dd>
@@ -78,9 +95,9 @@
           <label for="E-SPF" class="col-sm-2 control-label">E-SPF</label>
           <div class="col-sm-4">
             <select class="form-control" type="text" id="E-SPF" name="E-SPF" placeholder="Province">
-              <option>10</option>
-              <option>15</option>
-              <option>25</option>
+              <option{%if product["E-SPF"]==="10" %} selected{%endif%}>10</option>
+              <option{%if product["E-SPF"]==="15" %} selected{%endif%}>15</option>
+              <option{%if product["E-SPF"]==="25" %} selected{%endif%}>25</option>
             </select>
           </div>
           </dd>
@@ -90,8 +107,9 @@
           <label for="brand" class="col-sm-2 control-label">Brand</label>
           <div class="col-sm-4">
             <select class="form-control" type="text" id="brand" name="brand" placeholder="Brand">
-              <option>依视路</option>
-              <option>宝岛</option>
+              {% for brand in brands %}
+              <option{%if product.brand === brand%} selected{%endif%}>{{brand}}</option>
+              {% endfor %}
             </select>
           </div>
           </dd>

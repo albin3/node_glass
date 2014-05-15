@@ -3,9 +3,6 @@ var config = require("../../config"); // 为了获取到路径
 var qureystring = require("querystring");
 var fs = require("fs");
 var fileExists = require("path").exists;
-
-var async = require("async");
-
 var mongojs = require('mongojs');
 var db = mongojs(config.dbinfo.dbname);
 var dbbrand = db.collection('brand');

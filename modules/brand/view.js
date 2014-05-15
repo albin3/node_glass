@@ -43,5 +43,3 @@ exports.delall = function (req, res) {
   });
 };
 
-
-

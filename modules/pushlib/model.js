@@ -1,13 +1,19 @@
 var apn = require('apn');
 var gtpush = require('./gtpush/lib/build/Release/gtpush');
+
+var config   = require('../../config');
+var mongojs  = require('mongojs');
+var db       = mongojs(config.dbinfo.dbname);
+var dbdevice = db.collection("deviceid");
+var ObjectID = require('mongodb').ObjectID;
  
 var ApplePush   = {};
 var AndroidPush = {};
 
 // Apple 推送接口
 var options = { 
-  "cert"   : "./EssilorCer.pem",
-  "key"    : "./EssilorP12.pem",
+  "cert"   : config.appPath() + "/modules/pushlib/EssilorCer.pem",
+  "key"    : config.appPath() + "/modules/pushlib/EssilorP12.pem",
   "gateway": "gateway.sandbox.push.apple.com",
   "port"   : 2195
 };
@@ -58,6 +64,27 @@ pushList    : function(cltlist, msg) {              // 推送用户列表
   apnConnection.pushNotification(note, device);
   },
 pushAll     : function(msg) {                       // 推送所有用户
+  dbdevice.find({lan: msg.lan, os: "IOS"}, function(err, docs){
+    console.log(docs);
+    if (err || docs.length === 0) {
+      return;
+    }
+    var device = new Array();
+    for(var i=0; i<docs.length; i++) {
+      device.push(new apn.Device(docs[i].deviceid));
+    }
+    var note = new apn.Notification();
+ 
+    note.expiry  = Math.floor(Date.now() / 1000) + 60;
+    note.badge   = 1;
+    note.alert   = msg.alert;
+    note.sound   = "ping.aiff";
+    note.payload = { 'page' : msg.content, 'id': msg.message };
+ 
+    for (var i=0; i<device.length; i++) {
+      apnConnection.pushNotification(note, device[i]);
+    }
+  });
   }
 };
 
@@ -74,7 +101,7 @@ pushList    : function(cltlist, msg) {              // 推送List用户
   console.log(gtpush.pushList());
   },
 pushAll     : function(msg) {                       // 推送给所有用户
-  console.log(gtpush.pushAll("Content", "Message"));
+  console.log(gtpush.pushAll(msg.content, msg.message));
   }
 };
 

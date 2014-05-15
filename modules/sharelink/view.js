@@ -12,9 +12,9 @@ exports.sharelink = function(req, res) {
 exports.sharenews = function(req, res) {
   model.sharenews(req, function(ret){
     if (ret.ret===1) {
-      res.render('sharelink/news', {objid: req.params.objid, news: ret.val});
+      res.render('sharelink/news', {objid: req.params.objid, news: ret.val, language: ret.val.lan });
     } else {
-      res.render('sharelink/news', {objid: req.params.objid, news: null });
+      res.render('sharelink/news', {objid: req.params.objid, news: null, language: "simplified" });
     }
   });
 };
@@ -24,9 +24,9 @@ exports.shareprod = function(req, res) {
   model.shareprod(req, function(ret){
     if (ret.ret===1) {
       console.log(ret.val);
-      res.render('sharelink/prod', {objid: req.params.objid, prod: ret.val});
+      res.render('sharelink/prod', {objid: req.params.objid, prod: ret.val, language: ret.val.lan });
     } else {
-      res.render('sharelink/prod', {objid: req.params.objid, prod: null });
+      res.render('sharelink/prod', {objid: req.params.objid, prod: null, language: "simplified" });
     }
   });
 };
