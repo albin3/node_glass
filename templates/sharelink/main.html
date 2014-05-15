@@ -7,43 +7,6 @@
 
 {% block content %}
 <label class="alert"></label>
-<p id="page">prod</p>
-<p id="objid">{{objid}}</p>
-{%if prod%}
-<h1>{{prod.name}}</h1>
-{% if prod.image %}
-<div class="bs-example">
-  <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-       {%for index, img in prod.image%}
-       <li data-target="#carousel-example-generic" data-slide-to="{{index}}" class="{%if index === 0%}active{%endif%}"></li>
-       {%endfor%}
-    </ol>
-    <div class="carousel-inner">
-      {% for index, img in prod.image %}
-      <div class="item{%if index === 0%} active{%endif%}">
-        <img alt="First slide" src="{{img.url}}">
-      </div>
-      {% endfor %}
-    </div>
-    <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left"></span>
-    </a>
-    <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right"></span>
-    </a>
-   </div>
-   </div>
- </div>
-{% endif %}
-{% if prod.contents %}
-{% for content in prod.contents %}
-<p>{{content}}</p>
-{% endfor %}
-{% endif %}
-{% endif %}
-</div>
-<div id="pageOverlay" onclick="this.style.visibility = 'hidden'" style="visibility: visible;"></div>
 <script>
 var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_IPHONE  = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
@@ -92,13 +55,12 @@ $().ready(function(){
     }
 });
 function guide() {
-  document.getElementById('pageOverlay').style.visibility = 'visible';
   if (IS_IOS) {
     $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
   } else if (IS_ANDROID) {
-    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。")
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
   } else {
-    $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
   }
 };
 </script>

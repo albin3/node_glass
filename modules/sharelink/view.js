@@ -31,4 +31,13 @@ exports.shareprod = function(req, res) {
   });
 };
 
-
+// 分享链接新闻
+exports.sharemain = function(req, res) {
+  model.sharemain(req, function(ret){
+    if (ret.ret===1) {
+      res.render('sharelink/main', { language: req.params.lan });
+    } else {
+      res.render('sharelink/main', { language: "simplified" });
+    }
+  });
+};

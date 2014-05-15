@@ -28,3 +28,11 @@ h2 {
   font-size   : 100px;
   padding     : 20px;
   }
+
+.alert {
+  color:#ff0000;
+  display:block; 
+  width:100%; 
+  text-align:right;
+  font-size:40px;
+}

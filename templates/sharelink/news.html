@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+<label class="alert"></label>
 <p id="page">news</p>
 <p id="objid">{{objid}}</p>
 {%if news !== null%}
@@ -28,6 +29,7 @@ var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_ANDROID = !IS_IOS && navigator.userAgent.match(/android/i) != null,
     IS_MOBILE  = IS_IOS || IS_ANDROID;
 $().ready(function(){
+    guide();
     $("title").text("Essilor Sharelink");
     // If it's not an universal app, use IS_IPAD or IS_IPHONE
     $("#page").hide();
@@ -58,6 +60,15 @@ $().ready(function(){
         // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
     }
 });
+function guide() {
+  if (IS_IOS) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
+  } else if (IS_ANDROID) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
+  } else {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
+  }
+};
 </script>
 {% endblock %}
 
