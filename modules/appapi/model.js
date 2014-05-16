@@ -565,10 +565,10 @@ exports.uvrank = function(req, callback) {
 // 寻找黄眼镜
 exports.findglass = function(req, callback) {
   var data     = req.body;
-  var id       = data._id;
+  var id       = data._id      || "anonymous";
   var nickname = data.nickname || "anonymous";
-  var limit    = data.limit || 10;
-  var score    = parseInt(data.score) || 100000;
+  var limit    = data.limit    || 10;
+  var score    = parseFloat(data.score) || 100000;
   db_findglass.update({userid: id, lan: req.params.lan},
       {$set: {nickname: nickname, score: score, dt: new Date().getTime()}},
       {upsert: true}, function(err, doc){
