@@ -10,7 +10,6 @@ exports.tips = function (req, res) {
 
 // 新增tips
 exports.newtips = function (req, res) {
-  console.log(req.body);
   model.newtips(req, function(ret) {
     res.end(JSON.stringify(ret));
   });

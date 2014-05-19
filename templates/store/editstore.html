@@ -46,9 +46,9 @@
           </dd>
           <br>
           <dd>
-          <label for="province" class="col-sm-2 control-label">Province</label>
+          <label for="province" class="col-sm-2 control-label">Province(Reselect)</label>
             <div class="col-sm-4">
-              <select class="form-control" type="text" id="province" name="province" placeholder="Province">
+              <select class="form-control" type="text" id="province" name="province" value="{{store.province}}">
               <option>--</option>
               <option>上海</option>
               <option>北京</option>
@@ -91,7 +91,7 @@
           <dd>
           <label for="municipality" class="col-sm-2 control-label">Municipality</label>
           <div class="col-sm-4">
-            <select class="form-control" type="text" id="municipality" name="municipality" placeholder="Municipality">
+            <select class="form-control" type="text" id="municipality" name="municipality" value="{{store.municipality}}">
             <option>--</option>
             </select>
           </div>
@@ -100,7 +100,7 @@
           <dd>
           <label for="area" class="col-sm-2 control-label">Area</label>
             <div class="col-sm-4">
-              <select class="form-control" type="text" id="area" name="area" placeholder="Area">
+              <select class="form-control" type="text" id="area" name="area" value="{{store.area}}">
                 <option>--</option>
               </select>
             </div>
@@ -135,26 +135,36 @@
   </div>
 </div>
 <script>
-  $("#province").change(function(){
-    var text = $("#province").find("option:selected").text();
-    $.post('/appbg/store/getcity',{province: text},function(data){
-      $("#municipality").children("option").remove();
-      $("#municipality").append("<option>--</option>");
-      for(var i=0;i<data.val.length;i++){
-        $("#municipality").append("<option>" + data.val[i] + "</option>");
-      }
-    },'json');
+  $().ready(function() {
+    console.log($("#province").attr("value"));
+    /*
+    $("#province").val($("#province").attr("value"));
+    $("#municipality").val($("#municipality").attr("value"));
+    $("#area").val($("#area").attr("value"));
+    */
+    $("#province").change(function(){
+      var text = $("#province").find("option:selected").text();
+      $.post('/appbg/store/getcity/'+$("body").attr("lan"), {province: text}, function(data){
+        console.log(data);
+        $("#municipality").children("option").remove();
+        $("#municipality").append("<option>--</option>");
+        for(var i=0;i<data.val.length;i++){
+          $("#municipality").append("<option>" + data.val[i] + "</option>");
+        }
+      },'json');
+    });
+    $("#municipality").change(function(){
+      var text1 = $("#municipality").find("option:selected").text();
+      var text2 = $("#province").find("option:selected").text();
+      $.post('/appbg/store/getarea/'+$("body").attr("lan"), {city: text1, province: text2}, function(data){
+        console.log(data);
+        $("#area").children("option").remove();
+        $("#area").append("<option>--</option>");
+        for(var i=0;i<data.val.length;i++){
+          $("#area").append("<option>" + data.val[i] + "</option>");
+        }
+      },'json');
   });
-  $("#municipality").change(function(){
-    var text1 = $("#municipality").find("option:selected").text();
-    var text2 = $("#province").find("option:selected").text();
-    $.post('/appbg/store/getarea',{city: text1,province: text2},function(data){
-      $("#area").children("option").remove();
-      $("#area").append("<option>--</option>");
-      for(var i=0;i<data.val.length;i++){
-        $("#area").append("<option>" + data.val[i] + "</option>");
-      }
-    },'json');
   });
 </script>
 {% endblock %}

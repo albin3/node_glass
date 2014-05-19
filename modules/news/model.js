@@ -31,7 +31,6 @@ exports.allnews = function (language, callback) {
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
 exports.addnews =  function (req, current_user, callback) {
   var news = req.body;
-  console.log(req.body);
   var language = req.params.lan;
   news.focus = false;     // 是否设置为焦点图
   news.lan = language;
@@ -70,7 +69,6 @@ exports.addslide =  function (req, callback) {
   slide.lan = language;
   dbslide.insert(slide, function (err, doc) {
     if (doc) {
-      console.log(doc);
       if (files["picture"].size > 0){ 
         if (judge_size(files["picture"].size)) { 
           fs.readFile(files["picture"].path, function (err, data) {
@@ -98,7 +96,6 @@ function deletePicturesOfNews(newsid) {
 
 // 删除新闻
 exports.delnews =  function (news, callback) {
-  console.log(news);
   dbnews.remove({ _id: new ObjectID(news.id) }, function (err) {
     
     // 删除新闻首图
@@ -245,7 +242,6 @@ exports.updatenews = function (req, current_user, callback) {
         funcArr
         ,function(err){
       doc.details = new_details;
-      console.log(new_details);
       doc.time = new Date().getTime();        // 更新时间
       if (typeof current_user !== "string")   // 更新作者
         doc.author = "anonymous";

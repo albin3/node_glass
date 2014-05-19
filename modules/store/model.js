@@ -76,7 +76,7 @@ exports.delall = function (req, callback) {
 exports.getcity = function (body, callback) {
   dbregional.find({city: body.province}, function(err, docs){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
     var city = new Array();
     for(var i=0;i<docs.length;i++){
@@ -84,7 +84,7 @@ exports.getcity = function (body, callback) {
         city.push(docs[i].county);
       }
     }
-    callback({ret: 1, val: city});
+    return callback({ret: 1, val: city});
   });
 };
 
@@ -95,13 +95,13 @@ exports.getarea = function (body, callback) {
   query.county = body.city;
   dbregional.find(query, function(err, docs){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
     var area = new Array();
     for(var i=0;i<docs.length;i++){
       area.push(docs[i].prov);
     }
-    callback({ret: 1, val: area});
+    return callback({ret: 1, val: area});
   });
 }
 

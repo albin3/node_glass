@@ -531,9 +531,9 @@ exports.uvcatcher = function(req, callback) {
   var id       = data._id             || "anonymous";
   var nickname = data.nickname        || "anonymous";
   var score    = parseInt(data.score) || 0;
-  var limit    = data.limit           || 10;
-  db_uvcatcher.update({userid: id, lan: req.params.lan}, 
-      {$set:{dt: new Date().getTime(), score: score, nickname: nickname}},
+  var limit    = parseInt(data.limit) || 10;
+  db_uvcatcher.update({userid: id, dt: new Date().getTime(), lan: req.params.lan}, 
+      {$set:{score: score, nickname: nickname}},
       {upsert: true}, function(err, doc) {
     if (err || !doc) {
       return callback("");                                                      // RETURN: 返回更新错误
@@ -565,12 +565,12 @@ exports.uvrank = function(req, callback) {
 // 寻找黄眼镜
 exports.findglass = function(req, callback) {
   var data     = req.body;
-  var id       = data._id      || "anonymous";
-  var nickname = data.nickname || "anonymous";
-  var limit    = data.limit    || 10;
+  var id       = data._id               || "anonymous";
+  var nickname = data.nickname          || "anonymous";
+  var limit    = parseInt(data.limit)   || 10;
   var score    = parseFloat(data.score) || 100000;
-  db_findglass.update({userid: id, lan: req.params.lan},
-      {$set: {nickname: nickname, score: score, dt: new Date().getTime()}},
+  db_findglass.update({userid: id, lan: req.params.lan, dt: new Date().getTime()},
+      {$set: {nickname: nickname, score: score}},
       {upsert: true}, function(err, doc){
     if (err || !doc) {
       return callback("");                                                       // RETURN: 返回更新错误
@@ -1040,6 +1040,7 @@ exports.prodstores = function(req, callback) {
       storeIds.push(new ObjectID(doc.stores[i]));
     }
     db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}, province: query.prov, municipality: query.muni, area: query.area, $or:[{address: query.cont}, {name: query.cont}]}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    //db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
       if (err) {
         return callback({ret: 2});
       }

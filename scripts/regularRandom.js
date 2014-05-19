@@ -9,6 +9,8 @@ var dbrandom = db.collection('random');
 dbrandom.update({}, {$set: {random: Math.random()}}, function(err, doc){
   if (err) {
     console.log("产生随机数出错");
+  } else {
+    console.log("产生随机数成功");
   }
-  console.log("产生随机数成功");
+  db.close();
 });

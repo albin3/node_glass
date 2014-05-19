@@ -258,7 +258,7 @@
     $(".active-tr").removeClass("active-tr");
     tr.addClass("active-tr");
     $("#edit-weather").val(tr.children(".td-weather").text());
-    $("#edit-tips-detail").text(tr.children(".td-detail").text());
+    $("#edit-tips-detail").val(tr.children(".td-detail").text());
     $("#edit-espf").val(tr.children(".td-espf").text());
     $("#modal-edit-tips").modal("show");
   };
@@ -269,4 +269,5 @@
   });
 </script>
 {% endblock %}
+
 

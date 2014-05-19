@@ -29,7 +29,6 @@ exports.tonewstore = function (req, res) {
 
 // 新增store
 exports.newstore = function (req, res) {
-  console.log(req.body);
   model.newstore(req, function(ret) {
     res.redirect('/appbg/store/'+req.params.lan);
   });

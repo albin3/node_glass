@@ -65,7 +65,6 @@ pushList    : function(cltlist, msg) {              // 推送用户列表
   },
 pushAll     : function(msg) {                       // 推送所有用户
   dbdevice.find({lan: msg.lan, os: "IOS"}, function(err, docs){
-    console.log(docs);
     if (err || docs.length === 0) {
       return;
     }

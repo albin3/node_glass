@@ -42,7 +42,6 @@ exports.finduser =  function (id, callback) {
         if (err) {
           callback(err);
         } else {
-          console.log(doc);
           callback(null, doc);
         }
       });

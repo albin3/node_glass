@@ -31,7 +31,7 @@
         $.post('/account/currentuser', {
           }, function(data){
           if (data.current_user !== "admin") {
-            return alert("Only root canagement this page.");
+            return alert("Only root can manage this page.");
           }
           window.location.href='/appbg/bguser/{{language}}';
         }, 'json');

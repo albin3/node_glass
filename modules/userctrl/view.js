@@ -62,8 +62,6 @@ exports.userdel = function (req, res) {
  * 改变用户的状态
  */
 exports.changestate = function (req, res) {
-  console.log(req.params);
-  console.log(req.body);
   model.changestate(req.params.userid, req.body, function(err, doc) {
     var state = false;
     if (err) {

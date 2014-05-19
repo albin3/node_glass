@@ -30,7 +30,6 @@ exports.addbrand =  function (req, callback) {
   brand.lan = language;
   dbbrand.insert(brand, function (err, doc) {
     if (doc) {
-      console.log(doc);
       if (files["picture"].size > 0){ 
         if (judge_size(files["picture"].size)) { 
           fs.readFile(files["picture"].path, function (err, data) {

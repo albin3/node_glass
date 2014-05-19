@@ -23,7 +23,6 @@ exports.sharenews = function(req, res) {
 exports.shareprod = function(req, res) {
   model.shareprod(req, function(ret){
     if (ret.ret===1) {
-      console.log(ret.val);
       res.render('sharelink/prod', {objid: req.params.objid, prod: ret.val, language: ret.val.lan });
     } else {
       res.render('sharelink/prod', {objid: req.params.objid, prod: null, language: "simplified" });
