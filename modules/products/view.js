@@ -67,6 +67,13 @@ exports.sale = function(req, res) {
   });
 };
 
+// 批量改变商品的店铺列表
+exports.salelist = function(req, res) {
+  model.salelist(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+};
+
 // 改变商品的店铺促销状态
 exports.discount = function(req, res) {
   model.discount(req, function(ret){

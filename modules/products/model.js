@@ -193,6 +193,12 @@ exports.delall = function (req, callback) {
 };
 
 // ####################店铺关联产品操作##################
+// 删除数组中元素
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
 // 引用store管理里面的函数
 exports.getStores = function(req, callback){
   dbproduct.findOne({_id: new ObjectID(req.params.id)}, function(err, doc){
@@ -267,12 +273,6 @@ exports.storesinpage = function(req, callback){
     });
   });
 };
-// 删除数组中元素
-Array.prototype.remove = function(from, to) {
-  var rest = this.slice((to || from) + 1 || this.length);
-  this.length = from < 0 ? this.length + from : from;
-  return this.push.apply(this, rest);
-};
 // 产品关联的店铺操作
 exports.sale = function(req, callback) {
   var query = req.body;
@@ -294,6 +294,56 @@ exports.sale = function(req, callback) {
           doc.stores.remove(i);
           doc.discount.remove(i);
           break;
+        }
+      }
+    } else {
+    }
+    dbproduct.update({_id: new ObjectID(query.prodid)}, doc, function(err, docs){
+      if (err) {
+        return callback({ret: 2});
+      }
+      return callback({ret: 1});
+    });
+  });
+};
+// 产品关联的批量店铺操作
+exports.salelist = function(req, callback) {
+  var query      =  req.body || {};
+  var storelist  =  query.storelist || [];
+  dbproduct.findOne({_id: new ObjectID(query.prodid)}, function(err, doc) {
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 错误
+    }
+    if (!doc.stores) {
+      doc.stores   = [];//商店列表
+      doc.discount = [];//促销列表
+    }
+    if (query.checked === "true") {
+      for (var i=0; i<storelist.length; i++) {
+        var exist = false;
+        for(var j=0; j<doc.stores.length; j++) {
+          if (storelist[i] === doc.stores[j]) {
+            exist = true;
+            break;
+          }
+        }
+        if (!exist) {
+          doc.stores.push(storelist[i]);
+          doc.discount.push(false);
+        }
+      }
+    } else if(query.checked === "false"){  // 删除
+      for (var i=0; i<storelist.length; i++) {
+        var exist = false;
+        for(var j=0; j<doc.stores.length; j++) {
+          if (storelist[i] === doc.stores[j]) {
+            exist = true;
+            break;
+          }
+        }
+        if (exist) {
+          doc.stores.remove(j);
+          doc.discount.remove(j);
         }
       }
     } else {

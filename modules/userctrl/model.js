@@ -133,7 +133,7 @@ exports.totalPages = function(numPerPage, callback) {
 
 // 获取用户（分页）
 exports.getUsers = function(query, callback) {
-  dbappuser.find({ }).sort({nickname : 1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+  dbappuser.find({ }).sort({nickname : 1}).sort({isworker: -1, sharenum: -1, clicknum: -1, nickname: 1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
     if (err) 
       return callback({ret: 2, val: []});
     else 
