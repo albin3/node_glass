@@ -229,6 +229,8 @@
       </form>
       <h4>Choose Stores (Show only when edit product)</h4>
       <hr>
+      <button class="btn btn-success" id="checkall">Check all</button>
+      <button class="btn btn-warning" id="uncheckall">Uncheck all</button>
       <div class="table-responsive">
         <table class="table table-striped" totalPages="{{totalPages}}">
           <thead>
@@ -271,7 +273,52 @@
   </div>
 </div>
 <script>
-  // 增加新闻内容
+  // 批量勾选门店
+  $("#checkall").click(function(event){
+    var storelist = [];
+    $("#store-list tr").each(function(index, element) {
+      storelist.push($(element).attr("data-id"));
+    });
+    $.post('/appbg/product/salelist/'+$('body').attr("lan"), {
+      prodid    :  $("#_id").val(),
+      checked   :  true,
+      storelist :  storelist
+    }, function(data) {
+      if (data.ret === 1) {
+        $(".check-sale").each(function(index, elem) {
+          elem.checked = true;
+        });
+        return ;
+      } else {
+        alert("Fail to check these stores.");
+        return ;
+      }
+    }, "json");
+  });
+  // 批量取消勾选门店
+  $("#uncheckall").click(function(event){
+    var storelist = [];
+    $("#store-list tr").each(function(index, element) {
+      storelist.push($(element).attr("data-id"));
+    });
+    $.post('/appbg/product/salelist/'+$('body').attr("lan"), {
+      prodid    :  $("#_id").val(),
+      checked   :  false,
+      storelist :  storelist
+    }, function(data) {
+      if (data.ret === 1) {
+        $(".check-sale").each(function(index, elem) {
+          elem.checked = false;
+          $(".check-discount").get(index).checked = false;
+        });
+        return ;
+      } else {
+        alert("Fail to check these stores.");
+        return ;
+      }
+    }, "json");
+  });
+  // 增加产品内容
   $("#add-text").click(function(event){
     var elemnum = $("#texts").children("dd").length;
     var num = 0;
@@ -290,7 +337,7 @@
     $("#texts").append(add_row);
   });
   
-  // 增加新闻图片
+  // 增加产品图片
   $("#add-picture").click(function(event){
     var elemnum = $("#pictures").children("dd").length;
     var num = 0;
