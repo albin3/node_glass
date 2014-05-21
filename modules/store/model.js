@@ -107,7 +107,7 @@ exports.getarea = function (body, callback) {
 
 // 分页获取店铺信息
 exports.getStores = function(query, callback) {
-  dbstore.find({lan: query.lan}).sort({_id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+  dbstore.find({lan: query.lan}).sort({class: 1, _id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
     if (err) 
       return callback({ret: 2, val: []});
     else 

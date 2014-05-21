@@ -245,7 +245,7 @@ exports.storesinpage = function(req, callback){
   var page   = parseInt(req.params.page_num);
   var lan    = req.params.lan;
   var prodid = req.body._id;
-  dbstore.find({lan: lan}).skip((page-1)*20).limit(20, function(err, docs){
+  dbstore.find({lan: lan}).sort({class: 1, _id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((page-1)*20).limit(20, function(err, docs){
     if (err) {
       return callback({ret: 2});                                                // RETURN: 调用错误
     }
