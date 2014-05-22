@@ -105,6 +105,19 @@ exports.getarea = function (body, callback) {
   });
 }
 
+// 编辑GPS
+exports.editgps = function (req, callback) {
+  var id  = req.body.id              || "535a27b66e5a97eb1b135000";
+  var lng = parseFloat(req.body.lng) || 0;
+  var lat = parseFloat(req.body.lat) || 0;
+  dbstore.update({_id: ObjectID(id)}, {$set: {gps: [lng, lat]}}, function(err, updated) {
+    if (err) {
+      return callback({ret: 2});
+    }
+    return callback({ret: 1});
+  });
+}
+
 // 分页获取店铺信息
 exports.getStores = function(query, callback) {
   dbstore.find({lan: query.lan}).sort({class: 1, _id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){

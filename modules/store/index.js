@@ -11,4 +11,5 @@ exports.register = function (app) {
   app.post('/appbg/store/delall/:lan', view.delall);
   app.post('/appbg/store/getcity/:lan', view.getcity);
   app.post('/appbg/store/getarea/:lan', view.getarea);
+  app.post('/appbg/store/editgps/:lan', view.editgps);
 };

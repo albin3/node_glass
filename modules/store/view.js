@@ -56,8 +56,15 @@ exports.getcity = function (req, res) {
 }
 
 //根据省获得城市
-exports.getarea= function (req, res) {
+exports.getarea = function (req, res) {
   model.getarea (req.body, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}
+
+// 编辑Store GPS
+exports.editgps = function (req, res) {
+  model.editgps(req, function(ret) {
     res.end(JSON.stringify(ret));
   });
 }
