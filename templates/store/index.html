@@ -40,7 +40,8 @@
               <th class="col-sm-1">Municipality</th>
               <th class="col-sm-1">Area</th>
               <th class="col-sm-3">Address</th>
-              <th class="col-sm-2">Telephone</th>
+              <th class="col-sm-2">GPS</th>
+              <th class="col-sm-1">Telephone</th>
               <th class="col-sm-1">Operation</th>
             </tr>
           </thead>
@@ -52,9 +53,11 @@
               <td>{{store.municipality}}</td>
               <td>{{store.area}}</td>
               <td>{{store.address}}</td>
+              <td>{{store.gps}}</td>
               <td>{{store.telephone}}</td>
               <td>
                 <ul class=list-inline>
+                  <li><a href="#" class="a-editgps">edit-gps</a></li>
                   <li><a href="edit/{{ store._id.toString() }}/{{language}}" class="a-edit-store">edit</a></li>
                   <li><a href="#" class="a-del-store">delete</a></li>
                 </ul>
@@ -70,6 +73,38 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="modal-store-edit">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit Gps of store</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="store-lng" class="col-sm-2 control-label">Longitude</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="store-lng" name="store-lng" placeholder="Lng">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="store-lat" class="col-sm-2 control-label">Latitude</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" id="store-lat" name="store-lat" placeholder="Lat">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+        <button type="button" class="btn btn-primary">save</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End modal -->
 
 <script>
   // 增加门店
@@ -93,7 +128,41 @@
       var tr = $(event.target).parent().parent().parent().parent();
       var storeid = tr.attr("data-id");
       deleteStore(storeid, tr);
+    } else if ($(event.target).context.className === "a-editgps") {
+      event.preventDefault();
+      var tr = $(event.target).parent().parent().parent().parent();
+      var storeid = tr.attr("data-id");
+      editgps(storeid, tr);
     }
+  });
+  // 编辑GPS
+  function editgps(id, target) {
+    $("#store-lng").val("");
+    $("#store-lat").val("");
+    $(".activetr").removeClass("activetr");
+    $(target).addClass("activetr");
+    $("#modal-store-edit").modal("show");
+  }
+  $(".modal-footer .btn-primary").click(function(event) {
+    var lng = $("#store-lng").val();
+    var lat = $("#store-lat").val();
+    if (isNaN(parseFloat(lng)) || isNaN(parseFloat(lat))) {
+      alert("Please input float.");
+      return;
+    }
+    var id  = $(".activetr").attr("data-id");
+    $.post("/appbg/store/editgps/"+$("body").attr("lan"), {
+      id  : id,
+      lng : lng,
+      lat : lat
+    }, function(data) {
+      if (data.ret !== 1) {
+        alert("Fail to update Lan and Lat.")
+        return ;
+      }
+      $($(".activetr").children("td")[5]).text(lng+","+lat);
+      $("#modal-store-edit").modal("hide");
+    }, "json");
   });
   // 删除store
   function deleteStore(id, target){
