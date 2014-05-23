@@ -12,17 +12,13 @@ var xlsx = require('node-xlsx'),
 function func() {
 
 console.log("start to get baidu api.");
-var objs = xlsx.parse(__dirname+"/20140509_xintianhong.xlsx").worksheets[1].data;
-console.log(objs);
-return ;
+var objs = xlsx.parse(__dirname+"/20140509_xintianhong.xlsx").worksheets[0].data;
 for (var i=1; i<objs.length; i++) {
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined || typeof obj[0].value !== 'string') {
    continue;
   }
-  console.log(obj);
-  continue;
   storeObj.class = "新天鸿";
   storeObj.name  = obj[0] ? obj[0].value : " ";
   storeObj.province  = obj[1] ? obj[1].value : " ";
