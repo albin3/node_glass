@@ -26,6 +26,7 @@ var db_random       = db.collection('random');
 var db_usercoupon   = db.collection('usercoupon');
 var db_deviceid     = db.collection('deviceid');
 var db_brandcode    = db.collection('brandcode');
+var db_loadingpic   = db.collection('loadingpic');
 var ObjectID        = require('mongodb').ObjectID;
 
 // Date的format方法
@@ -56,12 +57,15 @@ Date.prototype.format = function(format) {
  */
 exports.loadingpic = function(req, callback) {
   var lan   = req.params.lan;
-  var index = req.params.index;
-  if (isNaN(parseInt(index))) 
-    index = 1;
-  else 
-    index = parseInt(index);
-  return callback({ret: 1, val: {index: index, url: "/img/loadingpic/1.jpg", dt: new Date().getTime()}});
+  var size  = req.params.size;
+  console.log(size);
+  console.log(lan);
+  db_loadingpic.findOne({lan: lan, size: size}, function(err, doc) {
+    if (err || !doc) {
+      return callback({ret: 2});
+    }
+    return callback({ret: 1, val: {index: parseInt(doc.size), url: doc.url, dt: doc.dt}});
+  });
 };
 
 /**

@@ -4,7 +4,7 @@ var view = require('./view');
 exports.register = function (app) { 
   app.all('/appapi/*', view.setheader);                                             // 全部以JSON形式返回
                                                                                     
-  app.all('/appapi/loadingpic/:lan/:index', view.loadingpic);
+  app.all('/appapi/loadingpic/:lan/:size', view.loadingpic);                        // 广告图
 
   app.post('/appapi/newuser/', view.newuser);                                       // 用户注册新户信息
   app.post('/appapi/updateuser/:userid', view.updateuser);                          // 用户更新用户信息
