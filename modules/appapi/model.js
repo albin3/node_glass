@@ -52,6 +52,19 @@ Date.prototype.format = function(format) {
 }
 
 /**
+ * 广告图获取
+ */
+exports.loadingpic = function(req, callback) {
+  var lan   = req.params.lan;
+  var index = req.params.index;
+  if (isNaN(parseInt(index))) 
+    index = 1;
+  else 
+    index = parseInt(index);
+  return callback({ret: 1, val: {index: index, url: "/img/loadingpic/1.jpg", dt: new Date().getTime()}});
+};
+
+/**
  * 新用户注册
  */
 exports.newuser = function (user, callback) {
