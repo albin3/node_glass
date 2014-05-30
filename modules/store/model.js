@@ -76,7 +76,7 @@ exports.delall = function (req, callback) {
 exports.getcity = function (body, callback) {
   dbregional.find({city: body.province}, function(err, docs){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
     var city = new Array();
     for(var i=0;i<docs.length;i++){
@@ -84,7 +84,7 @@ exports.getcity = function (body, callback) {
         city.push(docs[i].county);
       }
     }
-    callback({ret: 1, val: city});
+    return callback({ret: 1, val: city});
   });
 };
 
@@ -95,22 +95,47 @@ exports.getarea = function (body, callback) {
   query.county = body.city;
   dbregional.find(query, function(err, docs){
     if (err) {
-      callback({ret: 2});                           // RETURN: 数据库出错
+      return callback({ret: 2});                           // RETURN: 数据库出错
     }
     var area = new Array();
     for(var i=0;i<docs.length;i++){
       area.push(docs[i].prov);
     }
-    callback({ret: 1, val: area});
+    return callback({ret: 1, val: area});
+  });
+}
+
+// 编辑GPS
+exports.editgps = function (req, callback) {
+  var id  = req.body.id              || "535a27b66e5a97eb1b135000";
+  var lng = parseFloat(req.body.lng) || 0;
+  var lat = parseFloat(req.body.lat) || 0;
+  dbstore.update({_id: ObjectID(id)}, {$set: {gps: [lng, lat]}}, function(err, updated) {
+    if (err) {
+      return callback({ret: 2});
+    }
+    return callback({ret: 1});
   });
 }
 
 // 分页获取店铺信息
 exports.getStores = function(query, callback) {
-  dbstore.find({lan: query.lan}).sort({province: 1}).skip(query.skip*query.limit).limit(query.limit, function(err, docs){
+  dbstore.find({lan: query.lan}).sort({class: 1, _id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
     if (err) 
-      return callback({ret: 2});
+      return callback({ret: 2, val: []});
     else 
       return callback({ret: 1, val: docs});
   });
-}
+};
+
+// 获取分页总数
+exports.getPages = function(data, callback) {
+  var perPage = data.perPage;
+  var lan     = data.lan;
+  dbstore.count({lan: lan}, function(err, num) {
+    if (err) {
+      return callback(1);
+    }
+    return callback(Math.ceil(num/perPage));
+  });
+};

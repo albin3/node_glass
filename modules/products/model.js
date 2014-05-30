@@ -2,13 +2,14 @@
 var config = require('../../config');
 var mongojs = require('mongojs');
 var fs = require("fs");
+var store_model = require('../store/model');
+var pushlib = require('../pushlib/model');      // 推送
 
 var db = mongojs(config.dbinfo.dbname);
 var dbproduct = db.collection('product');
 var dbstore   = db.collection('store');
+var dbbrand   = db.collection('brand');
 var ObjectID = require('mongodb').ObjectID;
-
-var store_model = require('../store/model');
 
 // 新建product
 exports.newproduct = function (req, callback) {
@@ -23,12 +24,10 @@ exports.newproduct = function (req, callback) {
   if (product["nc-content"]) {
     product.nc_enable = true;
   }
-  delete product["nc-content"];
   product.sc_enable = false;
   if (product["sc-content"]) {
     product.sc_enable = true;
   }
-  delete product["sc-content"];
   product.image     = new Array();
   product.contents  = new Array();
   var id = product._id;
@@ -47,6 +46,9 @@ exports.newproduct = function (req, callback) {
           delete product["text-"+i];
           new_cont.push(text);
         }
+      }
+      if (files["listpic"] && files["listpic"].size>0) {
+        fs.renameSync(files["listpic"].path, config.appPath() + "/static/img/product/" + id + ".jpg");
       }
       for (var i=0; i<20; i++) {
         if (product["picture"+i] !== undefined) {
@@ -69,6 +71,8 @@ exports.newproduct = function (req, callback) {
       product.contents = new_cont;
       product._id      = new ObjectID(product._id.toString());
       product.dt       = new Date().getTime();
+      product.stores   = old_prod.stores;
+      product.discount = old_prod.discount;
       dbproduct.update({_id: new ObjectID(id)}, product, function(err, doc){
         if (err) {
           return callback({ret: 2});                  // RETURN: 更新出错
@@ -94,6 +98,9 @@ exports.newproduct = function (req, callback) {
           delete product["text-"+i];
           new_cont.push(text);
         }
+      }
+      if (files["listpic"] && files["listpic"].size>0) {
+        fs.renameSync(files["listpic"].path, config.appPath() + "/static/img/product/" + id + ".jpg");
       }
       for (var i=0; i<20; i++) {
         if (product["picture"+i] !== undefined) {
@@ -142,7 +149,7 @@ function judge_size(size) {
 
 // 查询所有product
 exports.allproduct = function (req, callback) {
-  dbproduct.find({lan : req.params.lan}).sort({_id: -1}, function(err,docs){
+  dbproduct.find({lan : req.params.lan}).sort({brand: 1, dt: -1}, function(err,docs){
     if (err) {
       return callback({ret: 2});                           // RETURN: 数据库出错
     }
@@ -186,6 +193,12 @@ exports.delall = function (req, callback) {
 };
 
 // ####################店铺关联产品操作##################
+// 删除数组中元素
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
 // 引用store管理里面的函数
 exports.getStores = function(req, callback){
   dbproduct.findOne({_id: new ObjectID(req.params.id)}, function(err, doc){
@@ -198,7 +211,7 @@ exports.getStores = function(req, callback){
     }
     var query   = {};
     query.lan   = req.params.lan;
-    query.skip  = 0;
+    query.skip  = 1;
     query.limit = 15;
     store_model.getStores(query, function(data){
       if (data.ret !== 1) {
@@ -213,6 +226,7 @@ exports.getStores = function(req, callback){
           if (obj._id.toString() === doc.stores[j]) {
             obj.sale     = true;
             obj.discount = doc.discount[j];
+            break;
           }
         }
       }
@@ -231,7 +245,7 @@ exports.storesinpage = function(req, callback){
   var page   = parseInt(req.params.page_num);
   var lan    = req.params.lan;
   var prodid = req.body._id;
-  dbstore.find({lan: lan}).skip((page-1)*20).limit(20, function(err, docs){
+  dbstore.find({lan: lan}).sort({class: 1, _id: 1, province: 1, municipality: 1, area: 1, address: 1, name: 1, telephone: -1}).skip((page-1)*20).limit(20, function(err, docs){
     if (err) {
       return callback({ret: 2});                                                // RETURN: 调用错误
     }
@@ -259,12 +273,6 @@ exports.storesinpage = function(req, callback){
     });
   });
 };
-// 删除数组中元素
-Array.prototype.remove = function(from, to) {
-  var rest = this.slice((to || from) + 1 || this.length);
-  this.length = from < 0 ? this.length + from : from;
-  return this.push.apply(this, rest);
-};
 // 产品关联的店铺操作
 exports.sale = function(req, callback) {
   var query = req.body;
@@ -272,7 +280,7 @@ exports.sale = function(req, callback) {
     if (err) {
       return callback({ret: 2});                    // RETURN: 错误
     }
-    if (doc.stores === undefined) {
+    if (!doc.stores) {
       doc.stores   = [];//商店列表
       doc.discount = [];//促销列表
     }
@@ -286,6 +294,56 @@ exports.sale = function(req, callback) {
           doc.stores.remove(i);
           doc.discount.remove(i);
           break;
+        }
+      }
+    } else {
+    }
+    dbproduct.update({_id: new ObjectID(query.prodid)}, doc, function(err, docs){
+      if (err) {
+        return callback({ret: 2});
+      }
+      return callback({ret: 1});
+    });
+  });
+};
+// 产品关联的批量店铺操作
+exports.salelist = function(req, callback) {
+  var query      =  req.body || {};
+  var storelist  =  query.storelist || [];
+  dbproduct.findOne({_id: new ObjectID(query.prodid)}, function(err, doc) {
+    if (err) {
+      return callback({ret: 2});                    // RETURN: 错误
+    }
+    if (!doc.stores) {
+      doc.stores   = [];//商店列表
+      doc.discount = [];//促销列表
+    }
+    if (query.checked === "true") {
+      for (var i=0; i<storelist.length; i++) {
+        var exist = false;
+        for(var j=0; j<doc.stores.length; j++) {
+          if (storelist[i] === doc.stores[j]) {
+            exist = true;
+            break;
+          }
+        }
+        if (!exist) {
+          doc.stores.push(storelist[i]);
+          doc.discount.push(false);
+        }
+      }
+    } else if(query.checked === "false"){  // 删除
+      for (var i=0; i<storelist.length; i++) {
+        var exist = false;
+        for(var j=0; j<doc.stores.length; j++) {
+          if (storelist[i] === doc.stores[j]) {
+            exist = true;
+            break;
+          }
+        }
+        if (exist) {
+          doc.stores.remove(j);
+          doc.discount.remove(j);
         }
       }
     } else {
@@ -335,4 +393,53 @@ exports.uploadmovies =  function (req, callback) {
     fs.rename(req.files["video"].path, defaultpath + req.params.lan +".mp4", function(err){});
   }
   callback({ret: 1});                             // RETURN: 返回成功
+};
+
+// 获取品牌列表
+exports.getbrands = function(req, callback) {
+  dbbrand.find({lan: req.params.lan}, function(err, docs){
+    if (err || docs===0) {
+      return callback(["No brands added"]);
+    }
+    var brand = [];
+    for (var i=0; i<docs.length; i++) {
+      brand.push(docs[i].name);
+    }
+    callback(brand);
+  });
+};
+
+// 推送指定product
+exports.pushproduct = function (product, callback) {
+  dbproduct.findOne({_id: new ObjectID(product._id)}, function(err, doc){
+    if (err) {
+      return callback({ret: 2});                           // RETURN: 数据库出错
+    }
+    var lan = doc.lan;
+    pushlib.AndroidPush.pushAll({lan: lan, content: "prod/"+doc._id.toString()+"/"+doc.name+"/"+"click.", message: "message"});
+    pushlib.ApplePush.pushAll({lan: lan, message: doc._id.toString(), alert: doc.name, content: "prod"});
+    return callback({ret: 1});                             // RETURN: 返回推送成功
+  });
+};
+
+// 分页获取产品信息
+exports.getProducts = function(query, callback) {
+  dbproduct.find({lan: query.lan}).sort({brand: 1, dt: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    if (err) 
+      return callback({ret: 2, val: []});
+    else 
+      return callback({ret: 1, val: docs});
+  });
+};
+
+// 获取分页总数
+exports.getPages = function(data, callback) {
+  var perPage = data.perPage;
+  var lan     = data.lan;
+  dbproduct.count({lan: lan}, function(err, num) {
+    if (err) {
+      return callback(1);
+    }
+    return callback(Math.ceil(num/perPage));
+  });
 };

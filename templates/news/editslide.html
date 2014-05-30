@@ -29,7 +29,7 @@
 
       <h2>Edit Slide</h2>
       <hr>
-      <form id="form-edit-slide" class="form-edit-slide" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/getslide/addslide/{{ language }}"> 
+      <form id="form-edit-slide" class="form-edit-slide" role="form" enctype="multipart/form-data" method="post" action="/appbg/news/getslide/addslide/{{ language }}" onSubmit="return check()">
         <dl class="des-list dl-horizontal">
           <h3>Slide </h3>
           <dd>
@@ -58,12 +58,12 @@
           <br>
 
           <dd>
-          <label for="slide-picture" class="col-sm-2 control-label">Picture</label>
+          <label for="slide-picture" class="col-sm-2 control-label">Picture (Width:Height=4:3, Less than 100kb)</label>
           <div class="col-sm-6">
             <img src="/img/slide/{{ slide._id.toString() }}.jpg" width="300px" height="186px" id="slide-picture">
             <br>
             <label>Choose a new picture.</label>
-            <input type="file" name="picture">
+            <input id="slide-pic" type="file" name="picture">
           </div>
           </dd>
           <br>
@@ -82,4 +82,14 @@
     </div>
   </div>
 </div>
+<script>
+  function check() {
+    return true;
+    var file_path = $("#slide-pic").val();
+    var img       = new Image();
+    img.file      = file_path;
+    console.log($(img));
+    return false;
+  }
+</script>
 {% endblock %}

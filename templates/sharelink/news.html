@@ -6,11 +6,12 @@
 {% endblock %}
 
 {% block content %}
+<label class="alert"></label>
 <p id="page">news</p>
 <p id="objid">{{objid}}</p>
 {%if news !== null%}
-<h2>{{news.title}}</h2>
-<h4>{{news.summary}}</h4>
+<h1>{{news.title}}</h1>
+<h2>{{news.summary}}</h2>
 <p><a href="{{news.firpicdes}}">{{news.firpicdes}}</a></p>
 {%for index, detail in news.details%}
 {%if detail.type === 1%}
@@ -28,12 +29,13 @@ var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_ANDROID = !IS_IOS && navigator.userAgent.match(/android/i) != null,
     IS_MOBILE  = IS_IOS || IS_ANDROID;
 $().ready(function(){
+    guide();
     $("title").text("Essilor Sharelink");
     // If it's not an universal app, use IS_IPAD or IS_IPHONE
     $("#page").hide();
     $("#objid").hide();
-    var page  = $("#page").val();
-    var objid = $("#objid").val();
+    var page  = $("#page").text();
+    var objid = $("#objid").text();
     if (IS_IOS) {
         // document.location.href = "essilorapp://view?id=123";
         // window.location = "essilorapp://view?id=123";
@@ -58,6 +60,15 @@ $().ready(function(){
         // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
     }
 });
+function guide() {
+  if (IS_IOS) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
+  } else if (IS_ANDROID) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
+  } else {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。");
+  }
+};
 </script>
 {% endblock %}
 

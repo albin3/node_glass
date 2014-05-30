@@ -6,10 +6,11 @@
 {% endblock %}
 
 {% block content %}
+<label class="alert"></label>
 <p id="page">prod</p>
 <p id="objid">{{objid}}</p>
 {%if prod%}
-<h2>{{prod.name}}</h2>
+<h1>{{prod.name}}</h1>
 {% if prod.image %}
 <div class="bs-example">
   <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
@@ -41,6 +42,8 @@
 {% endfor %}
 {% endif %}
 {% endif %}
+</div>
+<div id="pageOverlay" onclick="this.style.visibility = 'hidden'" style="visibility: visible;"></div>
 <script>
 var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_IPHONE  = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
@@ -48,12 +51,13 @@ var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_ANDROID = !IS_IOS && navigator.userAgent.match(/android/i) != null,
     IS_MOBILE  = IS_IOS || IS_ANDROID;
 $().ready(function(){
+    guide();
     $("title").text("Essilor Sharelink");
     // If it's not an universal app, use IS_IPAD or IS_IPHONE
     $("#page").hide();
     $("#objid").hide();
-    var page  = $("#page").val();
-    var objid = $("#objid").val();
+    var page  = $("#page").text();
+    var objid = $("#objid").text();
     if (IS_IOS) {
         // document.location.href = "essilorapp://view?id=123";
         // window.location = "essilorapp://view?id=123";
@@ -75,9 +79,28 @@ $().ready(function(){
 
         // Instead of using the actual URL scheme, use 'intent://' for better UX
         window.location = "essilorapp://"+page+"/"+objid;;
+        setTimeout(function() {
+            // If the user is still here, open the App Store
+            if (!document.webkitHidden) {
+                // Replace the Apple ID following '/id'
+                // window.location = "http://baidu.com";
+                // document.location.href = "http://www.baidu.com"
+                // window.location = 'http://183.61.111.195/apk/Essilor_'+$("body").attr("lan")+'.apk';
+            }
+        }, 25);
         // window.location = 'intent://view?id=123#Intent;package=com.essilorchina;scheme=essilorapp;launchFlags=268435456;end;';
     }
 });
+function guide() {
+  document.getElementById('pageOverlay').style.visibility = 'visible';
+  if (IS_IOS) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
+  } else if (IS_ANDROID) {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用默认浏览器打开。")
+  } else {
+    $(".alert").text("如果没有跳转到APP，请点击右上角用Safari打开。");
+  }
+};
 </script>
 {% endblock %}
 

@@ -16,12 +16,6 @@
       </button>
       <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Push Android Update</a></li>
-        <li><a>                </a></li>
-      </ul>
-    </div>
   </div>
 </div>
 
@@ -33,6 +27,7 @@
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
       <h2 class="page-header">Android Current Version</h2>
+      <!-- <button class="btn btn-primary" id="push-android-update">Push This Version</button> -->
       {%if version !== undefined%}
       <dl class="des-list dl-horizontal">
         <dd>
@@ -153,6 +148,10 @@
         alert("Fail request");
       }
     }, "json");
+  });
+  // 推送Android版本更新
+  $("#push-android-update").click(function(event) {
+    alert();
   });
 </script>
 {% endblock %}

@@ -1,11 +1,14 @@
 // appapi model.js
 var config = require('../../config');
+var plist   = require('plist');
 var mongojs = require('mongojs');
 var password_hash = require('password-hash');
 var db = mongojs(config.dbinfo.dbname);
 
 var db_user         = db.collection('appuser');
-var db_appversion   = db.collection('appversion');
+var db_appversion   = db.collection('appversion');    // android version
+var db_appleversion = db.collection('appleversion');  // apple version
+var db_androidscore = db.collection('androidscore');  // android score
 var db_news         = db.collection('news');
 var db_workerid     = db.collection('workerid');
 var db_uvcatcher    = db.collection('uvcatcher');     // Games
@@ -21,6 +24,9 @@ var db_product      = db.collection('product');
 var db_tips         = db.collection('tips');
 var db_random       = db.collection('random');
 var db_usercoupon   = db.collection('usercoupon');
+var db_deviceid     = db.collection('deviceid');
+var db_brandcode    = db.collection('brandcode');
+var db_loadingpic   = db.collection('loadingpic');
 var ObjectID        = require('mongodb').ObjectID;
 
 // Date的format方法
@@ -45,6 +51,22 @@ Date.prototype.format = function(format) {
   }
   return format;
 }
+
+/**
+ * 广告图获取
+ */
+exports.loadingpic = function(req, callback) {
+  var lan   = req.params.lan;
+  var size  = req.params.size;
+  console.log(size);
+  console.log(lan);
+  db_loadingpic.findOne({lan: lan, size: size}, function(err, doc) {
+    if (err || !doc) {
+      return callback({ret: 2});
+    }
+    return callback({ret: 1, val: {index: parseInt(doc.size), url: doc.url, dt: doc.dt}});
+  });
+};
 
 /**
  * 新用户注册
@@ -163,7 +185,9 @@ exports.usersignin = function (user, callback) {
         workerid : "",
         location : "",
         isworker : 0,
-        disable  : false
+        disable  : false,
+        sharenum : 0,      // 分享链接的次数
+        clicknum : 0       // 链接点击的次数
       },function(err, doc){
         if (err || !doc) {
           return callback({ret: 5});          // RETURN: 查询出错
@@ -234,10 +258,73 @@ exports.usersignin = function (user, callback) {
 };
 
 /**
+ * 邀请好友
+ */
+exports.invitefriend = function (user, callback) {
+  var id = user.id;
+  db_user.findOne({_id: new ObjectID(id)}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 4});         // RETURN: 账号不存在
+    }
+    if (doc.disable) {
+      return callback({ret: 3});         // RETURN: 账号被停封
+    }
+    if (user.tel) {
+      doc.tel   = user.tel;
+    }
+    if (user.email) {
+      doc.email = user.email;
+    }
+    db_workerid.findOne({index: user.workerid}, function(err, workerid){
+      if (err||!workerid&&user.workerid) {
+        return callback({ret: 6});      // RETURN: 员工身份码错误
+      } else if (user.workerid){
+        doc.isworker = 1;
+        doc.workerid = user.workerid;
+      }
+      db_user.update({_id: new ObjectID(id)}, doc, function(err, updated){
+        if(err) {
+          return callback({ret: 5});       // RETURN: 数据库错误
+        }
+        var val = {
+          userid   : doc._id.toString(),
+          isworker : doc.isworker,
+          name     : doc.name,
+          sex      : doc.sex,
+          age      : doc.age,
+          job      : doc.job,
+          nickname : doc.nickname,
+          workerid : doc.workerid,
+          location : doc.location
+        };
+        if (doc.tel) {
+          val.tel = doc.tel;
+        }
+        if (doc.email) {
+          val.email = doc.email;
+        }
+        if (doc.thirdpath) {
+          val.thirdpath = doc.thirdpath;
+        }
+        return callback({ret : 1, val: val});        // RETURN: 更新成功
+      });
+    });
+
+  });
+};
+
+/**
  * 修改用户密码
  */
 exports.chpassword = function (user, callback) {
-  var query = {_id: new ObjectID(user.userid)};
+  var query = {};
+  if (user.type === 1 || user.type === '1') {
+    query.tel = user.username      ||"test";
+  } else if (user.type === 2 || user.type === '2') {
+    query.email = user.username    ||"test";
+  } else {
+    query.thirdpath = user.username||"test";
+  }
 
   db_user.findOne(query, function(err, doc){
     if (err || !doc) {
@@ -250,7 +337,7 @@ exports.chpassword = function (user, callback) {
       return callback({ret: 2});         // RETURN: 账号密码不正确
     }
 
-    doc.password = password_hash.generate(user.newpsd);
+    doc.password = password_hash.generate(user.newpassword || user.newpsd || "111111");
     db_user.update(query, doc, function(err, updated){
       if(err) {
         return callback({ret: 5});       // RETURN: 数据库错误
@@ -275,7 +362,7 @@ exports.chpassword = function (user, callback) {
       if (doc.thirdpath) {
         val.thirdpath = doc.thirdpath;
       }
-      return callback({                           // RETURN: 账号密码正确
+      return callback({                 // RETURN: 账号密码正确
              ret      : 1,
              val      : val
       });
@@ -322,7 +409,6 @@ exports.resetpassword = function (user, callback) {
 exports.updateuser = function (req, callback) {
   var query = {_id: new ObjectID(req.params.userid)};
   var user = req.body;
-  console.log(user);
   db_user.findOne(query, function(err, mid){
     if (err || !mid) {
       return callback({ret: 4});         // RETURN: 账号不存在
@@ -359,8 +445,6 @@ exports.updateuser = function (req, callback) {
       mid.age      = user.age      || mid.age;
       mid.job      = user.job      || mid.job;
       mid.location = user.location || mid.location;
-      console.log(query);
-      console.log(mid);
       db_user.update(query, mid, function(err, doc){
         if (err) {
           return callback({ret: 2});       // RETURN: 邮箱或手机号已经被使用
@@ -461,19 +545,29 @@ exports.newsdetails = function (req, callback) {
 // 紫外线收割机
 exports.uvcatcher = function(req, callback) {
   var data     = req.body;
-  var id       = data._id;
-  var nickname = data.nickname || "none";
+  var id       = data._id             || "anonymous";
+  var nickname = data.nickname        || "anonymous";
   var score    = parseInt(data.score) || 0;
-  db_uvcatcher.update({userid: id, lan: req.params.lan}, 
-      {$set: {userid: id}, $set:{nickname: nickname}, $set:{score: score}},
+  var limit    = parseInt(data.limit) || 10;
+  db_uvcatcher.update({userid: id, dt: new Date().getTime(), lan: req.params.lan}, 
+      {$set:{score: score, nickname: nickname}},
       {upsert: true}, function(err, doc) {
     if (err || !doc) {
-      return callback({ret: 2});                               // RETURN: 返回更新错误
+      return callback("");                                                      // RETURN: 返回更新错误
     }
-    return callback({ret: 1});                                 // RETURN: 返回更新成功
+    db_uvcatcher.find({lan: req.params.lan}).sort({score: -1, dt: 1}).limit(limit, function(err, docs) {
+      if (err) {
+        return callback("");                                                    // RETURN: 返回错误
+      }
+      var rank_list = [];
+      for (var i=0; i<docs.length; i++) {
+        rank_list.push(docs[i].score.toString());
+      }
+      return callback(plist.build({"Ranking List": rank_list}).toString());     // RETURN: 返回更新成功
+    });
   });
 };
-// 紫外线收割机排行
+// 紫外线收割机排行榜
 exports.uvrank = function(req, callback) {
   console.log("hear this");
   db_uvcatcher.find({lan: req.params.lan}).sort({score: -1}).limit(8,function(err, docs){
@@ -488,16 +582,26 @@ exports.uvrank = function(req, callback) {
 // 寻找黄眼镜
 exports.findglass = function(req, callback) {
   var data     = req.body;
-  var id       = data._id;
-  var nickname = data.nickname;
-  var score    = parseInt(data.score) || 100000;
-  db_findglass.update({userid: id, lan: req.params.lan},
-      {$set:{userid: id}, $set:{nickname: nickname}, $set:{score: score}},
+  var id       = data._id               || "anonymous";
+  var nickname = data.nickname          || "anonymous";
+  var limit    = parseInt(data.limit)   || 10;
+  var score    = parseFloat(data.score) || 100000;
+  db_findglass.update({userid: id, lan: req.params.lan, dt: new Date().getTime()},
+      {$set: {nickname: nickname, score: score}},
       {upsert: true}, function(err, doc){
     if (err || !doc) {
-      return callback({ret: 2});                               // RETURN: 返回更新错误
+      return callback("");                                                       // RETURN: 返回更新错误
     }
-    return callback({ret: 1});                                 // RETURN: 返回更新成功
+    db_findglass.find({lan: req.params.lan}).sort({score: 1, dt: 1}).limit(limit, function(err, docs) {
+      if (err || docs.length === 0) {
+        return callback("");                                                     // RETURN: 返回错误
+      }
+      var rank_list = [];
+      for (var i=0; i<docs.length; i++) {
+        rank_list.push(docs[i].score.toString());
+      }
+      return callback(plist.build({"Ranking List": rank_list}).toString());      // RETURN: 返回更新成功
+    });
   });
 };
 // 寻找黄眼镜获取图片数据
@@ -528,7 +632,9 @@ exports.storecoupon = function(req, callback) {
       return callback({ret: 4});                                  // RETURN: 产品不存在
     }
     if (!doc["sc-remain"] || doc["sc-remain"] <= 0) {
-      return callback({ret: 5});                                  // RETURN: 优惠券没了
+      if (!doc["nc-remain"] || doc["nc-remain"] <= 0) {
+        return callback({ret: 5});                                // RETURN: 优惠券没了
+      }
     }
     db_usercoupon.findOne({prodid: prodid, userid: userid}, function(err, saved){
       if (err) {
@@ -544,7 +650,8 @@ exports.storecoupon = function(req, callback) {
         detail :  doc["sc-detail"] || doc["nc-detail"],
         start  :  new Date(new Date(doc["sc-start"] || doc["nc-start"]).getTime()+8*3600*1000),
         end    :  new Date(new Date(doc["sc-end"] || doc["nc-end"]).getTime()+8*3600*1000),
-        dt     :  new Date().getTime()
+        dt     :  new Date().getTime(),
+        lan    :  doc.lan
       };
       elem.key = "CP" + parseInt(elem.dt%100000000000);// 取CP+时间戳的毫秒级后11位组成唯一码
       db_usercoupon.insert(elem, function(err, saved){
@@ -628,8 +735,9 @@ exports.checkcoupon = function(req, callback) {
 
 // 使用优惠券
 exports.usecoupon = function(req, callback) { 
-  var data      = req.body;
-  var key = data.key || "not a couponkey";
+  var data = req.body;
+  var key  = data.key  || "not a couponkey";
+  var code = data.code || "null";
   db_usercoupon.findOne({key: key}, function(err, doc) { 
     if (err || !doc) {
       return callback({ret: 4});                              // RETURN: 这张优惠券不存在
@@ -642,6 +750,22 @@ exports.usecoupon = function(req, callback) {
       if (err) {
         return callback({ret: 2});                            // RETURN: 优惠券使用失败
       }
+      // 存储品牌识别码
+      var lan = doc.lan;
+      db_brandcode.findOne({code: code, lan: lan}, function(err, doc) {
+        if (err) {
+          return ;
+        }
+        if (!doc) {
+          var doc = {};
+          doc.code = code;
+          doc.num  = 1;
+        } else {
+          doc.num  = doc.num + 1;
+        }
+        db_brandcode.update({code: code, lan: lan}, doc, {upsert: 1}, function(err, updated) {
+        });
+      });
       return callback({ret: 1});                              // RETURN: 这张优惠券使用成功
     });
   });
@@ -660,7 +784,7 @@ exports.couponlist = function(req, callback) {
   if (isNaN(limit)) {
     limit = 3;
   }
-  db_usercoupon.find({userid: userid, isdeleted: {$not: {$in: [false]}}}).sort({dt: -1}).skip((page-1)*limit).limit(limit, function(err, docs) { 
+  db_usercoupon.find({userid: userid, isdeleted: {$not: {$in: [true]}}}).sort({dt: -1}).skip((page-1)*limit).limit(limit, function(err, docs) { 
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
     }
@@ -781,7 +905,7 @@ exports.products = function(req,callback){
   	query['E-SPF'] = '25';
   }
   query.lan = req.params.lan;
-  db_product.find(query).sort({_id: -1}).skip(numPerPage*(pageNum-1)).limit(numPerPage, function(err, docs){
+  db_product.find(query).sort({dt: -1}).skip(numPerPage*(pageNum-1)).limit(numPerPage, function(err, docs){
     if (err) {
       return callback({ret: 2});           // RETURN: 查询错误
     }
@@ -795,7 +919,7 @@ exports.products = function(req,callback){
     	}else{
     		prod.sale = false;
     	}
-    	prod.url = "/img/product/picture0" + docs[doc]._id.toString() + ".jpg";
+    	prod.url = "/img/product/" + docs[doc]._id.toString() + ".jpg";
       prods.push(prod);
 	  }
     return callback({ret: 1, val: prods});
@@ -933,6 +1057,7 @@ exports.prodstores = function(req, callback) {
       storeIds.push(new ObjectID(doc.stores[i]));
     }
     db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}, province: query.prov, municipality: query.muni, area: query.area, $or:[{address: query.cont}, {name: query.cont}]}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    //db_store.find({_id: {"$in": storeIds}, gps: {"$near": [query.lng, query.lat]}}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
       if (err) {
         return callback({ret: 2});
       }
@@ -961,7 +1086,8 @@ exports.random = function(callback){
     }
     return callback({ret: 1, num: doc.random});
   });
-}
+};
+
 // 获取tips
 exports.gettips = function(req, callback){
   var query = {
@@ -980,6 +1106,7 @@ exports.gettips = function(req, callback){
     callback({ret: 1, val: tips});                  // RETURN: 返回成功
   });
 };
+
 // 统计分享次数
 exports.sharelink = function(req, callback) {
   var userid = req.params.userid;
@@ -988,6 +1115,7 @@ exports.sharelink = function(req, callback) {
     return callback({ret: 1});                                       // 操作完成
   });
 };
+
 // 获取版本信息
 exports.appversion = function(req, callback) {
   var lan    = req.params.lan;
@@ -998,5 +1126,48 @@ exports.appversion = function(req, callback) {
     doc.time   = new Date(doc.time).getTime();
     doc.number = parseInt(doc.number);
     return callback({ret: 1, val: doc});           // RETURN: 版本信息获取成功
+  });
+};
+
+// 获取苹果版本信息
+exports.appleversion = function(req, callback) {
+  var lan    = req.params.lan;
+  db_appleversion.findOne({lan: lan}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 2});                   // RETURN: 版本信息获取失败
+    }
+    doc.time   = new Date(doc.time).getTime();
+    doc.number = doc.number;
+    return callback({ret: 1, val: doc});           // RETURN: 版本信息获取成功
+  });
+};
+
+// 获取Android去评分
+exports.androidscore = function(req, callback) {
+  var lan    = req.params.lan;
+  db_androidscore.findOne({lan: lan}, function(err, doc){
+    if (err || !doc) {
+      return callback({ret: 2});                   // RETURN: Android去评分获取失败
+    }
+    return callback({ret: 1, val: doc});           // RETURN: Android去评分获取成功
+  });
+};
+
+// 注册DEVICEID
+exports.reg_deviceid = function(req, callback) {
+  var lan    = req.params.lan;
+  var body   = req.body;
+  db_deviceid.findOne({ deviceid: body.deviceid }, function(err, doc){
+    if (err || !doc) {
+      db_deviceid.insert({deviceid: body.deviceid, lan: req.params.lan, os: body.os, userid: ""}, function(err, doc){
+        if (err) {
+          return callback({ret: 2});               // RETURN: DEVICEID注册失败
+        } else {
+          return callback({ret: 1, val: doc});     // RETURN: DEVICEID注册成功
+        }
+      });
+    } else {
+      return callback({ret: 1, val: doc});         // RETURN: DEVICEID注册成功
+    }
   });
 };

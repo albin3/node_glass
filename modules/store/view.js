@@ -3,8 +3,15 @@ var model = require('./model');
 
 // store管理主页
 exports.store = function (req, res) {
-  model.allstore(req, function(ret){
-    res.render('store/index', {Title: "Store Management", stores: ret.val ,language: req.params.lan});
+  var data = {
+    lan   : req.params.lan,
+    limit : 20,
+    skip  : 1
+  };
+  model.getStores(data, function(ret){
+    model.getPages({perPage: 20, lan: req.params.lan}, function(pages) { 
+      res.render('store/index', {Title: "Store Management", stores: ret.val ,language: req.params.lan, totalPages: pages});
+    });
   });
 };
 
@@ -22,7 +29,6 @@ exports.tonewstore = function (req, res) {
 
 // 新增store
 exports.newstore = function (req, res) {
-  console.log(req.body);
   model.newstore(req, function(ret) {
     res.redirect('/appbg/store/'+req.params.lan);
   });
@@ -50,8 +56,27 @@ exports.getcity = function (req, res) {
 }
 
 //根据省获得城市
-exports.getarea= function (req, res) {
+exports.getarea = function (req, res) {
   model.getarea (req.body, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}
+
+// 编辑Store GPS
+exports.editgps = function (req, res) {
+  model.editgps(req, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}
+
+// 分页获取store的页面
+exports.getstore = function (req, res) {
+  var query = {
+    limit : parseInt(req.body.perPage) || 20,
+    skip  : parseInt(req.body.page)    || 1,
+    lan   : req.params.lan
+  };
+  model.getStores(query, function(ret) {
     res.end(JSON.stringify(ret));
   });
 }

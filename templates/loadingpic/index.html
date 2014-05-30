@@ -1,0 +1,129 @@
+{% extends "../base.html" %}
+
+{% block css_files %}
+  {% parent %}
+{% endblock %}
+
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Essilor App Background</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+
+    {% include "../leftbars.html" %}
+
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <h1 class="page-header">{{ Title }}</h1>
+
+      <h2 class="page-header">LoadingPic Management</h2>
+      <form id="form-edit-news" name="uploadform" class="form-edit-news" role="form" enctype="multipart/form-data" method="post" action="/appbg/loadingpic/new/{{language}}"> 
+        <dl class="des-list dl-horizontal">
+          <dd>
+          <label for="pic-size" class="col-sm-2 control-label">Picture Size</label>
+          <div class="col-sm-2">
+            <select class="form-control" type="text" id="pic-size" name="pic-size">
+              <option value="1">320X480</option>
+              <option value="2">480X800</option>
+              <option value="3">640X960</option>
+              <option value="4">640X1136</option>
+              <option value="5">1280X720</option>
+              <option value="6">1920X1080</option>
+            </select>
+          </div>
+          </dd>
+          <br>
+
+          <dd>
+          <label for="upload" class="col-sm-2 control-label">Upload Picture</label>
+          <div class="col-sm-2">
+            <input type="file" id="upload" name="upload" onchange="pichide.src=document.uploadform.upload.value">
+            <img id="pichide" name="pichide" src=""></img>
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="" class="col-sm-2 control-label">Option</label>
+          <div class="col-sm-6">
+            <button type="button" id="btn-save" class="btn btn-primary">save</button>
+            <button type="submit" id="btn-upload" class="btn btn-default">upload</button>
+          </div>
+          <br>
+          </dd>
+        </dl>
+      </form>
+      <hr>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="col-sm-3">Width,Height(pixel)</th>
+              <th class="col-sm-3">Picture</th>
+            </tr>
+          </thead>
+          <tbody id="user-list">
+            {% for obj in objs %}
+            <tr data-id="{{ obj._id.toString() }}">
+              <td>( {{obj.width}}, {{obj.height}} )</td>
+              <td><img src="{{obj.url}}" width="100" height="62"></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $().ready(function(){
+    $("#btn-upload").hide();    // 隐藏上传按钮
+    $("#pichide").hide();
+  });
+  // 为了使新增的按钮上绑定事件，直接在table上绑定点击事件，再检测是哪个元素
+  $(".table-striped tbody").click(function(event){
+    event.preventDefault();                             // 页面的焦点不变
+    if ($(event.target).context.className === "a-del-pic") {
+      delete_pic(event);
+    }
+  });
+  // 删除图片
+  function delete_pic(event) { 
+    if (!confirm('Delete it?')) {       // 要求确认
+      return;
+    }
+    var tr = $(event.target).parents("tr");
+    $.post("/appbg/loadingpic/del",{
+      id   : tr.attr("data-id"),
+      lan  : $("body").attr("lan"),
+      size : $("#pic-size").val()
+      }, function(data) {
+      data = JSON.parse(data);
+      if (data.ret !== 1) {
+        alert("Fail to delete.");
+        return;
+      }
+      tr.remove();
+    });
+  }; 
+
+  $("#btn-save").click(function(event){
+    if ($("#upload").val() === "") {
+      alert("No picture selected.");
+      return ;
+    }
+    // 模拟提交表单
+    $("#btn-upload").trigger("click");
+  });
+</script>
+{% endblock %}

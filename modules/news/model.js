@@ -11,6 +11,7 @@ var db = mongojs(config.dbinfo.dbname);
 var dbnews = db.collection('news');
 var dbslide = db.collection('slide');
 var ObjectID = require('mongodb').ObjectID;
+var pushlib = require('../pushlib/model');      // 推送
 
 // 获取到某条新闻的全部信息
 exports.findOneNews = function (id, callback) {
@@ -21,7 +22,7 @@ exports.findOneNews = function (id, callback) {
 
 // 获取到所有新闻信息
 exports.allnews = function (language, callback) {
-  dbnews.find({lan: language}).sort({_id: -1}, function (err, docs) {
+  dbnews.find({lan: language}).sort({time: -1}, function (err, docs) {
     callback(err, docs);
   });
 };
@@ -30,7 +31,6 @@ exports.allnews = function (language, callback) {
 // copy /img/news/default.jpg to /img/news/<_id>.jpg作为新闻的首图
 exports.addnews =  function (req, current_user, callback) {
   var news = req.body;
-  console.log(req.body);
   var language = req.params.lan;
   news.focus = false;     // 是否设置为焦点图
   news.lan = language;
@@ -69,7 +69,6 @@ exports.addslide =  function (req, callback) {
   slide.lan = language;
   dbslide.insert(slide, function (err, doc) {
     if (doc) {
-      console.log(doc);
       if (files["picture"].size > 0){ 
         if (judge_size(files["picture"].size)) { 
           fs.readFile(files["picture"].path, function (err, data) {
@@ -243,8 +242,7 @@ exports.updatenews = function (req, current_user, callback) {
         funcArr
         ,function(err){
       doc.details = new_details;
-      console.log(new_details);
-      doc.time = new Date().getTime();      // 更新时间
+      doc.time = new Date().getTime();        // 更新时间
       if (typeof current_user !== "string")   // 更新作者
         doc.author = "anonymous";
       else
@@ -271,5 +269,40 @@ exports.changestate =  function (req, callback) {
       return callback(err, {state: "焦点图"});
     }
     return callback(err, {state: "非焦点"});
+  });
+};
+
+// 推送新闻
+exports.pushnews =  function (news, callback) {
+  dbnews.findOne({ _id: new ObjectID(news.id) }, function (err, doc) {
+    if (err) {
+      return callback({ret: 2});
+    }
+    var lan = doc.lan;
+    pushlib.AndroidPush.pushAll({lan: lan, content: "news/"+doc._id.toString()+"/"+doc.title+"/"+doc.summary, message: "message"});
+    pushlib.ApplePush.pushAll({lan: lan, content: "news", message: doc._id.toString(), alert: doc.title+"\n"+doc.summary});
+    return callback({ret: 1});
+  });
+};
+
+// 分页获取新闻信息
+exports.getNews = function(query, callback) {
+  dbnews.find({lan: query.lan}).sort({time: -1}).skip((query.skip-1)*query.limit).limit(query.limit, function(err, docs){
+    if (err) 
+      return callback({ret: 2, val: []});
+    else 
+      return callback({ret: 1, val: docs});
+  });
+};
+
+// 获取分页总数
+exports.getPages = function(data, callback) {
+  var perPage = data.perPage;
+  var lan     = data.lan;
+  dbnews.count({lan: lan}, function(err, num) {
+    if (err) {
+      return callback(1);
+    }
+    return callback(Math.ceil(num/perPage));
   });
 };

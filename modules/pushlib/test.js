@@ -8,9 +8,11 @@ var msg1 = {
 alert: "猛戳\n这里"
 };
 
-// model.ApplePush.pushSingle(cltid, msg);
+model.ApplePush.pushSingle(cltid, msg);
 // model.ApplePush.pushList([cltid], msg1);
 
-model.AndroidPush.pushSingle();
-model.AndroidPush.pushList();
-model.AndroidPush.pushAll();
+// model.AndroidPush.pushSingle();
+// model.AndroidPush.pushLt();
+// model.AndroidPush.pushAll({content: "aaa", alert: "hello"});
+
+

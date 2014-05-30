@@ -10,7 +10,6 @@ exports.tips = function (req, res) {
 
 // 新增tips
 exports.newtips = function (req, res) {
-  console.log(req.body);
   model.newtips(req, function(ret) {
     res.end(JSON.stringify(ret));
   });
@@ -26,6 +25,13 @@ exports.deltips = function (req, res) {
 // 删除所有
 exports.delall = function (req, res) {
   model.delall (req, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
+// 编辑tips
+exports.edittips = function (req, res) {
+  model.edittips(req, function(ret) {
     res.end(JSON.stringify(ret));
   });
 };

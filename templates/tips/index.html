@@ -16,17 +16,6 @@
       </button>
       <a class="navbar-brand" href="#">Essilor App Background</a>
     </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Dashboard</a></li>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">Profile</a></li>
-        <li><a href="#">Help</a></li>
-      </ul>
-      <form class="navbar-form navbar-right">
-        <input type="text" class="form-control" placeholder="Search...">
-      </form>
-    </div>
   </div>
 </div>
 
@@ -54,11 +43,12 @@
           <tbody>
             {%for tip in tips%}
             <tr data-id="{{ tip._id.toString() }}">
-              <td>{{tip.weather}}</td>
-              <td>{{tip.espf}}</td>
-              <td class="normal">{{tip.detail}}</td>
+              <td class="td-weather">{{tip.weather}}</td>
+              <td class="td-espf">{{tip.espf}}</td>
+              <td class="normal td-detail">{{tip.detail}}</td>
               <td>
                 <ul class=list-inline>
+                  <li><a href="#" class="a-edit-tip">edit</a></li>
                   <li><a href="#" class="a-del-tip">delete</a></li>
                 </ul>
               </td>
@@ -112,7 +102,54 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Confirm</button>
+        <button type="button" class="btn btn-primary" id="new-confirm-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End modal -->
+
+<div class="modal fade" id="modal-edit-tips" data-id="">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit Tips</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="weather" class="col-sm-3 control-label">Weather</label>
+            <div class="col-sm-8">
+              <select class="form-control" type="text" id="edit-weather" name="edit-weather" placeholder="Weather">
+                <option>sunny</option>
+                <option>cloudy</option>
+                <option>overcast</option>
+                <option>rain</option>
+                <option>snow</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="E-SPF" class="col-sm-3 control-label">E-SPF</label>
+            <div class="col-sm-8">
+              <select class="form-control" type="text" id="edit-espf" name="edit-espf" placeholder="E-SPF">
+                <option>10</option>
+                <option>15</option>
+                <option>25</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tips-detail" class="col-sm-3 control-label">Tips Content</label>
+            <div class="col-sm-8">
+              <textarea class="form-control" rows="3" id="edit-tips-detail" name="edit-tips-detail" placeholder="Tips Content"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="edit-confirm-btn">Confirm</button>
       </div>
     </div>
   </div>
@@ -135,6 +172,9 @@
       var tr = $(event.target).parent().parent().parent().parent();
       var tipid = tr.attr("data-id");
       deleteTip(tipid, tr);
+    } else if ($(event.target).context.className === "a-edit-tip") {
+      event.preventDefault();       // 页面的焦点不变
+      editTip(event);
     }
   });
   // 删除tip
@@ -153,7 +193,7 @@
     alert("Delete error!");
     }, 'json');
   }
-  $(".modal-footer .btn-primary").click(function(event){
+  $("#new-confirm-btn").click(function(event){
     var weather = $("#weather").val();
     var detail = $("#tips-detail").val();
     var espf = $("#espf").val();
@@ -172,21 +212,62 @@
         tip = data.val;
         var new_raw =
             '<tr data-id="' + tip._id + '">' +
-              '<td>' + tip.weather + '</td>' +
-              '<td>' + tip.espf + '</td>' +
-              '<td class="normal">' + tip.detail + '</td>' +
+              '<td class="td-weather">' + tip.weather + '</td>' +
+              '<td class="td-espf">' + tip.espf + '</td>' +
+              '<td class="normal td-detail">' + tip.detail + '</td>' +
               '<td>' +
                 '<ul class=list-inline>' +
-                  '<li><a href="#" class="a-del-tip">Delete</a></li>' + 
+                  '<li><a href="#" class="a-edit-tip">edit</a></li>' + 
+                  '<li><a href="#" class="a-del-tip">delete</a></li>' + 
                 '</ul>' +
               '</td>' +
             '</tr>';
-        $('tbody').append(new_raw);
+        $('tbody').prepend(new_raw);
         return $('#modal-add-tips').modal('hide');
       }
       return alert("Same weather tips already exists.");
     }, 'json');
   });
+  $("#edit-confirm-btn").click(function(event){
+    var weather = $("#edit-weather").val();
+    var detail = $("#edit-tips-detail").val();
+    var espf = $("#edit-espf").val();
+    if (!detail.length){
+      alert("Tips can not be empty");
+      return ;
+    }
+    $.post(
+      '/appbg/tips/edit/{{language}}',
+      {
+        _id    : $(".active-tr").attr("data-id"),
+        weather: weather,
+        detail : detail,
+        espf   : espf
+      }, function(data){
+      if (data.ret === 1) {
+        $(".active-tr").children(".td-weather").text(data.val.weather);
+        $(".active-tr").children(".td-espf").text(data.val.espf);
+        $(".active-tr").children(".td-detail").text(data.val.detail);
+        return $('#modal-edit-tips').modal('hide');
+      }
+      return alert("Fail to save data.");
+    }, 'json');
+  });
+  var editTip = function(event){
+    var tr = $(event.target).parent().parent().parent().parent();
+    $(".active-tr").removeClass("active-tr");
+    tr.addClass("active-tr");
+    $("#edit-weather").val(tr.children(".td-weather").text());
+    $("#edit-tips-detail").val(tr.children(".td-detail").text());
+    $("#edit-espf").val(tr.children(".td-espf").text());
+    $("#modal-edit-tips").modal("show");
+  };
+  $("#modal-add-tips").on("show.bs.modal", function(e){
+    $("#weather").val("sunny");
+    $("#espf").val("10");
+    $("#tips-detail").val("");
+  });
 </script>
 {% endblock %}
+
 

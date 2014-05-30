@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 
 {% block css_files %}
+  <link rel="stylesheet" href="/css/utils/bootstrap-pagination.css"/>
   {% parent %}
 {% endblock %}
 
@@ -18,7 +19,7 @@
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a class="export-excel" href="/appbg/userctrl/exportexcel/">Export to excel</a></li>
+        <li><a class="export-excel" href="/appbg/userctrl/{{language}}/exportexcel">Download as Excel</a></li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
         <li><a class="export-excel"></a></li>
       </ul>
@@ -33,10 +34,10 @@
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <h1 class="page-header">{{ Title }}</h1>
-
       <h2 class="sub-header">App User List</h2>
+      <a class="btn btn-primary" href="/appbg/userctrl/{{language}}/exportexcel">Export to excel</a>
       <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped" totalPages="{{totalPages}}">
           <thead>
             <tr>
               <th class="col-sm-2">Nickname</th>
@@ -48,7 +49,7 @@
               <th class="col-sm-3">Options</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="user-list">
             {% for user in appusers %}
             <tr data-id="{{ user._id.toString() }}">
               <td>{{user.nickname}}</td>
@@ -67,7 +68,6 @@
           </tbody>
         </table>
         <div class="pagination">
-          <ul></ul>
         </div>
       </div>
     </div>
@@ -121,6 +121,46 @@
       tr.remove();
     });
   };
-
+  $().ready(function(){
+    var numPerPage = 20;
+    var options = {
+      currentPage: 1,
+      totalPages: parseInt($("table").attr("totalPages")),
+      numberOfPages: numPerPage,
+      onPageChanged: function(e,oldPage,newPage){
+        $.post("/appbg/userctrl/paged/"+$("body").attr("lan"), {
+          _id     : $("#_id").val(),
+          perPage : numPerPage,
+          page    : newPage
+        }, function(data){
+          if (data.ret !== 1) {
+            return ;
+          }
+          $("#user-list tr").remove();
+          for (var i=0; i<data.val.length; i++) {
+            var user = data.val[i];
+            var new_tr = '<tr data-id="'+ user._id.toString() + '">' +
+              '<td>' + user.nickname + '</td>' +
+              '<td>' + function(){if(user.isworker === 0) return "no"; else return "yes";}() + 
+              '<a href="#"><span state="" class="label ' + function(){if (user.disable) return "label-danger"; else return "label-primary";}() + 
+              '">' + function(){if (user.disable) return "Disable"; else return "Enable";}() + '</span></a></td>' +
+              '<td>' + function(){if (user.tel   === undefined) return "none"; else return user.tel;}() + '</td>' +
+              '<td>' + function(){if (user.email === undefined) return "none"; else return user.email;}() + '</td>' +
+              '<td>' + user.sharenum + '</td>' + 
+              '<td>' + user.clicknum + '</td>' +
+              '<td>' +
+                '<ul class=list-inline>' +
+                  '<li><a href="#" class="a-del-user">delete</a></li>' +
+                '</ul>' + 
+              '</td>' +
+            '</tr>';
+            $("#user-list").append(new_tr);
+          }
+        }, "json");
+      }
+    };
+    if ($("#_id").val() !== "")
+      $(".pagination").bootstrapPaginator(options);
+  });
 </script>
 {% endblock %}

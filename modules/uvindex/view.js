@@ -7,7 +7,9 @@ exports.uvindex = function (req, res) {
 
 // 推送
 exports.pushuvindex = function (req, res) {
-  model.pushuvindex(function(ret){
+  model.pushuvindex(req, function(ret){
     res.end(JSON.stringify(ret));
   });
 };
+
+

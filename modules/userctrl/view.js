@@ -5,13 +5,20 @@ var model = require("./model");
  * 用户管理首页
  */
 exports.userctrl = function (req, res, next) {
-  if (req.params.lan!=="simplified" && req.params.lan!=="traditional" && req.params.lan!=="english")
-    return next();
-  model.alluser(function(err, docs) {
-    if (err || docs.length === 0) {
-      return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan });
+  // if (req.params.lan!=="simplified" && req.params.lan!=="traditional_hk" && req.params.lan!=="english")
+  //   return next();
+  var query = {
+    lan   : req.params.lan,
+    limit : 20,
+    page  : 1
+  };
+  model.getUsers(query, function(ret) {
+    if (ret.ret !== 1) {
+      return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan, appusers: [], totalPages: 1});
     }
-    return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan, appusers: docs });
+    model.totalPages(20, function(totalPages) {
+      return res.render('userctrl/index', { Title: "App User Management", language: req.params.lan, appusers: ret.val, totalPages: totalPages});
+    });
   });
 };
 
@@ -55,8 +62,6 @@ exports.userdel = function (req, res) {
  * 改变用户的状态
  */
 exports.changestate = function (req, res) {
-  console.log(req.params);
-  console.log(req.body);
   model.changestate(req.params.userid, req.body, function(err, doc) {
     var state = false;
     if (err) {
@@ -79,3 +84,15 @@ exports.exportexcel = function (req, res) {
     // res.end(JSON.stringify(ret));
   });
 }
+
+// APP用户分页显示
+exports.getUsers = function(req, res) {
+  var query = {
+    lan   : req.params.lan,
+    skip  : parseInt(req.body.page)    || 1,
+    limit : parseInt(req.body.perPage) || 20
+  };
+  model.getUsers(query, function(ret) {
+    return res.end(JSON.stringify(ret));
+  });
+};

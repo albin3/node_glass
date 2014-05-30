@@ -46,7 +46,6 @@ exports.finduser =  function (id, callback) {
         if (err) {
           callback(err);
         } else {
-          console.log(doc);
           callback(null, doc);
         }
       });
@@ -116,7 +115,6 @@ exports.adduser = function (user, callback) {
   user.password = password_hash.generate(user.password);
   user.disable = false;
   dbbguser.insert(user, function (err, doc) {
-    console.log(doc);
     if (err){
       return callback({ret: 2});              // RETURN: 用户名重复
     }

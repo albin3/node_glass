@@ -68,3 +68,12 @@ exports.shareprod = function(req, callback) {
   }
 }
 
+// 分享给好友
+exports.sharemain = function(req, callback) {
+  var msgs = req.params;
+  if (msgs.userid.length === 24) {
+    db_appuser.update({_id: new ObjectID(msgs.userid)}, {$inc: {clicknum: 1}}, function(err, doc){
+    });
+  }
+  return callback({ret: 1});
+}

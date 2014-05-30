@@ -13,7 +13,6 @@ exports.allpics = function(req, callback) {
   if (isNaN(sizetype)) {
     sizetype = 1;
   }
-  console.log({ lan: req.params.lan, size: sizetype });
   dbfindglass.find({ lan: req.params.lan, size: sizetype }).sort({_id: -1}, function(err, docs){
     if (err)  
       docs = new Array();
