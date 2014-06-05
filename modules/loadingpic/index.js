@@ -2,8 +2,8 @@
 var view = require('./view');
 
 exports.register = function(app){
-  app.get("/appbg/loudingpic/:lan/:size", view.index);
-  app.post("/appbg/loudingpic/new/:lan", view.newpic);
-  app.post("/appbg/loudingpic/del", view.delpic);
+  app.get("/appbg/loadingpic/:lan", view.index);
+  app.post("/appbg/loadingpic/new/:lan", view.newpic);
+  // app.post("/appbg/loadingpic/del", view.delpic);
 };
 

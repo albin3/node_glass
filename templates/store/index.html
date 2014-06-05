@@ -203,10 +203,15 @@
             '<td>' + store.municipality + '</td>' +
             '<td>' + store.area         + '</td>' +
             '<td>' + store.address      + '</td>' +
+            '<td>' + store.gps          + '</td>' +
             '<td>' + store.telephone    + '</td>' +
             '<td>' +
               '<ul class=list-inline>'  +
+
+                  '<li><a href="#" class="a-editgps">edit-gps</a></li>' +
+
                  '<li><a href="edit/' + store._id.toString() + '/' + store.lan + '" class="a-edit-store">edit</a></li>' + 
+
                  '<li><a href="#" class="a-del-store">delete</a></li>' +
               '</ul>' +
             '</td>' +

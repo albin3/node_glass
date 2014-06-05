@@ -5,23 +5,20 @@ var model = require('./model');
 exports.index = function (req, res) {
   req.body.size = req.params.size;
   model.allpics(req, function(data) {
-    res.render("findglass/index", {Title: "Find Glass", language: req.params.lan, objs: data.docs, size: data.size});
+    res.render("loadingpic/index", {Title: "Loading Pic", language: req.params.lan, objs: data.docs});
   });
 };
 
 // 上传新的图片
-exports.newpic = function(req, res) {
-  model.newpic(req, function(data){
-    if (data.ret !== 1) 
-      res.redirect("/appbg/findglass/"+req.params.lan+"/1");
-    else
-      res.redirect("/appbg/findglass/"+req.params.lan+"/"+data.size);
+exports.newpic = function(req, res) { 
+  model.newpic(req, function(data){ 
+    res.redirect("/appbg/loadingpic/"+req.params.lan);
   });
 };
 
-// 删除图片
-exports.delpic = function(req, res) {
-  model.delpic(req.body, function(ret){
+// 删除图片 
+exports.delpic = function(req, res) { 
+  model.delpic(req.body, function(ret){ 
     res.end(JSON.stringify(ret));
   });
 };

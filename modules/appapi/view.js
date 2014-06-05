@@ -7,6 +7,13 @@ exports.setheader = function(req, res, next) {
   next();
 };
 
+// 获取广告图片
+exports.loadingpic = function(req, res) {
+  model.loadingpic(req, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+};
+
 // 注册新用户
 exports.newuser = function (req, res) {
   model.newuser(req.body, function (ret) {

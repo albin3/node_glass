@@ -26,6 +26,7 @@ var db_random       = db.collection('random');
 var db_usercoupon   = db.collection('usercoupon');
 var db_deviceid     = db.collection('deviceid');
 var db_brandcode    = db.collection('brandcode');
+var db_loadingpic   = db.collection('loadingpic');
 var ObjectID        = require('mongodb').ObjectID;
 
 // Date的format方法
@@ -50,6 +51,22 @@ Date.prototype.format = function(format) {
   }
   return format;
 }
+
+/**
+ * 广告图获取
+ */
+exports.loadingpic = function(req, callback) {
+  var lan   = req.params.lan;
+  var size  = req.params.size;
+  console.log(size);
+  console.log(lan);
+  db_loadingpic.findOne({lan: lan, size: size}, function(err, doc) {
+    if (err || !doc) {
+      return callback({ret: 2});
+    }
+    return callback({ret: 1, val: {index: parseInt(doc.size), url: doc.url, dt: doc.dt}});
+  });
+};
 
 /**
  * 新用户注册

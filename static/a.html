@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Upload Image</title>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body bgcolor="#FFFFFF" text="#000000">
+<form name="IUpload" action="upfile.asp" method="post">
+<p><input type="file" name="picsrc" size="40" onchange="picshow.src=document.IUpload.picsrc.value">
+<input type="button" value="上载" onclick="detect()"></p></form>
+<p><img name="picshow" src="http://www.webjx.com/pics/face/19.gif" title="图像预览"></p>
+</body>
+</html>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function imgExceedSize(w,h){
+if(!document.IUpload.picsrc.value==""){
+if(picshow.width>w||picshow.height>h){
+alert("图像尺寸："+picshow.width+"X"+picshow.height+"。\\n图像尺寸过大！你只能上传尺寸为 "+w+"×"+h+"的图像，请重新浏览图片！");
+return true;
+}else{
+return false;
+}
+}else{
+return true;
+}
+}
+
+function detect(){
+var ok=imgExceedSize(50,50);
+if(ok){
+document.IUpload.reset();
+}else{
+document.IUpload.submit();
+}
+}
+
+//-->
+</SCRIPT>
