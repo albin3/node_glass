@@ -137,7 +137,7 @@ exports.editgps = function (req, callback) {
 exports.getStores = function(req, query, callback) {
   var q = {};
   q.lan = query.lan;
-  if (req.session.storesearch && req.session.storesearch != "") {
+  if (req.session && req.session.storesearch && req.session.storesearch != "") {
     eval("q.name = /" + req.session.storesearch + "/;")
     eval("q.address = /" + req.session.storesearch + "/;")
   } else {
