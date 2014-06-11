@@ -21,12 +21,12 @@ for (var i=0; i<31; i++) {
 }
 */
 var count = new Array();
-for (var i=0; i<31; i++) {
+for (var i=0; i<51; i++) {
   count.push(0);
 }
 dbtimes.find({}, function(err, docs) {
   for (var i=0; i<docs.length; i++) {
-    var day = Math.floor((docs[i].dt-1398873600000)/(24*3600*1000));
+    var day = Math.floor((docs[i].dt-gt)/(24*3600*1000));
     if (day < 0) 
       day = 0;
     count[day] ++;

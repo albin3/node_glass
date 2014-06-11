@@ -14,7 +14,7 @@ var ObjectID = require('mongodb').ObjectID;
 
 // 查询所有品牌
 exports.allbrand = function (req, callback) {
-  dbbrand.find({lan : req.params.lan}, function(err,docs){
+  dbbrand.find({lan : req.params.lan}).sort({summary: 1, _id: 1}, function(err,docs){
     if (err) {
       callback({ret: 2});                           // RETURN: 数据库出错
     }
@@ -26,6 +26,11 @@ exports.allbrand = function (req, callback) {
 exports.addbrand =  function (req, callback) {
   var files = req.files;
   var brand = req.body;
+  if (isNaN(parseFloat(brand.summary))) {
+    brand.summary = 10;
+  } else {
+    brand.summary = parseFloat(brand.summary);
+  }
   var language = req.params.lan;
   brand.lan = language;
   dbbrand.insert(brand, function (err, doc) {

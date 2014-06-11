@@ -8,9 +8,9 @@ exports.store = function (req, res) {
     limit : 20,
     skip  : 1
   };
-  model.getStores(data, function(ret){
-    model.getPages({perPage: 20, lan: req.params.lan}, function(pages) { 
-      res.render('store/index', {Title: "Store Management", stores: ret.val ,language: req.params.lan, totalPages: pages});
+  model.getStores(req, data, function(ret){
+    model.getPages({perPage: 20, lan: req.params.lan, storesearch: req.session.storesearch}, function(pages) { 
+      res.render('store/index', {Title: "Store Management", stores: ret.val ,language: req.params.lan, totalPages: pages, storesearch: req.session.storesearch});
     });
   });
 };
@@ -76,7 +76,14 @@ exports.getstore = function (req, res) {
     skip  : parseInt(req.body.page)    || 1,
     lan   : req.params.lan
   };
-  model.getStores(query, function(ret) {
+  model.getStores(req, query, function(ret) {
+    res.end(JSON.stringify(ret));
+  });
+}
+
+// 根据内容搜索
+exports.search = function (req, res) {
+  model.search(req, res, function(ret) {
     res.end(JSON.stringify(ret));
   });
 }

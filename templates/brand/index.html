@@ -40,7 +40,7 @@
               <thead>
                 <tr>
                   <th class="col-md-1">Name</th>
-                  <th class="col-md-4">Summary</th>
+                  <th class="col-md-4">Sort Weight</th>
                   <th class="col-md-2">Picture</th>
                   <th class="col-md-2">Options</th>
                 </tr>
@@ -49,7 +49,7 @@
                 {% for brand in brandlist %}
                 <tr data-id="{{ brand._id.toString() }}">
                   <td class="td-name">{{ brand.name }}</td>
-                  <td class="td-summary normal">{{ brand.summary }}</td>
+                  <td class="td-summary">{{ brand.summary }}</td>
                   <td class="td-picture">
                     <ul class=list-inline>
                       <img src="/img/brand/{{ brand._id.toString() }}.jpg" width="50" height="31">
