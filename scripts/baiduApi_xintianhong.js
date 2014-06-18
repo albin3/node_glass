@@ -52,8 +52,6 @@ for (var i=0; i<objs.length; i++) {
   } else {
     storeObj.gps = [0, 0];
   }
-  console.log(storeObj);
-  continue;
   dbstore.save(storeObj, function(err, doc){
     if (err) 
       console.log(err);
