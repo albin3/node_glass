@@ -46,6 +46,27 @@
           </dd>
           <br>
           <dd>
+          <label for="class" class="col-sm-2 control-label">Brand</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="class" name="class" value="{{ store.class }}" placeholder="brand">
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store-lng" class="col-sm-2 control-label">Lng</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="store-lng" name="store-lng" value="{{ store.gps[0] || "" }}" placeholder="Lng">
+          </div>
+          </dd>
+          <br>
+          <dd>
+          <label for="store-lat" class="col-sm-2 control-label">Lat</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="store-lat" name="store-lat" value="{{ store.gps[1] || "" }}" placeholder="Lat">
+          </div>
+          </dd>
+          <br>
+          <dd>
           <label for="province" class="col-sm-2 control-label">Province(Reselect)</label>
             <div class="col-sm-4">
               <select class="form-control" type="text" id="province" name="province" value="{{store.province}}">

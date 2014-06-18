@@ -277,7 +277,8 @@ exports.invitefriend = function (user, callback) {
     }
     db_workerid.findOne({index: user.workerid}, function(err, workerid){
       if (err||!workerid&&user.workerid) {
-        return callback({ret: 6});      // RETURN: 员工身份码错误
+        doc.isworker = 0;
+        doc.workerid = "";
       } else if (user.workerid){
         doc.isworker = 1;
         doc.workerid = user.workerid;
@@ -417,16 +418,17 @@ exports.updateuser = function (req, callback) {
       return callback({ret: 3});         // RETURN: 账号被封停
     }
     
-    mid.workerid = user.workerid || mid.workerid;
+    mid.workerid = user.workerid || "";
     mid.isworker = user.isworker || mid.isworker;
     db_workerid.find({index: mid.workerid}, function(err, doc){
       if (err) {
         return callback({ret: 4});       // RETURN: 账号不存在
       }
-      if (doc && mid.workerid !== "") {
+      if (doc) {
         mid.isworker = 1;
       } else {
         mid.isworker = 0;
+        mid.workerid = "";
       }
       mid.tel      = user.tel      || mid.tel;
       mid.email    = user.email    || mid.email;
@@ -870,7 +872,7 @@ exports.store = function (req, callback) {
 };
 //获取品牌列表
 exports.brand = function (req, callback){
-  db_brand.find({lan:req.params.lan},function(err,docs){
+  db_brand.find({lan:req.params.lan}).sort({summary: 1, _id: 1},function(err,docs){
     if (err) {
       return callback({ret: 2});                                // RETURN: 查询错误
     }
@@ -1009,8 +1011,8 @@ exports.prodstores = function(req, callback) {
   query.lng   = parseFloat(query.lng);
   query.lat   = parseFloat(query.lat);
   if (query.lng===0&&query.lat===0&&query.prov==="null"&&query.muni==="null"&&query.area==="null") {
-    query.prov = "北京";
-    query.muni = "北京";
+    query.prov = ".";
+    query.muni = ".";
     near_store = false;
   }
   if (query.prov.indexOf("省")!==-1 || query.prov.indexOf("市")!==-1) {

@@ -247,6 +247,7 @@
           <tbody id="store-list">
           {%for store in stores%}
           <tr data-id="{{ store._id.toString() }}">
+          <td>{{store.class}}</td>
           <td>{{store.name}}</td>
           <td>{{store.province}}</td>
           <td>{{store.municipality}}</td>
@@ -420,6 +421,7 @@
           for (var i=0; i<data.val.length; i++) {
             var store = data.val[i];
             var new_tr = '<tr data-id="'+ store._id.toString() + '">' +
+            '<td>' + store.class        + '</td>' +
             '<td>' + store.name         + '</td>' +
             '<td>' + store.province     + '</td>' +
             '<td>' + store.municipality + '</td>' +

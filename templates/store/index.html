@@ -31,10 +31,13 @@
       <h2 class="sub-header">Store List</h2>
       <button class="btn btn-primary" id="addstore">Add Store</button>
       <button class="btn btn-danger">Delete All</button>
+      <input type="text" id="search" name="search" value="{{storesearch || ''}}" placeholder="search">
+      <button class="btn btn-success">Search</button>
       <div class="table-responsive">
         <table class="table table-striped" totalPages="{{totalPages}}">
           <thead>
             <tr>
+              <th class="col-sm-1">Brand</th>
               <th class="col-sm-1">Store</th>
               <th class="col-sm-1">Province</th>
               <th class="col-sm-1">Municipality</th>
@@ -48,6 +51,7 @@
           <tbody id="store-list">
             {%for store in stores%}
             <tr data-id="{{ store._id.toString() }}">
+              <td>{{store.class}}</td>
               <td>{{store.name}}</td>
               <td>{{store.province}}</td>
               <td>{{store.municipality}}</td>
@@ -164,13 +168,22 @@
       $("#modal-store-edit").modal("hide");
     }, "json");
   });
+  // 搜索.
+  $(".btn-success").click(function(){
+    console.log("/appbg/store/search/"+$("body").attr("lan"));
+    $.post("/appbg/store/search/"+$("body").attr("lan"), {
+      storesearch: $("#search").val()
+    }, function(data) {
+      location.reload();
+    }, "json");
+  });
   // 删除store
   function deleteStore(id, target){
     if (!confirm('Do you really want to delete it？')) {       // 要求确认
       return ;
     }
     $.post(
-    '/appbg/store/del/',
+    '/appbg/store/del/simplified',
     {
       _id: id
     }, function(data){
@@ -198,6 +211,7 @@
           for (var i=0; i<data.val.length; i++) {
             var store = data.val[i];
             var new_tr = '<tr data-id="'+ store._id.toString() + '">' +
+            '<td>' + store.class        + '</td>' +
             '<td>' + store.name         + '</td>' +
             '<td>' + store.province     + '</td>' +
             '<td>' + store.municipality + '</td>' +

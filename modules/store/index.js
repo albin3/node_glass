@@ -7,9 +7,10 @@ exports.register = function (app) {
   app.get('/appbg/store/new/:lan', view.tonewstore);
   app.post('/appbg/store/new/:lan', view.newstore);
   app.get('/appbg/store/edit/:id/:lan', view.toedit);
-  app.post('/appbg/store/del', view.delstore);
+  app.post('/appbg/store/del/:lan', view.delstore);
   app.post('/appbg/store/delall/:lan', view.delall);
   app.post('/appbg/store/getcity/:lan', view.getcity);
   app.post('/appbg/store/getarea/:lan', view.getarea);
   app.post('/appbg/store/editgps/:lan', view.editgps);
+  app.post('/appbg/store/search/:lan', view.search);
 };

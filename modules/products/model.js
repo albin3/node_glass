@@ -213,7 +213,7 @@ exports.getStores = function(req, callback){
     query.lan   = req.params.lan;
     query.skip  = 1;
     query.limit = 15;
-    store_model.getStores(query, function(data){
+    store_model.getStores(req, query, function(data){
       if (data.ret !== 1) {
         return callback(data);                                                  // RETURN: 调用错误
       }
