@@ -12,8 +12,8 @@ var xlsx = require('node-xlsx'),
 function func() {
 
 console.log("start to get baidu api.");
-var objs = xlsx.parse(__dirname+"/20140509_youli.xlsx").worksheets[0].data;
-for (var i=1; i<objs.length; i++) {
+var objs = xlsx.parse(__dirname+"/20140618_youli.xlsx").worksheets[0].data;
+for (var i=0; i<objs.length; i++) {
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined || typeof obj[0].value !== 'string') {
@@ -29,7 +29,7 @@ for (var i=1; i<objs.length; i++) {
   if (storeObj.municipality[storeObj.municipality.length-1] === "市") {
     storeObj.municipality = storeObj.municipality.slice(0, storeObj.municipality.length-1);
   }
-  storeObj.area  = obj[3] ? obj[3].value : " ";
+  storeObj.area  = obj[3] ? (obj[3].value || " ") : " ";
   if (storeObj.area[storeObj.area.length-1] === "县" || storeObj.area[storeObj.area.length-1] === "区") {
     storeObj.area = storeObj.area.slice(0, storeObj.area.length-1);
   }

@@ -12,8 +12,8 @@ var xlsx = require('node-xlsx'),
 function func() {
 
 console.log("start to get baidu api.");
-var objs = xlsx.parse(__dirname+"/20140509_xintianhong.xlsx").worksheets[0].data;
-for (var i=1; i<objs.length; i++) {
+var objs = xlsx.parse(__dirname+"/20140618_xintianhong.xlsx").worksheets[0].data;
+for (var i=0; i<objs.length; i++) {
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined || typeof obj[0].value !== 'string') {
@@ -52,6 +52,8 @@ for (var i=1; i<objs.length; i++) {
   } else {
     storeObj.gps = [0, 0];
   }
+  console.log(storeObj);
+  continue;
   dbstore.save(storeObj, function(err, doc){
     if (err) 
       console.log(err);

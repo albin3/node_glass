@@ -77,3 +77,12 @@ exports.sharemain = function(req, callback) {
   }
   return callback({ret: 1});
 }
+
+// 分享给好友
+exports.download = function(req, callback) {
+  var msgs = req.params;
+  if (msgs)
+    return callback({ret: 1});
+  else
+    return callback({ret: 2});
+}

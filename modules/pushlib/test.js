@@ -13,6 +13,6 @@ model.ApplePush.pushSingle(cltid, msg);
 
 // model.AndroidPush.pushSingle();
 // model.AndroidPush.pushLt();
-// model.AndroidPush.pushAll({content: "aaa", alert: "hello"});
+model.AndroidPush.pushAll({content: "今天紫外线指数较高，注意防晒", alert: "hello"});
 
 
