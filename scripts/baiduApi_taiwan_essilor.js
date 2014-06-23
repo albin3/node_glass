@@ -2,16 +2,13 @@ var http_sync = require('./http-sync');
 var urlencode = require('urlencode'),
     config    = require('../config'),
     MongoClient = require('mongodb'),
-    mongojs = require('mongojs');
-var db = mongojs(config.dbinfo.dbname);
+    mongojs = require('mongojs'),
+    db = mongojs(config.dbinfo.dbname);
 var dbregional = db.collection('regional');
 var dbstore = db.collection('store');
 var xlsx = require('node-xlsx'),
     password_hash = require('password-hash');
 
-function func() {
-
-console.log("start to get baidu api.");
 var objs = xlsx.parse(__dirname+"/20140620_taiwan_essilor.xlsx").worksheets[0].data;
 for (var i=0; i<objs.length; i++) {
   var obj = objs[i];
@@ -53,7 +50,8 @@ for (var i=0; i<objs.length; i++) {
   } else {
     storeObj.gps = [0, 0];
   }
-  dbstore.save(storeObj, function(err, doc){
+  console.log(storeObj);
+  dbstore.insert(storeObj, function(err, doc){
     if (err) 
       console.log(err);
     else 
@@ -81,11 +79,3 @@ for (var i=0; i<values.length; i++) {
     console.log(rtn.result.location.lat);
   }
 }
-
-var http = require('http');
-console.log("<<<<<<<<<<<<<<<<<<<<<<<<");
-}
-
-setTimeout(func, 10);
-
-
