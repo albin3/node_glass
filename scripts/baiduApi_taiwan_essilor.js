@@ -10,7 +10,8 @@ var xlsx = require('node-xlsx'),
     password_hash = require('password-hash');
 
 var objs = xlsx.parse(__dirname+"/20140620_taiwan_essilor.xlsx").worksheets[0].data;
-for (var i=0; i<objs.length; i++) {
+console.log(objs.length);
+for (var i=700; i<808; i++) {//objs.length
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined) {
@@ -50,7 +51,6 @@ for (var i=0; i<objs.length; i++) {
   } else {
     storeObj.gps = [0, 0];
   }
-  console.log(storeObj);
   dbstore.insert(storeObj, function(err, doc){
     if (err) 
       console.log(err);

@@ -7,7 +7,7 @@ var db = mongojs(config.dbinfo.dbname);
 var dbstores  = db.collection('store');
 var dbproduct = db.collection('product');
 
-dbstores.find({lan: "traditional_tw", brand: "essilor"}, function(err, docs) {
+dbstores.find({lan: "traditional_tw", brand: "nikon"}, function(err, docs) {
   if (err || docs.length === 0) {
     return console.log("Can not find stores");
   }
@@ -20,7 +20,7 @@ dbstores.find({lan: "traditional_tw", brand: "essilor"}, function(err, docs) {
       flag = true;
     discount.push(flag);
   }
-  dbproduct.update({lan: "traditional_tw", brand: "essilor"}, {$set: {stores: stores, discount: discount}}, {multi: true}, function(err, msg) {
+  dbproduct.update({lan: "traditional_tw", brand: "Nikon"}, {$set: {stores: stores, discount: discount}}, {multi: true}, function(err, msg) {
     return console.log(msg);
   });
 });
