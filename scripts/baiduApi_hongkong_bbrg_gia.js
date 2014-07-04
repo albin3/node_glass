@@ -9,34 +9,37 @@ var dbstore = db.collection('store');
 var xlsx = require('node-xlsx'),
     password_hash = require('password-hash');
 
+var len = 0;
+
 function func() {
 
 console.log("start to get baidu api.");
-var objs = xlsx.parse(__dirname+"/20140618_xintianhong.xlsx").worksheets[0].data;
-for (var i=0; i<objs.length; i++) {
+var objs = xlsx.parse(__dirname+"/20140624_hongkong_bbrg_gia.xlsx").worksheets[0].data;
+console.log(objs.length);
+for (var i=1; i<objs.length; i++) {
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined || typeof obj[0].value !== 'string') {
    continue;
   }
-  storeObj.class = "新天鸿";
+  storeObj.class = "bbrg&gia";
   storeObj.name  = obj[0] ? obj[0].value : " ";
-  storeObj.province  = obj[1] ? obj[1].value : " ";
+  storeObj.province  = obj[2] ? obj[2].value : " ";
   if (storeObj.province[storeObj.province.length-1] === "省") {
     storeObj.province = storeObj.province.slice(0, storeObj.province.length-1);
   }
-  storeObj.municipality = obj[2] ? obj[2].value : " ";
+  storeObj.municipality = obj[3] ? obj[3].value : " ";
   if (storeObj.municipality[storeObj.municipality.length-1] === "市") {
     storeObj.municipality = storeObj.municipality.slice(0, storeObj.municipality.length-1);
   }
-  storeObj.area  = obj[3] ? obj[3].value : " ";
+  storeObj.area  = obj[4] ? obj[4].value : " ";
   if (storeObj.area[storeObj.area.length-1] === "县" || storeObj.area[storeObj.area.length-1] === "区") {
     storeObj.area = storeObj.area.slice(0, storeObj.area.length-1);
   }
-  storeObj.address = obj[4] ? obj[4].value : " ";
-  storeObj.telephone = obj[5] ? obj[5].value : " ";
-  storeObj.onbussiness = obj[6] ? obj[6].value : " ";
-  storeObj.lan = "simplified";
+  storeObj.address = obj[5] ? obj[5].value : " ";
+  storeObj.telephone = obj[6] ? obj[6].value : " ";
+  storeObj.onbussiness = "9:00~18:00";
+  storeObj.lan = "traditional_hk";
   var req = http_sync.request({
     protocol: 'http',
     host: 'api.map.baidu.com',

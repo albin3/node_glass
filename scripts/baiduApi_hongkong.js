@@ -9,17 +9,20 @@ var dbstore = db.collection('store');
 var xlsx = require('node-xlsx'),
     password_hash = require('password-hash');
 
+var len = 0;
+
 function func() {
 
 console.log("start to get baidu api.");
-var objs = xlsx.parse(__dirname+"/20140618_xintianhong.xlsx").worksheets[0].data;
-for (var i=0; i<objs.length; i++) {
+var objs = xlsx.parse(__dirname+"/20140620_hongkong.xlsx").worksheets[0].data;
+console.log(objs.length);
+for (var i=500; i<616; i++) {
   var obj = objs[i];
   var storeObj = {};
   if (obj === undefined || obj[0] === undefined || typeof obj[0].value !== 'string') {
    continue;
   }
-  storeObj.class = "新天鸿";
+  storeObj.class = "hongkong";
   storeObj.name  = obj[0] ? obj[0].value : " ";
   storeObj.province  = obj[1] ? obj[1].value : " ";
   if (storeObj.province[storeObj.province.length-1] === "省") {
@@ -35,8 +38,8 @@ for (var i=0; i<objs.length; i++) {
   }
   storeObj.address = obj[4] ? obj[4].value : " ";
   storeObj.telephone = obj[5] ? obj[5].value : " ";
-  storeObj.onbussiness = obj[6] ? obj[6].value : " ";
-  storeObj.lan = "simplified";
+  storeObj.onbussiness = " ";
+  storeObj.lan = "traditional_hk";
   var req = http_sync.request({
     protocol: 'http',
     host: 'api.map.baidu.com',

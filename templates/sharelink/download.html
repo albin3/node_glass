@@ -7,21 +7,6 @@
 
 {% block content %}
 <label class="alert"></label>
-<p id="page">news</p>
-<p id="objid">{{objid}}</p>
-{%if news !== null%}
-<h1>{{news.title}}</h1>
-<h2>{{news.summary}}</h2>
-<p><a href="{{news.firpicdes}}">{{news.firpicdes}}</a></p>
-{%for index, detail in news.details%}
-{%if detail.type === 1%}
-<p>{{detail.content}}</p>
-{%else%}
-<img src="{{detail.content}}"></img>
-<p>{{detail.des}}</p>
-{%endif%}
-{%endfor%}
-{%endif%}
 <script>
 var IS_IPAD    = navigator.userAgent.match(/iPad/i) != null,
     IS_IPHONE  = !IS_IPAD && ((navigator.userAgent.match(/iPhone/i) != null) || (navigator.userAgent.match(/iPod/i) != null)),
@@ -56,10 +41,10 @@ $().ready(function(){
     } else if (IS_ANDROID) {
 
         // Instead of using the actual URL scheme, use 'intent://' for better UX
-        window.location = "essilorapp://"+page+"/"+objid;
+        // window.location = "essilorapp://"+page+"/"+objid;;
         setTimeout(function() {
             // If the user is still here, open the App Store
-            if (!document.webkitHidden) {
+            if (1) {
                 // Replace the Apple ID following '/id'
                 // window.location = "http://baidu.com";
                 // document.location.href = "http://www.baidu.com"

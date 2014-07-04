@@ -40,3 +40,14 @@ exports.sharemain = function(req, res) {
     }
   });
 };
+
+// 分享下载
+exports.download = function(req, res) {
+  model.download(req, function(ret) {
+    if (ret.ret===1) {
+      res.render('sharelink/download', { language: req.params.lan });
+    } else {
+      res.render('sharelink/download', { language: "simplified" });
+    }
+  });
+};

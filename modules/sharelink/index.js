@@ -6,5 +6,6 @@ exports.register = function (app) {
   app.get('/sharelink/prod/:userid/:objid/:lan', view.shareprod);
   app.get('/sharelink/main/:userid/:lan', view.sharemain);
   app.all('/sharelink/:userid/:lan', view.sharelink);
+  app.get('/sharelink/:lan', view.download);
 };
 

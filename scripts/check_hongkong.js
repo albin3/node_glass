@@ -7,7 +7,7 @@ var db = mongojs(config.dbinfo.dbname);
 var dbstores  = db.collection('store');
 var dbproduct = db.collection('product');
 
-dbstores.find({lan: "traditional_tw", class: "essilor"}, function(err, docs) {
+dbstores.find({lan: "traditional_tw", brand: "essilor"}, function(err, docs) {
   if (err || docs.length === 0) {
     return console.log("Can not find stores");
   }
