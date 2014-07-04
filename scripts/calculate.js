@@ -21,7 +21,7 @@ for (var i=0; i<31; i++) {
 }
 */
 var count = new Array();
-for (var i=0; i<51; i++) {
+for (var i=0; i<61; i++) {
   count.push(0);
 }
 dbtimes.find({}, function(err, docs) {
