@@ -11,7 +11,7 @@ var xlsx = require('node-xlsx'),
 
 var objs = xlsx.parse(__dirname+"/20140620_taiwan_essilor.xlsx").worksheets[0].data;
 console.log(objs.length);
-var i    = 0;
+var i    = 290;
 var test = false;
 function func() {//objs.length
   var obj = objs[i];
@@ -68,7 +68,7 @@ function func() {//objs.length
     i++;
     console.log("###");
     console.log(i+"/808");
-    setTimeout(func, 1000);
+    setTimeout(func, 3000);
   } else {
     console.log("$$$ complete");
   }
