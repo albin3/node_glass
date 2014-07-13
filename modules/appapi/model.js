@@ -612,6 +612,9 @@ exports.findglasspulldata = function(req, callback) {
     if (err || docs.length===0) {
       return callback({ret: 2});                               // RETURN: 返回更新错误
     }
+    for (var i=0; i<docs.length; i++) {
+      docs[i].dt = docs[i].dt.toString();
+    }
     return callback({ret: 1, pics: docs});                     // RETURN: 返回更新成功
   });
 };
@@ -840,7 +843,8 @@ exports.getarea = function(req,callback){
     }
     var area = new Array();
     for(var i=0;i<docs.length;i++){
-      area.push(docs[i].prov);
+      if (docs[i].prov && docs[i].prov != "")
+        area.push(docs[i].prov);
     }
     callback({ret: 1, val: area});
   });
@@ -1172,4 +1176,9 @@ exports.reg_deviceid = function(req, callback) {
       return callback({ret: 1, val: doc});         // RETURN: DEVICEID注册成功
     }
   });
+};
+
+// 抓取espf，并返回
+exports.espflevel = function(req, callback) {
+  callback({ret: 1, val: "强"});
 };

@@ -233,3 +233,9 @@ exports.reg_deviceid = function(req, res){
     res.end(JSON.stringify(ret));
   });
 }
+// 抓取espf，并返回给前端
+exports.espflevel = function(req, res){
+  model.espflevel(req, function(ret){
+    res.end(JSON.stringify(ret));
+  });
+}
