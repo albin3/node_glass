@@ -49,4 +49,5 @@ exports.register = function (app) {
   app.get('/appapi/androidscore/:lan',view.androidscore);                           // 获取苹果版本信息
 
   app.post('/appapi/deviceid/:lan', view.reg_deviceid);                             // 注册DEVICEID
+  app.all('/appapi/espf', view.espflevel);                                          // 抓取espf指数
 };
