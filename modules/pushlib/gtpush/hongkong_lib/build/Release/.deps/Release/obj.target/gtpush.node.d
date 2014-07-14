@@ -1,0 +1,1 @@
+cmd_Release/obj.target/gtpush.node := flock ./Release/linker.lock g++ -shared -pthread -rdynamic -m64  -Wl,-soname=gtpush.node -o Release/obj.target/gtpush.node -Wl,--start-group Release/obj.target/gtpush/src/igtpush.o -Wl,--end-group -lgtpushsdk

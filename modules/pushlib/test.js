@@ -8,11 +8,14 @@ var msg1 = {
 alert: "猛戳\n这里"
 };
 
-model.ApplePush.pushSingle(cltid, msg);
+// model.ApplePush.pushSingle(cltid, msg);
 // model.ApplePush.pushList([cltid], msg1);
 
 // model.AndroidPush.pushSingle();
 // model.AndroidPush.pushLt();
+// model.AndroidPush.pushAll({lan: "traditional_hk", content: "main/111/EssolorApp/hongkong", alert: "hello"});
+model.AndroidPush.pushAll({lan: "traditional_tw", content: "main/111/EssolorApp/hongkong", alert: "hello"});
+// model.AndroidPush.pushAll({lan: "simplified", content: "main/111/EssolorApp/今天紫外线指数有点高，出门注意防晒", alert: "hello"});
 model.AndroidPush.pushAll({content: "今天紫外线指数较高，注意防晒", alert: "hello"});
 
 

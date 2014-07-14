@@ -1,5 +1,7 @@
 var apn = require('apn');
-var gtpush = require('./gtpush/lib/build/Release/gtpush');
+var hongkong_gtpush   = require('./gtpush/hongkong_lib/build/Release/gtpush');
+var taiwan_gtpush     = require('./gtpush/taiwan_lib/build/Release/gtpush');
+var simplified_gtpush = require('./gtpush/simplified_lib/build/Release/gtpush');
 
 var config   = require('../../config');
 var mongojs  = require('mongojs');
@@ -90,17 +92,27 @@ pushAll     : function(msg) {                       // 推送所有用户
 // Android 推送接口
 
 // 初始化个推，参数分别为AppId，AppKey，MasterSecuret
-console.log(gtpush.pushInit("OlpSqUkkqy7cyonooHV0W9", "WsltddSVpc6sNIGw9xYWN2", "JoWWctCwtJAsDZVwy1XhU1"));
+console.log(hongkong_gtpush.pushInit("OeAwjlA060AvLvf9BJS664", "lezXcpOMgX7JTdMh2nKAX4", "b78VLAAbXy6zATurf50QH1"));
+console.log(simplified_gtpush.pushInit("OlpSqUkkqy7cyonooHV0W9", "WsltddSVpc6sNIGw9xYWN2", "JoWWctCwtJAsDZVwy1XhU1"));
+console.log(taiwan_gtpush.pushInit("w63Nz0zlJZ93iaVautYFn8", "r5aJmFdQMu68A3DY8wpxs1", "ecE1XF00Ff9hhIIoYWvgj8"));
+
+var gtpush = {};
+gtpush["traditional_hk"] = hongkong_gtpush;
+gtpush["traditional_tw"] = taiwan_gtpush;
+gtpush["simplified"]     = simplified_gtpush;
 
 AndroidPush = {
 pushSingle  : function(cltid, msg) {                // 推送单个用户
-  console.log(gtpush.pushSingle());
+  if (gtpush[msg.lan])
+    console.log(gtpush[msg.lan].pushSingle());
   },
 pushList    : function(cltlist, msg) {              // 推送List用户
-  console.log(gtpush.pushList());
+  if (gtpush[msg.lan])
+    console.log(gtpush[msg.lan].pushList());
   },
 pushAll     : function(msg) {                       // 推送给所有用户
-  console.log(gtpush.pushAll(msg.content, msg.message));
+  if (gtpush[msg.lan])
+    console.log(gtpush[msg.lan].pushAll(msg.content, msg.message));
   }
 };
 

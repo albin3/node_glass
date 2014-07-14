@@ -27,7 +27,11 @@ var db_usercoupon   = db.collection('usercoupon');
 var db_deviceid     = db.collection('deviceid');
 var db_brandcode    = db.collection('brandcode');
 var db_loadingpic   = db.collection('loadingpic');
+var db_espf         = db.collection('espf');
 var ObjectID        = require('mongodb').ObjectID;
+
+var Requester = require('requester');   // 抓取紫外线指数
+var requester = new Requester({debug: 1});
 
 // Date的format方法
 Date.prototype.format = function(format) {
@@ -612,6 +616,9 @@ exports.findglasspulldata = function(req, callback) {
     if (err || docs.length===0) {
       return callback({ret: 2});                               // RETURN: 返回更新错误
     }
+    for (var i=0; i<docs.length; i++) {
+      docs[i].dt = docs[i].dt.toString();
+    }
     return callback({ret: 1, pics: docs});                     // RETURN: 返回更新成功
   });
 };
@@ -840,7 +847,8 @@ exports.getarea = function(req,callback){
     }
     var area = new Array();
     for(var i=0;i<docs.length;i++){
-      area.push(docs[i].prov);
+      if (docs[i].prov && docs[i].prov != "")
+        area.push(docs[i].prov);
     }
     callback({ret: 1, val: area});
   });
@@ -1171,5 +1179,19 @@ exports.reg_deviceid = function(req, callback) {
     } else {
       return callback({ret: 1, val: doc});         // RETURN: DEVICEID注册成功
     }
+  });
+};
+
+// 抓取espf，并返回
+exports.espflevel = function(req, callback) {
+  db_espf.find({city: "北京"}).sort(dt: -1).limit(1, function(err, doc) {
+  });
+  requester.get('http://www.weather.com.cn/weather/101010100.shtml',function(body) {
+    var i = body.indexOf('<section class="detail uv">');
+    var subbody = body.slice(i);
+    var p1 = subbody.indexOf('<b>')+3;
+    var p2 = subbody.indexOf('</b>');
+    var result = (subbody.slice(p1, p2)).replace(/(^\s*)|(\s*$)/g, "");
+    return callback({ret: 1, val: result});
   });
 };
